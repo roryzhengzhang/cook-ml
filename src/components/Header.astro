@@ -1,0 +1,173 @@
+---
+// Two-row header in the style of documentation sites such as vLLM:
+// brand, search and utilities on top, section tabs underneath.
+import Search from '@astrojs/starlight/components/Search.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro';
+import logo from '../assets/logo.svg';
+
+const tabs = [
+  { label: 'Home', href: '/', match: (p: string) => p === '/' },
+  { label: 'Tutorials', href: '/tutorials/', match: (p: string) => p.startsWith('/tutorials/') },
+  { label: 'Blog', href: '/blog/', match: (p: string) => p.startsWith('/blog/') },
+  { label: 'About', href: '/about/', match: (p: string) => p.startsWith('/about/') },
+];
+
+const path = Astro.url.pathname;
+---
+
+<div class="cm-header">
+  <div class="cm-top">
+    <a href="/" class="cm-brand" aria-label="Cook ML home">
+      <img src={logo.src} width="28" height="28" alt="" />
+      <span>Cook ML</span>
+    </a>
+    <div class="cm-search print:hidden"><Search /></div>
+    <div class="cm-utils sl-hidden md:sl-flex print:hidden">
+      <SocialIcons />
+      <ThemeSelect />
+    </div>
+  </div>
+  <nav class="cm-tabs print:hidden" aria-label="Sections">
+    {
+      tabs.map((tab) => (
+        <a href={tab.href} aria-current={tab.match(path) ? 'page' : undefined}>
+          {tab.label}
+        </a>
+      ))
+    }
+  </nav>
+</div>
+
+<style>
+  .cm-header {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+  }
+
+  .cm-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: var(--cm-top-height);
+    flex-shrink: 0;
+  }
+
+  .cm-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.15rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--sl-color-white);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .cm-brand img {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .cm-search {
+    margin-inline-start: auto;
+  }
+
+  .cm-utils {
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cm-tabs {
+    display: flex;
+    gap: 1.75rem;
+    height: var(--cm-tabs-height);
+    align-items: stretch;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .cm-tabs a {
+    display: flex;
+    align-items: center;
+    font-size: 0.9375rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+
+  .cm-tabs a:hover {
+    color: var(--sl-color-white);
+  }
+
+  .cm-tabs a[aria-current='page'] {
+    color: var(--sl-color-white);
+    font-weight: 550;
+    border-bottom-color: var(--cm-brand);
+  }
+
+  /* Leave room for Starlight's mobile menu button in the top row. */
+  :global([data-has-sidebar]) .cm-top {
+    padding-inline-end: calc(var(--sl-menu-button-size) + 0.5rem);
+  }
+
+  @media (min-width: 50rem) {
+    :global([data-has-sidebar]) .cm-top {
+      padding-inline-end: 0;
+    }
+    .cm-search {
+      width: min(22rem, 40vw);
+    }
+  }
+</style>
+
+<script>
+  // Highlight the sidebar link for the section currently on screen.
+  // Replaces the right-hand table of contents, which is turned off.
+  function trackSections() {
+    const sidebar = document.querySelector('.sidebar-content');
+    if (!sidebar) return;
+    const here = location.pathname;
+    const links = [...sidebar.querySelectorAll<HTMLAnchorElement>('a[href*="#"]')].filter(
+      (a) => new URL(a.href).pathname === here,
+    );
+    if (!links.length) return;
+
+    const byId = new Map(links.map((a) => [decodeURIComponent(new URL(a.href).hash.slice(1)), a]));
+    const headings = [...byId.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((h): h is HTMLElement => h !== null);
+
+    const update = () => {
+      const offset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 120;
+      let current: HTMLElement | undefined;
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top - offset <= 8) current = h;
+      }
+      links.forEach((a) => a.classList.remove('cm-active-section'));
+      sidebar.classList.toggle('cm-in-section', Boolean(current));
+      if (current) byId.get(current.id)?.classList.add('cm-active-section');
+    };
+
+    let queued = false;
+    addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          update();
+        });
+      },
+      { passive: true },
+    );
+    update();
+  }
+  trackSections();
+</script>

@@ -1,0 +1,74 @@
+---
+// Numbered chapter list for a tutorial series, read from the content collection.
+import { getCollection } from 'astro:content';
+
+interface Props {
+  series: string;
+  limit?: number;
+}
+const { series, limit } = Astro.props;
+const prefix = `tutorials/${series}/`;
+
+const chapters = (await getCollection('docs', (e) => e.id.startsWith(prefix) && e.id !== `tutorials/${series}`))
+  .sort((a, b) => (a.data.sidebar?.order ?? 0) - (b.data.sidebar?.order ?? 0))
+  .slice(0, limit);
+---
+
+<ol class="cm-chapters not-content">
+  {
+    chapters.map((c, i) => (
+      <li>
+        <a href={`/${c.id}/`}>
+          <span class="num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="body">
+            <span class="title">{c.data.title}</span>
+            <span class="desc">{c.data.description}</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .cm-chapters {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0;
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+  .cm-chapters li {
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+  .cm-chapters a {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1rem 0.25rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .num {
+    font-family: var(--sl-font-mono);
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    padding-top: 0.15rem;
+    min-width: 1.5rem;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .title {
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+  .desc {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--sl-color-gray-3);
+  }
+  a:hover .title {
+    color: var(--sl-color-text-accent);
+  }
+</style>

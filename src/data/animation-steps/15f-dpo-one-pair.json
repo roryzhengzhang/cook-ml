@@ -1,0 +1,35 @@
+{
+  "name": "15f dpo one pair",
+  "title": "DPO raises the winner and lowers the loser relative to the reference",
+  "subtitle": "One preference pair; log probabilities of whole responses; β = 0.1; no reward model and no sampling",
+  "steps": [
+    {
+      "caption": "Before training the policy equals the reference, so both log ratios are 0, the margin is 0, the sigmoid is 0.5 and the loss is ln 2 = 0.693 for every pair.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-01.png"
+    },
+    {
+      "caption": "Training raises the winner's log probability above the reference and pushes the loser's below it. The loss reads only the gap between the two log ratios.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-02.png"
+    },
+    {
+      "caption": "Final state: winner log ratio −10.0 − (−11.0) = +1.0, loser −12.0 − (−11.5) = −0.5, margin 1.5.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-03.png"
+    },
+    {
+      "caption": "Multiply by β = 0.1 to get 0.15. This is the same gap a reward model would score, with the implicit reward β × log ratio standing in for r.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-04.png"
+    },
+    {
+      "caption": "The sigmoid of 0.15 is 0.5374, read as the chance the winner is preferred under the implicit reward.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-05.png"
+    },
+    {
+      "caption": "The loss is −ln 0.5374 = 0.6210, down from 0.6931. Small, because β = 0.1 shrinks a margin of 1.5 nats.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-06.png"
+    },
+    {
+      "caption": "The gradient on this pair is scaled by 1 − 0.5374 = 0.4626. Pairs already ranked right get small weight, pairs ranked wrong get weight near 1.",
+      "image": "/images/llm-fundamentals/steps/15f-dpo-one-pair/step-07.png"
+    }
+  ]
+}

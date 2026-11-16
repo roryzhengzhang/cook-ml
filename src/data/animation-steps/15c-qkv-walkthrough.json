@@ -1,0 +1,47 @@
+{
+  "name": "15c qkv walkthrough",
+  "title": "Three projections turn each token into a question an advert and a payload",
+  "subtitle": "Section 2 toy: width 2; the token bank asks its question of all three tokens",
+  "steps": [
+    {
+      "caption": "Each token starts as a vector x. In a trained model it has thousands of numbers; here it has two, chosen so the arithmetic fits on the screen.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-01.png"
+    },
+    {
+      "caption": "Multiply each x by W_Q to get its query, the question it asks. For bank, (1, 1) times W_Q gives (1, 1).",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-02.png"
+    },
+    {
+      "caption": "The same x times W_K gives its key, the advert it shows to other tokens. river advertises (1, 1).",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-03.png"
+    },
+    {
+      "caption": "And x times W_V gives its value, the payload it hands over when read. river carries (2, 0).",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-04.png"
+    },
+    {
+      "caption": "Score every key against bank's query with a dot product: −1 for the, 2 for river, 1 for bank itself.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-05.png"
+    },
+    {
+      "caption": "Divide by the square root of the head width, here √2, so wider heads do not produce larger scores.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-06.png"
+    },
+    {
+      "caption": "Exponentiate. Every number becomes positive and their order is kept. The three add to 6.6344.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-07.png"
+    },
+    {
+      "caption": "Divide by that sum. The weights 0.0743, 0.6200 and 0.3057 add to one, and river gets the most.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-08.png"
+    },
+    {
+      "caption": "Scale each value by its weight and add them up. That sum is the attention output for bank.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-09.png"
+    },
+    {
+      "caption": "The output (1.8514, 0.3800) is mostly river's payload (2, 0). bank now carries information about the word next to it, which is what makes it a river bank.",
+      "image": "/images/llm-fundamentals/steps/15c-qkv-walkthrough/step-10.png"
+    }
+  ]
+}

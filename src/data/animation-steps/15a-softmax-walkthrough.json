@@ -1,0 +1,35 @@
+{
+  "name": "15a softmax walkthrough",
+  "title": "Softmax turns four scores into probabilities that sum to one",
+  "subtitle": "Section 5 example: context \"the cat\"; logits 2.0, 1.0, 0.5, -1.0; temperature divides every logit",
+  "steps": [
+    {
+      "caption": "The network ends with one raw score per vocabulary token, called a logit. Logits can be any real number, negative included, and they do not sum to anything in particular.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-01.png"
+    },
+    {
+      "caption": "At temperature 1 the logits pass through unchanged. Temperature is a number that divides every logit before the next step.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-02.png"
+    },
+    {
+      "caption": "Exponentiate each one: e to the 2.0 is 7.389, e to the -1.0 is 0.368. Every result is positive and the larger logit stays larger.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-03.png"
+    },
+    {
+      "caption": "Divide each exponential by their sum 12.124. The probabilities are 0.609, 0.224, 0.136 and 0.030, and they sum to one.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-04.png"
+    },
+    {
+      "caption": "Subtracting the largest logit from all four first gives the same probabilities, because the shared factor cancels in the division. Real code does this so e to a large logit never overflows.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-05.png"
+    },
+    {
+      "caption": "Temperature 0.5 doubles every logit gap before exponentiating. \"sat\" rises to 0.842 and \"the\" falls to 0.002, so sampling becomes nearly deterministic.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-06.png"
+    },
+    {
+      "caption": "Temperature 2 halves every gap. The distribution flattens to 0.434, 0.263, 0.205 and 0.097, so sampling picks the unlikely tokens more often.",
+      "image": "/images/llm-fundamentals/steps/15a-softmax-walkthrough/step-07.png"
+    }
+  ]
+}

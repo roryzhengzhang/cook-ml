@@ -1,0 +1,298 @@
+/* Cook ML theme on top of Starlight.
+   Goal: a quiet, readable documentation look (white page, one accent color,
+   generous line height) in the spirit of Material for MkDocs sites like vLLM. */
+
+:root {
+  --sl-font: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --cm-brand: #e8613c;
+  --cm-top-height: 3.5rem;
+  --cm-tabs-height: 2.5rem;
+  --sl-nav-height: calc(var(--cm-top-height) + var(--cm-tabs-height));
+  --sl-content-width: 48rem;
+  --sl-sidebar-width: 17rem;
+
+  /* Dark theme */
+  --sl-color-accent-low: #1e2547;
+  --sl-color-accent: #7c8cff;
+  --sl-color-accent-high: #b4beff;
+  --sl-color-white: #f2f3f5;
+  --sl-color-gray-1: #d9dbe0;
+  --sl-color-gray-2: #b5b9c2;
+  --sl-color-gray-3: #8b909b;
+  --sl-color-gray-4: #5a5f6a;
+  --sl-color-gray-5: #353943;
+  --sl-color-gray-6: #1f2229;
+  --sl-color-black: #14161b;
+  --sl-color-bg-nav: #14161b;
+  --sl-color-bg-sidebar: #14161b;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #e3e7ff;
+  --sl-color-accent: #3f51b5;
+  --sl-color-accent-high: #2c3a8f;
+  --sl-color-white: #1d2026;
+  --sl-color-gray-1: #2f333b;
+  --sl-color-gray-2: #4a4f59;
+  --sl-color-gray-3: #6b717c;
+  --sl-color-gray-4: #9aa0aa;
+  --sl-color-gray-5: #d7dbe1;
+  --sl-color-gray-6: #f1f3f6;
+  --sl-color-gray-7: #f8f9fb;
+  --sl-color-black: #ffffff;
+  --sl-color-text-accent: #3f51b5;
+  --sl-color-bg-nav: #ffffff;
+  --sl-color-bg-sidebar: #ffffff;
+}
+
+@media (min-width: 50rem) {
+  :root {
+    --cm-top-height: 3.75rem;
+    --cm-tabs-height: 2.75rem;
+  }
+}
+
+/* ---------- Header ---------- */
+
+header.header {
+  padding-block: 0;
+  border-bottom: 1px solid var(--sl-color-hairline);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.04);
+}
+
+.sl-menu-button {
+  top: calc((var(--cm-top-height) - var(--sl-menu-button-size)) / 2);
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar-pane {
+  border-inline-end: none;
+}
+
+.sidebar-content {
+  padding-top: 1.75rem;
+}
+
+.sidebar-content a {
+  font-size: 0.9rem;
+  color: var(--sl-color-gray-2);
+  padding-block: 0.3rem;
+}
+
+.sidebar-content a:hover {
+  color: var(--sl-color-text-accent);
+}
+
+/* Active page: accent text instead of a filled block. */
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover,
+.sidebar-content a[aria-current='page']:focus {
+  background: transparent;
+  color: var(--sl-color-text-accent);
+  font-weight: 600;
+}
+
+.sidebar-content .group-label .large,
+.sidebar-content summary .large {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-3);
+}
+
+/* ---------- Table of contents ---------- */
+
+starlight-toc h2,
+mobile-starlight-toc h2 {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-3);
+}
+
+starlight-toc a {
+  font-size: 0.85rem;
+  color: var(--sl-color-gray-3);
+}
+
+starlight-toc a[aria-current='true'] {
+  color: var(--sl-color-text-accent);
+  font-weight: 550;
+}
+
+/* ---------- Page title and prose ---------- */
+
+.content-panel h1#_top {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.sl-markdown-content {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.sl-markdown-content :is(h2, h3, h4) {
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.sl-markdown-content h2 {
+  font-size: 1.55rem;
+  font-weight: 650;
+  margin-top: 2.75rem;
+}
+
+.sl-markdown-content h3 {
+  font-size: 1.2rem;
+  font-weight: 650;
+  margin-top: 2rem;
+}
+
+.sl-markdown-content a:not(.not-content a) {
+  color: var(--sl-color-text-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.sl-markdown-content a:hover {
+  text-decoration-color: currentColor;
+}
+
+.sl-markdown-content hr {
+  border-color: var(--sl-color-hairline);
+  margin-block: 2.5rem;
+}
+
+.sl-markdown-content strong {
+  font-weight: 650;
+  color: var(--sl-color-white);
+}
+
+/* Figures: centered, framed, and on a white card so light-background plots read well in dark mode. */
+.sl-markdown-content p:has(> img:only-child) {
+  text-align: center;
+}
+
+.sl-markdown-content img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.6rem;
+}
+
+/* Tables: compact, readable, horizontally scrollable. */
+.sl-markdown-content table {
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.sl-markdown-content :is(th, td) {
+  padding: 0.55rem 0.8rem;
+  vertical-align: top;
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-gray-6);
+  font-weight: 650;
+}
+
+/* Inline code */
+.sl-markdown-content :not(pre) > code {
+  font-size: 0.875em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.3rem;
+  background: var(--sl-color-gray-6);
+  border: 1px solid var(--sl-color-hairline);
+}
+
+/* Math */
+.sl-markdown-content .katex {
+  font-size: 1.12em;
+}
+
+.sl-markdown-content .katex-display > .katex {
+  font-size: 1.22em;
+}
+
+.sl-markdown-content .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.6rem;
+  margin-block: 1.25rem;
+}
+
+/* ---------- Pagination ---------- */
+
+.pagination-links a {
+  box-shadow: none;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.6rem;
+}
+
+.pagination-links a:hover {
+  border-color: var(--sl-color-text-accent);
+}
+
+/* ---------- Chapter sections in the sidebar ---------- */
+
+/* Chapter groups: sentence-case titles rather than the small uppercase series label. */
+.sidebar-content ul ul details > summary .group-label .large {
+  font-size: 0.9rem;
+  font-weight: 550;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sl-color-gray-1);
+}
+
+.sidebar-content ul ul details[open] > summary .group-label .large {
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+
+.sidebar-content ul ul ul a {
+  font-size: 0.85rem;
+  padding-block: 0.22rem;
+}
+
+/* While a section is on screen, highlight it instead of the chapter's Introduction link. */
+.sidebar-content.cm-in-section a[aria-current='page'] {
+  color: var(--sl-color-gray-2);
+  font-weight: 400;
+}
+
+.sidebar-content a.cm-active-section {
+  color: var(--sl-color-text-accent);
+  font-weight: 600;
+}
+
+/* Animated figures (MP4 exported from the notes). */
+.sl-markdown-content video.cm-figure-video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.6rem;
+}
+
+/* Restore KaTeX table rules (\hline), which a base style reset hides. */
+.sl-markdown-content .katex .hline {
+  border-bottom-style: solid;
+}
+.sl-markdown-content .katex .hdashline {
+  border-bottom-style: dashed;
+}

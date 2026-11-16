@@ -1,0 +1,137 @@
+---
+// Card grid. `items="home"` shows the site's four areas; the default shows tutorial series.
+interface Props {
+  items?: 'home' | 'series';
+}
+type Card = { title: string; blurb: string; meta: string; href?: string; cta?: string };
+
+const home: Card[] = [
+  {
+    title: 'Fundamentals',
+    blurb: 'Core ideas behind modern ML and language models, explained from the ground up.',
+    meta: 'LLM Fundamentals',
+    href: '/tutorials/llm-fundamentals/',
+    cta: 'Start reading →',
+  },
+  {
+    title: 'Advanced',
+    blurb: 'Deeper techniques like efficient attention, retrieval, RL for LLMs, and ML systems.',
+    meta: 'Coming soon',
+  },
+  {
+    title: 'Labs',
+    blurb: 'Hands-on notebooks that build each idea in code.',
+    meta: 'Coming soon',
+  },
+  {
+    title: 'Blog',
+    blurb: 'Paper notes, tools, and lessons from building ML systems.',
+    meta: 'Latest posts',
+    href: '/blog/',
+    cta: 'Read the blog →',
+  },
+];
+
+const tutorialSeries: Card[] = [
+  {
+    title: 'LLM Fundamentals',
+    href: '/tutorials/llm-fundamentals/',
+    blurb: 'How language models work, from next-token prediction to training, inference, and evaluation.',
+    meta: '9 chapters',
+    cta: 'Start reading →',
+  },
+  {
+    title: 'Transformers in Depth',
+    blurb: 'Efficient attention, long context, scaling laws, and modern architectures.',
+    meta: 'Planned',
+  },
+  {
+    title: 'Retrieval and RAG',
+    blurb: 'Chunking, vector search, reranking, and evaluating retrieval systems.',
+    meta: 'Planned',
+  },
+  {
+    title: 'ML Systems',
+    blurb: 'Distributed training, serving, batching, and hardware budgets.',
+    meta: 'Planned',
+  },
+];
+
+const series = Astro.props.items === 'home' ? home : tutorialSeries;
+---
+
+<div class="cm-grid not-content">
+  {
+    series.map((s) =>
+      s.href ? (
+        <a class="card" href={s.href}>
+          <span class="meta">{s.meta}</span>
+          <span class="title">{s.title}</span>
+          <span class="blurb">{s.blurb}</span>
+          <span class="cta">{s.cta}</span>
+        </a>
+      ) : (
+        <div class="card planned">
+          <span class="meta">{s.meta}</span>
+          <span class="title">{s.title}</span>
+          <span class="blurb">{s.blurb}</span>
+        </div>
+      ),
+    )
+  }
+</div>
+
+<style>
+  .cm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.25rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 0.75rem;
+    background: var(--sl-color-black);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  a.card:hover {
+    border-color: var(--sl-color-text-accent);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.06);
+  }
+  .meta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cm-brand);
+  }
+  .planned .meta {
+    color: var(--sl-color-gray-3);
+  }
+  .title {
+    font-size: 1.1rem;
+    font-weight: 650;
+    color: var(--sl-color-white);
+  }
+  .blurb {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--sl-color-gray-3);
+  }
+  .cta {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sl-color-text-accent);
+  }
+  .planned {
+    border-style: dashed;
+  }
+</style>

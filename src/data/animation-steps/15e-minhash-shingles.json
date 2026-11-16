@@ -1,0 +1,31 @@
+{
+  "name": "15e minhash shingles",
+  "title": "Matching minimum hashes estimate how much two documents overlap",
+  "subtitle": "Word shingles of length 3; four hash functions give each shingle a random number from 0 to 99",
+  "steps": [
+    {
+      "caption": "Cut each sentence into runs of three consecutive words, called shingles. The two sentences differ in one word, yet that word sits inside 3 of the 6 shingles of each, so they share only 3 of 9 distinct shingles and J = 0.333.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-01.png"
+    },
+    {
+      "caption": "Hash function h1 gives every shingle a random number. Each document keeps its smallest number (bold red): A keeps 7 and B keeps 10, so they differ. They match only when the smallest number in the union belongs to a shared shingle, which happens with probability J.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-02.png"
+    },
+    {
+      "caption": "Hash function h2 gives every shingle a random number. Each document keeps its smallest number (bold red): A keeps 22 and B keeps 22, so they match. They match only when the smallest number in the union belongs to a shared shingle, which happens with probability J.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-03.png"
+    },
+    {
+      "caption": "Hash function h3 gives every shingle a random number. Each document keeps its smallest number (bold red): A keeps 7 and B keeps 19, so they differ. They match only when the smallest number in the union belongs to a shared shingle, which happens with probability J.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-04.png"
+    },
+    {
+      "caption": "Hash function h4 gives every shingle a random number. Each document keeps its smallest number (bold red): A keeps 8 and B keeps 8, so they match. They match only when the smallest number in the union belongs to a shared shingle, which happens with probability J.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-05.png"
+    },
+    {
+      "caption": "With k = 4 the estimate is 0.50 against a true 0.333, which is noisy. The spread of the estimate is the square root of J(1 - J)/k, so 128 hash functions bring it to about 0.04 while each document is still stored as only 128 numbers.",
+      "image": "/images/llm-fundamentals/steps/15e-minhash-shingles/step-06.png"
+    }
+  ]
+}

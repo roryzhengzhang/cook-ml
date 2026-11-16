@@ -1,0 +1,62 @@
+---
+// Most recent blog posts, newest first.
+import { getCollection } from 'astro:content';
+
+interface Props {
+  limit?: number;
+}
+const { limit = 3 } = Astro.props;
+
+const posts = (await getCollection('docs', (e) => e.id.startsWith('blog/') && e.data.date && !e.data.draft))
+  .sort((a, b) => b.data.date!.getTime() - a.data.date!.getTime())
+  .slice(0, limit);
+
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+---
+
+<ul class="cm-posts not-content">
+  {
+    posts.map((p) => (
+      <li>
+        <a href={`/${p.id}/`}>
+          <time datetime={p.data.date!.toISOString()}>{fmt.format(p.data.date!)}</time>
+          <span class="title">{p.data.title}</span>
+          {p.data.excerpt && <span class="desc">{p.data.excerpt}</span>}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cm-posts {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .cm-posts a {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--sl-color-hairline);
+    text-decoration: none;
+    color: inherit;
+  }
+  time {
+    font-size: 0.8rem;
+    color: var(--sl-color-gray-3);
+  }
+  .title {
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+  .desc {
+    font-size: 0.9rem;
+    color: var(--sl-color-gray-3);
+  }
+  a:hover .title {
+    color: var(--sl-color-text-accent);
+  }
+</style>
