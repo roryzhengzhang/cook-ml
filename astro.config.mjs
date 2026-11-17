@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeMathNowrap from './scripts/rehype-math-nowrap.mjs';
 import { seriesSidebar } from './scripts/series-sidebar.mjs';
 
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
     // Tutorials use $...$ and $$...$$ math, rendered with KaTeX at build time.
     processor: unified({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [[rehypeKatex, { strict: false }]],
+      rehypePlugins: [[rehypeKatex, { strict: false }], rehypeMathNowrap],
     }),
   },
   integrations: [

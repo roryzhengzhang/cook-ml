@@ -113,15 +113,31 @@ const escapeHtml = (t) =>
 // Step captions are plain text from the animation scripts. Render "$...$" with KaTeX and
 // plain exponents such as "0.8^5" or "(1 - p)^k" as superscripts.
 function richText(t) {
-  return String(t)
-    .split(/(\$[^$]+\$)/)
-    .map((part) => {
-      if (/^\$[^$]+\$$/.test(part)) {
-        return katex.renderToString(part.slice(1, -1), { throwOnError: false, output: 'html' });
-      }
-      return escapeHtml(part).replace(/\^(\([^()]*\)|[\w.]+)/g, '<sup>$1</sup>');
-    })
-    .join('');
+  const parts = String(t).split(/(\$[^$]+\$)/);
+  const html = parts.map((part) => {
+    if (/^\$[^$]+\$$/.test(part)) {
+      return katex.renderToString(part.slice(1, -1), { throwOnError: false, output: 'html' });
+    }
+    return escapeHtml(part).replace(/\^(\([^()]*\)|[\w.]+)/g, '<sup>$1</sup>');
+  });
+  return glueMath(parts, html);
+}
+
+// Card text is raw HTML, which the site's rehype-math-nowrap step never sees, so the same
+// pairing happens here: an inline formula and the punctuation touching it go in one span that
+// custom.css keeps on a single line. `parts` are the source pieces, `html` their rendered form.
+function glueMath(parts, html) {
+  const out = [...html];
+  for (let i = 0; i < parts.length; i++) {
+    if (!/^\$[^$]/.test(parts[i])) continue; // inline math only, not $$ display math
+    const after = (out[i + 1] ?? '').match(/^[.,;:!?)\]%]+/)?.[0] ?? '';
+    const before = (out[i - 1] ?? '').match(/[(\[]$/)?.[0] ?? '';
+    if (!after && !before) continue;
+    if (after) out[i + 1] = out[i + 1].slice(after.length);
+    if (before) out[i - 1] = out[i - 1].slice(0, -before.length);
+    out[i] = `<span class="cm-math-nowrap">${before}${out[i]}${after}</span>`;
+  }
+  return out.join('');
 }
 // Plain text for alt attributes.
 const plainText = (t) => escapeHtml(String(t).replace(/\$/g, ''));
@@ -456,7 +472,7 @@ function stepNotes(body) {
 // Markdown of one list item to HTML: display and inline math, bold, links, code.
 function mdInline(md) {
   const parts = md.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/);
-  return parts
+  const html = parts
     .map((part) => {
       if (/^\$\$[\s\S]+\$\$$/.test(part)) {
         return katex.renderToString(part.slice(2, -2).trim(), { throwOnError: false, displayMode: true });
@@ -468,8 +484,8 @@ function mdInline(md) {
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
-    })
-    .join('');
+    });
+  return glueMath(parts, html);
 }
 
 function walkthroughCards(body) {

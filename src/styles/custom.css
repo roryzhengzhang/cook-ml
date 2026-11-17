@@ -235,6 +235,18 @@ starlight-toc a[aria-current='true'] {
   }
 }
 
+/* A formula and the punctuation touching it never split across lines (rehype-math-nowrap.mjs).
+   On phones the formula itself may still wrap inside. */
+.sl-markdown-content .cm-math-nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .sl-markdown-content .cm-math-nowrap > .katex {
+    white-space: normal;
+  }
+}
+
 /* Inline formulas sit in a grey chip, the same as inline code, so they stand out from prose.
    On wide screens the chip is an inline block, which grows to fit fractions and exponents.
    On phones it stays inline so a long formula can still wrap, and each piece keeps its chip. */
