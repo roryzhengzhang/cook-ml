@@ -5,23 +5,23 @@
   "steps": [
     {
       "caption": "The token enters as its embedding, the vector (1, 0). This running vector is the residual stream, and every later block reads it and adds to it rather than replacing it.",
-      "image": "/images/llm-fundamentals/steps/15d-residual-stream-accumulation/step-01.png"
+      "image": "/images/steps/15d-residual-stream-accumulation/step-01.png"
     },
     {
       "caption": "Block 1 computes (0.5, 1) from what it read and adds it: (1, 0) + (0.5, 1) = (1.5, 1).",
-      "image": "/images/llm-fundamentals/steps/15d-residual-stream-accumulation/step-02.png"
+      "image": "/images/steps/15d-residual-stream-accumulation/step-02.png"
     },
     {
       "caption": "Block 2 adds (-0.5, 0.5), so the stream becomes (1, 1.5). Earlier contributions stay in the sum.",
-      "image": "/images/llm-fundamentals/steps/15d-residual-stream-accumulation/step-03.png"
+      "image": "/images/steps/15d-residual-stream-accumulation/step-03.png"
     },
     {
       "caption": "Block 3 adds (0.25, -0.5), so the final stream is (1.25, 1). The output head reads this vector, which is the embedding plus the three blocks' contributions.",
-      "image": "/images/llm-fundamentals/steps/15d-residual-stream-accumulation/step-04.png"
+      "image": "/images/steps/15d-residual-stream-accumulation/step-04.png"
     },
     {
       "caption": "Zero out block 2 and the final vector moves by exactly its contribution, from (1.25, 1) to (1.75, 0.5). Each block's write stays separately readable, and the same identity path carries gradients back.",
-      "image": "/images/llm-fundamentals/steps/15d-residual-stream-accumulation/step-05.png"
+      "image": "/images/steps/15d-residual-stream-accumulation/step-05.png"
     }
   ]
 }

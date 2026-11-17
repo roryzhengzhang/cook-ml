@@ -5,39 +5,39 @@
   "steps": [
     {
       "caption": "Step 1 sees a gradient of 2.0, meaning the loss rises when θ rises, so θ should fall.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-01.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-01.png"
     },
     {
       "caption": "Both running averages start at 0. m = 0.1 × 2.0 = 0.2 and v = 0.05 × 2.0² = 0.2, both far too small because they began at zero.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-02.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-02.png"
     },
     {
       "caption": "Bias correction divides by 1 - 0.9 = 0.1 and 1 - 0.95 = 0.05, giving m̂ = 2.0 and v̂ = 4.0, the true size of the first gradient and of its square.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-03.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-03.png"
     },
     {
       "caption": "The ratio m̂ / √v̂ = 2 / 2 = 1.0. On the first step Adam moves every parameter by exactly η whatever its gradient size.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-04.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-04.png"
     },
     {
       "caption": "Decoupled weight decay subtracts η λ θ = 0.01 × 0.1 × 0.5 = 0.0005 directly. θ = 0.5 - 0.01 - 0.0005 = 0.4895.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-05.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-05.png"
     },
     {
       "caption": "Step 2 sees a smaller gradient of 0.5. m = 0.9 × 0.2 + 0.1 × 0.5 = 0.23 and v = 0.95 × 0.2 + 0.05 × 0.25 = 0.2025.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-06.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-06.png"
     },
     {
       "caption": "Corrections divide by 0.19 and 0.0975, giving m̂ = 1.2105 and v̂ = 2.0769, so the ratio is 1.2105 / 1.4412 = 0.8400. The gradient fell fourfold but the step only by 16 percent.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-07.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-07.png"
     },
     {
       "caption": "After decay of 0.000490, θ = 0.480611. Momentum kept the step close to the earlier direction and size.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-08.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-08.png"
     },
     {
       "caption": "Plain gradient descent with the same η moves θ to 0.48 then 0.475. Multiply both gradients by 100 and it jumps to -2.0, while AdamW lands on the same 0.4806, since the ratio cancels the gradient scale.",
-      "image": "/images/llm-fundamentals/steps/15e-adamw-two-steps/step-09.png"
+      "image": "/images/steps/15e-adamw-two-steps/step-09.png"
     }
   ]
 }

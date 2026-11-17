@@ -5,23 +5,23 @@
   "steps": [
     {
       "caption": "Four documents of different lengths. Each one ends with an end-of-document token, so they hold 5, 3, 4 and 4 tokens, 16 in total, and the training window holds n = 8 tokens.",
-      "image": "/images/llm-fundamentals/steps/15e-sequence-packing/step-01.png"
+      "image": "/images/steps/15e-sequence-packing/step-01.png"
     },
     {
       "caption": "Padding gives each document its own window and fills the rest with a pad token that the loss ignores. Four windows hold 32 slots, 16 of them padding, so half of the compute spent on this batch is wasted.",
-      "image": "/images/llm-fundamentals/steps/15e-sequence-packing/step-02.png"
+      "image": "/images/steps/15e-sequence-packing/step-02.png"
     },
     {
       "caption": "Packing concatenates the documents into one stream and cuts it every 8 tokens. The same 16 tokens fit in two full windows, and the end-of-document token marks where one document stops and the next begins.",
-      "image": "/images/llm-fundamentals/steps/15e-sequence-packing/step-03.png"
+      "image": "/images/steps/15e-sequence-packing/step-03.png"
     },
     {
       "caption": "Window 1 holds documents A and B. A causal mask alone lets each token read every earlier token, 8 × 9 / 2 = 36 pairs, and 15 of them let B1, B2 and its end token read document A, an unrelated text.",
-      "image": "/images/llm-fundamentals/steps/15e-sequence-packing/step-04.png"
+      "image": "/images/steps/15e-sequence-packing/step-04.png"
     },
     {
       "caption": "A document mask removes those 15 pairs, leaving 15 inside A plus 6 inside B. Without it the model learns from false context. At real scale, with documents averaging 600 tokens, padding to n = 4,096 would waste about 85 percent of every window.",
-      "image": "/images/llm-fundamentals/steps/15e-sequence-packing/step-05.png"
+      "image": "/images/steps/15e-sequence-packing/step-05.png"
     }
   ]
 }

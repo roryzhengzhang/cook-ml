@@ -4,28 +4,27 @@
   "subtitle": "Section 2 example: \"the cat sat\" with next token probabilities 0.2, 0.1 and 0.3; natural log, so losses are in nats",
   "steps": [
     {
-      "caption": "Score the sentence one position at a time. At each step the model has already produced a full distribution, and we read off only the probability of the token that really came next.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-01.png"
+      "caption": "Score the sentence one position at a time. At each step the model has already produced a full distribution, and we read off only the probability of the token that really came next."
     },
     {
       "caption": "At the start of text the model gave \"the\" probability 0.2. The loss is minus the natural log, -ln 0.2 = 1.609 nats.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-02.png"
+      "image": "/images/steps/15a-perplexity-walkthrough/step-02.png"
     },
     {
       "caption": "After \"the\" it gave \"cat\" only 0.1, so this position costs 2.303 nats, the largest surprise in the sentence.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-03.png"
+      "image": "/images/steps/15a-perplexity-walkthrough/step-03.png"
     },
     {
       "caption": "After \"the cat\" it gave \"sat\" 0.3, costing 1.204 nats. The total is 5.116 nats and the sentence probability is 0.2 × 0.1 × 0.3 = 0.006.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-04.png"
+      "image": "/images/steps/15a-perplexity-walkthrough/step-04.png"
     },
     {
       "caption": "Average the loss over the 3 tokens to get 1.705 nats, then exponentiate. Perplexity 5.50 means the model was as uncertain as a fair choice among about 5.5 tokens at each step.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-05.png"
+      "image": "/images/steps/15a-perplexity-walkthrough/step-05.png"
     },
     {
       "caption": "A model that spreads probability evenly over the whole vocabulary pays ln 32,000 = 10.37 nats on every token, so its perplexity is the vocabulary size. Real models start training near this number.",
-      "image": "/images/llm-fundamentals/steps/15a-perplexity-walkthrough/step-06.png"
+      "image": "/images/steps/15a-perplexity-walkthrough/step-06.png"
     }
   ]
 }

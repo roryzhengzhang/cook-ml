@@ -5,27 +5,27 @@
   "steps": [
     {
       "caption": "The token \"cat\" has id 1. Its one-hot vector has a 1 in position 1 and 0 everywhere else. The embedding table has one row of 3 learned numbers per token.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-01.png"
+      "image": "/images/steps/15b-embedding-lookup/step-01.png"
     },
     {
       "caption": "Column 1 of the product multiplies each one-hot entry by the matching table entry and adds them. Four of the five products are zero, so the sum is just the \"cat\" entry, +0.7.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-02.png"
+      "image": "/images/steps/15b-embedding-lookup/step-02.png"
     },
     {
       "caption": "Column 2 of the product multiplies each one-hot entry by the matching table entry and adds them. Four of the five products are zero, so the sum is just the \"cat\" entry, -0.4.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-03.png"
+      "image": "/images/steps/15b-embedding-lookup/step-03.png"
     },
     {
       "caption": "Column 3 of the product multiplies each one-hot entry by the matching table entry and adds them. Four of the five products are zero, so the sum is just the \"cat\" entry, +0.5.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-04.png"
+      "image": "/images/steps/15b-embedding-lookup/step-04.png"
     },
     {
       "caption": "The result (+0.7, -0.4, +0.5) is exactly row 1 of the table. A multiplication that touches every row returns one row, so real models skip the multiplication and read the row directly.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-05.png"
+      "image": "/images/steps/15b-embedding-lookup/step-05.png"
     },
     {
       "caption": "Multiplying a one-hot vector with 32,000 entries by the 32,000 by 4,096 table would cost 2 x 32,000 x 4,096 = 262,144,000 floating-point operations to produce 4,096 numbers that a lookup copies directly, 8,192 bytes at 2 bytes each.",
-      "image": "/images/llm-fundamentals/steps/15b-embedding-lookup/step-06.png",
+      "image": "/images/steps/15b-embedding-lookup/step-06.png",
       "heading": "At real scale the lookup is a memory read, not arithmetic"
     }
   ]

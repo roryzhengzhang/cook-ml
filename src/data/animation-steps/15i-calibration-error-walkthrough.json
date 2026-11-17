@@ -1,0 +1,30 @@
+{
+  "name": "15i calibration error walkthrough",
+  "title": "Expected calibration error averages the confidence gap in each bin",
+  "subtitle": "Section 6 example: 100 answers grouped into three bins by the confidence the model stated",
+  "steps": [
+    {
+      "caption": "The model attached a confidence to each of 100 answers. Group the answers into three bins by that confidence, then compare each bin's average confidence with the fraction it got right."
+    },
+    {
+      "caption": "Bin 0.0 to 0.5 holds 20 answers with mean confidence 0.40. Seven are right, an accuracy of 0.35, so the gap is 0.05.",
+      "image": "/images/steps/15i-calibration-error-walkthrough/step-02.png"
+    },
+    {
+      "caption": "Bin 0.5 to 0.8 holds 30 answers with mean confidence 0.70. Eighteen are right, 0.60, so the gap is 0.10.",
+      "image": "/images/steps/15i-calibration-error-walkthrough/step-03.png"
+    },
+    {
+      "caption": "Bin 0.8 to 1.0 holds 50 answers with mean confidence 0.95. Forty are right, 0.80, so the gap is 0.15. Every violet bar stops below its orange line (the mean confidence of the bin), which marks an overconfident model.",
+      "image": "/images/steps/15i-calibration-error-walkthrough/step-04.png"
+    },
+    {
+      "caption": "Weight each gap by the share of answers in its bin and add: 0.2 x 0.05 + 0.3 x 0.10 + 0.5 x 0.15 = 0.115. On average the stated confidence overshoots accuracy by 11.5 points.",
+      "image": "/images/steps/15i-calibration-error-walkthrough/step-05.png"
+    },
+    {
+      "caption": "Abstention uses the same bins. Answering everything gives 65 right out of 100. Answering only the top bin covers 50 questions at 0.80 accuracy and leaves 50 to a fallback.",
+      "image": "/images/steps/15i-calibration-error-walkthrough/step-06.png"
+    }
+  ]
+}

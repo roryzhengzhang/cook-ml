@@ -1,36 +1,6 @@
 ---
-// Card grid. `items="home"` shows the site's four areas; the default shows tutorial series.
-interface Props {
-  items?: 'home' | 'series';
-}
+// Tutorial series, including planned additions.
 type Card = { title: string; blurb: string; meta: string; href?: string; cta?: string };
-
-const home: Card[] = [
-  {
-    title: 'Fundamentals',
-    blurb: 'Core ideas behind modern ML and language models, explained from the ground up.',
-    meta: 'LLM Fundamentals',
-    href: '/tutorials/llm-fundamentals/',
-    cta: 'Start reading →',
-  },
-  {
-    title: 'Advanced',
-    blurb: 'Deeper techniques like efficient attention, retrieval, RL for LLMs, and ML systems.',
-    meta: 'Coming soon',
-  },
-  {
-    title: 'Labs',
-    blurb: 'Hands-on notebooks that build each idea in code.',
-    meta: 'Coming soon',
-  },
-  {
-    title: 'Blog',
-    blurb: 'Paper notes, tools, and lessons from building ML systems.',
-    meta: 'Latest posts',
-    href: '/blog/',
-    cta: 'Read the blog →',
-  },
-];
 
 const tutorialSeries: Card[] = [
   {
@@ -57,7 +27,7 @@ const tutorialSeries: Card[] = [
   },
 ];
 
-const series = Astro.props.items === 'home' ? home : tutorialSeries;
+const series = tutorialSeries;
 ---
 
 <div class="cm-grid not-content">

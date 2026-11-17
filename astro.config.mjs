@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import starlightBlog from 'starlight-blog';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -10,6 +9,8 @@ import { seriesSidebar } from './scripts/series-sidebar.mjs';
 export default defineConfig({
   site: 'https://cook-ml.com',
   trailingSlash: 'always',
+  // No floating Astro toolbar in the dev server.
+  devToolbar: { enabled: false },
   markdown: {
     // Tutorials use $...$ and $$...$$ math, rendered with KaTeX at build time.
     processor: unified({
@@ -20,10 +21,10 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Cook ML',
-      description: 'Clear, worked-through tutorials and notes on machine learning and large language models.',
+      description: 'Clear, worked-through tutorials on machine learning, from first principles to practical systems.',
       logo: { src: './src/assets/logo.svg' },
       favicon: '/favicon.svg',
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/roryzhengzhang' }],
+      social: [{ icon: 'github', label: 'Cook ML on GitHub', href: 'https://github.com/roryzhengzhang/cook-ml' }],
       lastUpdated: true,
       pagination: true,
       routeMiddleware: './src/routeData.ts',
@@ -38,8 +39,15 @@ export default defineConfig({
       components: {
         Header: './src/components/Header.astro',
         Footer: './src/components/Footer.astro',
+        Hero: './src/components/Hero.astro',
       },
       head: [
+        // Restore a collapsed contents sidebar before the page paints (see Header.astro).
+        {
+          tag: 'script',
+          content:
+            "try{if(localStorage.getItem('cm-sidebar')==='collapsed')document.documentElement.dataset.cmSidebar='collapsed'}catch(e){}",
+        },
         { tag: 'meta', attrs: { property: 'og:image', content: 'https://cook-ml.com/og.png' } },
       ],
       sidebar: [
@@ -48,22 +56,6 @@ export default defineConfig({
           label: 'LLM Fundamentals',
           items: seriesSidebar('llm-fundamentals'),
         },
-      ],
-      plugins: [
-        starlightBlog({
-          title: 'Blog',
-          navigation: 'none',
-          postCount: 10,
-          recentPostCount: 8,
-          metrics: { readingTime: true },
-          authors: {
-            zheng: {
-              name: 'Zheng Zhang',
-              title: 'ML Engineer',
-              url: 'https://github.com/roryzhengzhang',
-            },
-          },
-        }),
       ],
     }),
   ],

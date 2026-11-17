@@ -1,0 +1,35 @@
+{
+  "name": "15g speculative accept reject",
+  "title": "One target pass checks four drafted tokens and keeps the agreeing prefix",
+  "subtitle": "Prompt \"My coffee is\"; draft probability q and target probability p for each drafted token; accept if a uniform draw u < min(1, p / q)",
+  "steps": [
+    {
+      "caption": "The context so far is \"My coffee is\". A small draft model is about to guess ahead."
+    },
+    {
+      "caption": "The draft model runs 4 cheap steps and proposes \"too hot to drink\", recording its own probability q for each guess.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-02.png"
+    },
+    {
+      "caption": "The target model scores all 4 positions in one pass. For \"too\" the target likes it more than the draft did, since p = 0.60 is above q = 0.50, so it is accepted with probability 1.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-03.png"
+    },
+    {
+      "caption": "For \"hot\" the draft was overconfident: p / q = 0.42 / 0.60 = 0.70. The uniform draw u = 0.35 is below 0.70, so \"hot\" is accepted.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-04.png"
+    },
+    {
+      "caption": "For \"to\" the ratio is 0.30 / 0.50 = 0.60 and the draw u = 0.81 is above it, so \"to\" is rejected. Everything after the first rejection, here \"drink\", is thrown away.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-05.png"
+    },
+    {
+      "caption": "At the rejected position the target samples a replacement from max(0, p - q), rescaled. Here only \"and\" (0.40 - 0.25) and \"today\" (0.20 - 0.15) have positive leftovers, giving 0.75 and 0.25.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-06.png"
+    },
+    {
+      "caption": "Sum of the bars: 1 + 0.8 + 0.64 + 0.512 + 0.410 = (1 - 0.8^5) / (1 - 0.8) = 3.36 tokens per target pass, against exactly 1 without speculation.",
+      "image": "/images/steps/15g-speculative-accept-reject/step-07.png",
+      "heading": "With acceptance 0.8 and four drafts a round emits 3.36 tokens on average"
+    }
+  ]
+}

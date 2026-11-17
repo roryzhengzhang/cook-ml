@@ -5,28 +5,28 @@
   "steps": [
     {
       "caption": "The policy writes four answers to the same prompt. No critic network is trained, so the group itself has to say which answers were better than usual.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-01.png"
+      "image": "/images/steps/15f-grpo-group-advantages/step-01.png"
     },
     {
       "caption": "A program checks each final answer against 408. Only sample 1 is right, so the rewards are 1, 0, 0, 0. No reward model is involved.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-02.png"
+      "image": "/images/steps/15f-grpo-group-advantages/step-02.png"
     },
     {
       "caption": "The group mean is 0.25 and the standard deviation is the square root of 0.25 × 0.75, which is 0.433. The mean plays the role a critic's value estimate would.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-03.png"
+      "image": "/images/steps/15f-grpo-group-advantages/step-03.png"
     },
     {
       "caption": "Sample 1 gets (1 − 0.25) / 0.433 = +1.732 and each wrong sample gets (0 − 0.25) / 0.433 = −0.577. The advantages sum to zero, and the rare success gets the large push.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-04.png"
+      "image": "/images/steps/15f-grpo-group-advantages/step-04.png"
     },
     {
       "caption": "A second prompt that the model already solves: all four samples are right, so every reward is 1.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-05.png",
+      "image": "/images/steps/15f-grpo-group-advantages/step-05.png",
       "heading": "An easy prompt teaches the model nothing"
     },
     {
       "caption": "The mean is 1 and the standard deviation is 0, so every advantage is 0 and the prompt gives no gradient. An all-wrong group behaves the same way.",
-      "image": "/images/llm-fundamentals/steps/15f-grpo-group-advantages/step-06.png",
+      "image": "/images/steps/15f-grpo-group-advantages/step-06.png",
       "heading": "An easy prompt teaches the model nothing"
     }
   ]

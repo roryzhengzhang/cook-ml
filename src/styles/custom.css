@@ -6,17 +6,19 @@
   --sl-font: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --cm-brand: #e8613c;
+  --cm-brand: var(--sl-color-text-accent);
   --cm-top-height: 3.5rem;
   --cm-tabs-height: 2.5rem;
   --sl-nav-height: calc(var(--cm-top-height) + var(--cm-tabs-height));
   --sl-content-width: 48rem;
-  --sl-sidebar-width: 17rem;
+  --sl-sidebar-width: 19.5rem;
 
   /* Dark theme */
-  --sl-color-accent-low: #1e2547;
-  --sl-color-accent: #7c8cff;
-  --sl-color-accent-high: #b4beff;
+  --sl-color-accent-low: #20372e;
+  --sl-color-accent: #87bbaa;
+  --sl-color-accent-high: #b8d9cc;
+  --sl-color-text-accent: var(--sl-color-accent);
+  --cm-surface-tint: #1b2523;
   --sl-color-white: #f2f3f5;
   --sl-color-gray-1: #d9dbe0;
   --sl-color-gray-2: #b5b9c2;
@@ -30,9 +32,10 @@
 }
 
 :root[data-theme='light'] {
-  --sl-color-accent-low: #e3e7ff;
-  --sl-color-accent: #3f51b5;
-  --sl-color-accent-high: #2c3a8f;
+  --sl-color-accent-low: #e4eee8;
+  --sl-color-accent: #326657;
+  --sl-color-accent-high: #234d40;
+  --cm-surface-tint: #f1f5f2;
   --sl-color-white: #1d2026;
   --sl-color-gray-1: #2f333b;
   --sl-color-gray-2: #4a4f59;
@@ -42,7 +45,7 @@
   --sl-color-gray-6: #f1f3f6;
   --sl-color-gray-7: #f8f9fb;
   --sl-color-black: #ffffff;
-  --sl-color-text-accent: #3f51b5;
+  --sl-color-text-accent: var(--sl-color-accent);
   --sl-color-bg-nav: #ffffff;
   --sl-color-bg-sidebar: #ffffff;
 }
@@ -222,8 +225,44 @@ starlight-toc a[aria-current='true'] {
   font-size: 1.12em;
 }
 
+/* Keep each inline formula on one line. KaTeX otherwise allows a break after "=" or "+",
+   which strands "W_V =" at the end of a line. Formulas too long for one line belong in $$...$$.
+   Algorithm-box lines are whole-line formulas and keep wrapping, and so does everything on
+   phone-width screens, where an unbroken equation chain would overflow the column. */
+@media (min-width: 40rem) {
+  .sl-markdown-content :not(.katex-display):not(.cm-algo-code) > .katex {
+    white-space: nowrap;
+  }
+}
+
+/* Inline formulas sit in a grey chip, the same as inline code, so they stand out from prose.
+   On wide screens the chip is an inline block, which grows to fit fractions and exponents.
+   On phones it stays inline so a long formula can still wrap, and each piece keeps its chip. */
+.sl-markdown-content :not(.katex-display):not(.cm-algo-code) > .katex {
+  padding: 0.08em 0.3em;
+  border-radius: 0.3rem;
+  background: var(--sl-color-gray-6);
+  border: 1px solid var(--sl-color-hairline);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+@media (min-width: 40rem) {
+  .sl-markdown-content :not(.katex-display):not(.cm-algo-code) > .katex {
+    display: inline-block;
+    line-height: 1.2;
+  }
+}
+
 .sl-markdown-content .katex-display > .katex {
   font-size: 1.22em;
+}
+
+/* On phones, displayed formulas drop to text size so more of them fit without scrolling. */
+@media (max-width: 40rem) {
+  .sl-markdown-content .katex-display > .katex {
+    font-size: 1em;
+  }
 }
 
 .sl-markdown-content .katex-display {
@@ -295,4 +334,897 @@ starlight-toc a[aria-current='true'] {
 }
 .sl-markdown-content .katex .hdashline {
   border-bottom-style: dashed;
+}
+
+/* ---------- Step-by-step figures (animations split into steps) ---------- */
+
+.cm-steps {
+  margin-block: 2rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.cm-steps-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0.9rem 1.15rem;
+  background: var(--sl-color-gray-6);
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.cm-steps-title {
+  flex: 1 1 auto;
+  font-weight: 650;
+  color: var(--sl-color-white);
+}
+
+.cm-steps-sub {
+  order: 3;
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: var(--sl-color-gray-3);
+}
+
+.cm-steps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cm-step {
+  padding: 1.1rem 1.15rem 1.25rem;
+  border-top: 1px solid var(--sl-color-hairline);
+}
+
+.cm-step:first-child {
+  border-top: none;
+}
+
+/* What the example shows, closing the card after its last step. */
+.cm-steps-notes {
+  padding: 1rem 1.15rem 1.1rem;
+  border-top: 1px solid var(--sl-color-hairline);
+  background: var(--sl-color-gray-7, var(--sl-color-gray-6));
+}
+
+.cm-steps-notes p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--sl-color-gray-2);
+}
+
+.cm-steps-notes p + p {
+  margin-top: 0.75rem;
+}
+
+.cm-step-phase {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cm-brand);
+}
+
+.cm-step-text {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--sl-color-gray-1);
+}
+
+.cm-step-num {
+  display: inline-block;
+  margin-inline-end: 0.6rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  vertical-align: 0.1em;
+  color: var(--sl-color-text-accent);
+  background: var(--sl-color-accent-low);
+}
+
+.cm-step img {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.5rem;
+}
+
+/* ---------- Collapsible subsections (<details class="cm-collapse">) ---------- */
+/* A "deep dive" card: tinted header with an icon, label and Show/Hide toggle; content on a plain body. */
+
+.sl-markdown-content details.cm-collapse {
+  --cm-collapse-tint: color-mix(in srgb, var(--sl-color-accent-low) 45%, var(--sl-color-black));
+  margin-block: 2rem;
+  /* Starlight indents <details> by 1rem; the card manages its own spacing. */
+  padding: 0;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.9rem;
+  background: var(--sl-color-black);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sl-markdown-content details.cm-collapse:hover,
+.sl-markdown-content details.cm-collapse[open] {
+  border-color: color-mix(in srgb, var(--sl-color-text-accent) 35%, var(--sl-color-hairline));
+  box-shadow: 0 6px 20px -12px rgb(0 0 0 / 0.15);
+}
+
+.sl-markdown-content details.cm-collapse > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0.85rem 1.35rem;
+  background: var(--cm-collapse-tint);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+/* Hide Starlight's default summary arrow and the browser marker. */
+.sl-markdown-content details.cm-collapse > summary::before,
+.sl-markdown-content details.cm-collapse > summary::marker {
+  content: none;
+  display: none;
+}
+.sl-markdown-content details.cm-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sl-markdown-content details.cm-collapse[open] > summary {
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.cm-collapse-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  background: var(--sl-color-black);
+  color: var(--sl-color-text-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sl-color-text-accent) 25%, transparent);
+}
+
+.cm-collapse-icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.cm-collapse-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.cm-collapse-kicker {
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--sl-color-text-accent);
+}
+
+.cm-collapse-title {
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--sl-color-white);
+}
+
+/* "Show" / "Hide" with a chevron that turns when the card opens. */
+.cm-collapse-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-inline-start: auto;
+  padding: 0.3rem 0.4rem 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sl-color-gray-2);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cm-collapse-hint::before {
+  content: 'Show';
+}
+
+details.cm-collapse[open] .cm-collapse-hint::before {
+  content: 'Hide';
+}
+
+.cm-collapse-hint::after {
+  content: '';
+  width: 1.1rem;
+  height: 1.1rem;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s ease;
+}
+
+details.cm-collapse[open] .cm-collapse-hint::after {
+  transform: rotate(180deg);
+}
+
+details.cm-collapse > summary:hover .cm-collapse-hint {
+  background: var(--sl-color-black);
+  color: var(--sl-color-text-accent);
+}
+
+details.cm-collapse > summary:focus-visible {
+  outline: 2px solid var(--sl-color-text-accent);
+  outline-offset: -2px;
+}
+
+/* Body */
+.sl-markdown-content details.cm-collapse > :not(summary) {
+  margin-inline: 1.35rem;
+}
+
+.sl-markdown-content details.cm-collapse > summary + * {
+  margin-top: 1.25rem;
+}
+
+.sl-markdown-content details.cm-collapse > :last-child {
+  margin-bottom: 1.35rem;
+}
+
+/* A step shown as text only (its frame had nothing to see yet). */
+.cm-step-text:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Previous / Next buttons: smaller chapter names ---------- */
+
+.pagination-links .link-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pagination-links a {
+  font-size: 0.85rem;
+  padding: 0.85rem 1rem;
+}
+
+/* Section headings inside a deep-dive card header keep the card's title style. */
+.sl-markdown-content details.cm-collapse .cm-collapse-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--sl-color-white);
+}
+
+/* Jumping to a section inside a card leaves room for the fixed header. */
+.sl-markdown-content details.cm-collapse .cm-collapse-title[id] {
+  scroll-margin-top: calc(var(--sl-nav-height) + 1.5rem);
+}
+
+/* "Step-by-step example:" prefix on step-figure titles. */
+.cm-steps-label {
+  color: var(--sl-color-text-accent);
+  font-weight: 650;
+}
+
+/* Previous / Next: two equal columns with labels and titles aligned on the same lines,
+   even when one title wraps. The arrow lines up with the first line of the title. */
+.pagination-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.pagination-links a {
+  align-items: flex-start;
+}
+
+.pagination-links a > svg {
+  margin-top: 1.3rem;
+}
+
+/* A lone "Next" stays in the right column. */
+.pagination-links a[rel='next']:only-child {
+  grid-column: 2;
+}
+
+@media (max-width: 40rem) {
+  .pagination-links {
+    grid-template-columns: 1fr;
+  }
+  .pagination-links a[rel='next']:only-child {
+    grid-column: auto;
+  }
+}
+
+/* ---------- Algorithm cards (rebuilt from LaTeX algorithm arrays) ---------- */
+
+.cm-algo {
+  --cm-algo-gutter: 2.75rem;
+  --cm-algo-step: 1.5rem;
+  --cm-algo-guide: color-mix(in srgb, var(--sl-color-text-accent) 22%, transparent);
+  margin-block: 2rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.9rem;
+  background: var(--sl-color-black);
+  overflow: hidden;
+  box-shadow: 0 6px 20px -14px rgb(0 0 0 / 0.15);
+}
+
+.cm-algo-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1.15rem;
+  background: color-mix(in srgb, var(--sl-color-accent-low) 45%, var(--sl-color-black));
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.cm-algo-tag {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--sl-color-black);
+  background: var(--sl-color-text-accent);
+}
+
+.cm-algo-name {
+  font-size: 1.02rem;
+  font-weight: 650;
+  color: var(--sl-color-white);
+}
+
+/* Inputs and outputs */
+.cm-algo-io {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem 1.15rem;
+  border-bottom: 1px dashed var(--sl-color-hairline);
+}
+
+.cm-algo-io-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+}
+
+.cm-algo-io-label {
+  flex: none;
+  width: 4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-3);
+}
+
+/* Numbered lines with a gutter and one guide line per indentation level. */
+.cm-algo-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0.55rem 0 0.7rem;
+  overflow-x: auto;
+}
+
+.cm-algo-lines li {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+  padding: 0.22rem 1.15rem 0.22rem 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--cm-algo-guide) 0 1px,
+    transparent 1px var(--cm-algo-step)
+  );
+  background-size: calc(var(--indent) * var(--cm-algo-step)) 100%;
+  background-position: calc(var(--cm-algo-gutter) + 0.3rem) 0;
+  background-repeat: no-repeat;
+  transition: background-color 0.12s ease;
+}
+
+.cm-algo-lines li:hover {
+  background-color: var(--sl-color-gray-6);
+}
+
+.cm-algo-ln {
+  flex: none;
+  width: var(--cm-algo-gutter);
+  padding-right: 0.95rem;
+  text-align: right;
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+  color: var(--sl-color-gray-4);
+  user-select: none;
+}
+
+.cm-algo-code {
+  flex: 1 1 auto;
+  min-width: max-content;
+  padding-left: calc(var(--indent) * var(--cm-algo-step));
+}
+
+.cm-algo-comment {
+  flex: none;
+  margin-left: auto;
+  padding-left: 1.25rem;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--sl-color-gray-3);
+  white-space: nowrap;
+}
+
+.cm-algo-comment::before {
+  content: '// ';
+  font-family: var(--sl-font-mono);
+  font-style: normal;
+  color: var(--sl-color-gray-4);
+}
+
+/* Words in the site font, variables stay in KaTeX math italics, keywords in the accent color. */
+.cm-algo .katex {
+  font-size: 1.04em;
+}
+
+.cm-algo .katex .mord.text > .mord {
+  font-family: var(--sl-font);
+  font-size: 0.86em;
+}
+
+.cm-algo .katex .mord.textbf {
+  font-family: var(--sl-font);
+  font-size: 0.86em;
+  font-weight: 700;
+  color: var(--sl-color-text-accent);
+}
+
+/* ---------- Token chips in BPE walkthrough tables ---------- */
+
+.cm-tok {
+  display: inline-block;
+  min-width: 1.35em;
+  padding: 0.05em 0.4em;
+  border: 1px solid color-mix(in srgb, var(--sl-color-text-accent) 30%, var(--sl-color-hairline));
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--sl-color-accent-low) 55%, var(--sl-color-black));
+  font-family: var(--sl-font-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--sl-color-white);
+}
+
+/* A word: its symbols packed tightly together. */
+.cm-word {
+  display: inline-flex;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.cm-words {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+}
+
+/* A pair: two symbols joined, with a count or merge-order badge after it. */
+.cm-pc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.12rem 0.55rem 0.12rem 0;
+  white-space: nowrap;
+}
+
+.cm-pair {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 0.45rem;
+}
+
+/* The pair this round merges. */
+.cm-pair.is-top {
+  background: color-mix(in srgb, var(--sl-color-text-accent) 18%, transparent);
+  box-shadow: 0 0 0 1px var(--sl-color-text-accent);
+}
+
+.cm-count,
+.cm-rank {
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+  color: var(--sl-color-gray-3);
+}
+
+.cm-pair.is-top + .cm-count {
+  color: var(--sl-color-text-accent);
+  font-weight: 700;
+}
+
+.cm-rank {
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--sl-color-gray-6);
+}
+
+/* A merge: [w] + [e] -> [we], with the new token in the accent color. */
+.cm-merge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.cm-op {
+  font-size: 0.8rem;
+  color: var(--sl-color-gray-3);
+}
+
+.cm-tok.is-new {
+  border-color: var(--sl-color-text-accent);
+  background: var(--sl-color-text-accent);
+  color: var(--sl-color-black);
+  font-weight: 700;
+}
+
+/* Keep these tables readable: cells align to the middle row of chips. */
+.sl-markdown-content tr:has(.cm-tok) > td {
+  vertical-align: middle;
+}
+
+/* ---------- Collapsible contents sidebar (desktop) ---------- */
+
+.cm-sidebar-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.45rem;
+  background: var(--sl-color-black);
+  color: var(--sl-color-gray-3);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cm-sidebar-toggle:hover {
+  color: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+}
+
+.cm-sidebar-toggle svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* The "Tutorials" row holds the hide button at its right edge, level with the group arrows. */
+.sidebar-content li.cm-has-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-content li.cm-has-toggle > a {
+  flex: 1 1 auto;
+}
+
+@media (min-width: 50rem) {
+  .sidebar-content li.cm-has-toggle > .cm-sidebar-hide {
+    display: inline-flex;
+    /* Same right edge as the group arrows, which sit inside the summary's end padding. */
+    margin-inline-end: 0.5rem;
+  }
+
+  /* Collapsed: the sidebar is gone, the article takes the space, and a small button reopens it. */
+  :root[data-has-sidebar][data-cm-sidebar='collapsed'] {
+    --sl-sidebar-width: 0px;
+  }
+
+  :root[data-has-sidebar][data-cm-sidebar='collapsed'] .sidebar-pane {
+    display: none;
+  }
+
+  :root[data-has-sidebar][data-cm-sidebar='collapsed'] .cm-sidebar-show {
+    display: inline-flex;
+    position: fixed;
+    top: calc(var(--sl-nav-height) + 1.25rem);
+    left: 1rem;
+    z-index: calc(var(--sl-z-index-menu) + 1);
+    padding: 0.35rem 0.65rem 0.35rem 0.4rem;
+  }
+}
+
+/* ---------- About page: author card ---------- */
+
+.cm-author {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1.25rem 0 1.75rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--sl-color-accent-low) 30%, var(--sl-color-black));
+}
+
+.cm-author img {
+  flex: none;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--sl-color-black);
+  box-shadow: 0 0 0 1px var(--sl-color-hairline);
+}
+
+.cm-author-body p {
+  margin: 0;
+}
+
+.cm-author-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--sl-color-white);
+}
+
+.cm-author-role {
+  margin-top: 0.15rem !important;
+  font-size: 0.95rem;
+  color: var(--sl-color-gray-2);
+}
+
+.cm-author-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cm-author-links a {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 50%;
+  background: var(--sl-color-black);
+  color: var(--sl-color-gray-2);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.cm-author-links a:hover {
+  color: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+  transform: translateY(-1px);
+}
+
+.cm-author-links svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+@media (max-width: 36rem) {
+  .cm-author {
+    flex-direction: column;
+    text-align: center;
+  }
+  .cm-author-links {
+    justify-content: center;
+  }
+}
+
+/* ---------- Collapse animations ---------- */
+
+/* Let the sidebar width animate: registered as a length, the article's offset (which Starlight
+   derives from it) can transition instead of jumping. */
+@property --sl-sidebar-width {
+  syntax: '<length>';
+  inherits: true;
+  /* Must be an absolute length for @property; 312px is 19.5rem at the default 16px. */
+  initial-value: 312px;
+}
+
+@media (min-width: 50rem) and (prefers-reduced-motion: no-preference) {
+  :root[data-has-sidebar] {
+    transition: --sl-sidebar-width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  /* The pane keeps its full width and slides out, so its text never squeezes mid-animation. */
+  :root[data-has-sidebar] .sidebar-pane {
+    width: 19.5rem;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0s;
+  }
+
+  :root[data-has-sidebar][data-cm-sidebar='collapsed'] .sidebar-pane {
+    display: block;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.3s;
+  }
+
+  /* The "Contents" button fades in once the sidebar has left. */
+  :root[data-has-sidebar][data-cm-sidebar='collapsed'] .cm-sidebar-show {
+    animation: cm-fade-in 0.2s ease 0.2s both;
+  }
+
+  /* Sidebar groups and deep-dive cards open and close smoothly where the browser supports it. */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  .sidebar-content details::details-content,
+  .sl-markdown-content details.cm-collapse::details-content {
+    height: 0;
+    overflow: clip;
+    transition: height 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), content-visibility 0.28s allow-discrete;
+  }
+
+  .sidebar-content details[open]::details-content,
+  .sl-markdown-content details.cm-collapse[open]::details-content {
+    height: auto;
+  }
+}
+
+@keyframes cm-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Sidebar group rows: a wrapped title never runs into its arrow, and the arrow keeps clear of the edge. */
+.sidebar-content {
+  padding-inline-end: 1.25rem;
+}
+
+.sidebar-content details > summary {
+  gap: 0.5rem;
+}
+
+.sidebar-content details > summary .group-label {
+  min-width: 0;
+}
+
+.sidebar-content details > summary svg.caret {
+  flex: none;
+}
+
+/* ---------- Step-by-step cards are collapsible ---------- */
+
+/* Starlight indents <details> by 1rem; the card manages its own spacing. */
+details.cm-steps {
+  padding: 0;
+}
+
+details.cm-steps > summary.cm-steps-head {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  margin: 0;
+}
+
+details.cm-steps > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.cm-steps > summary::marker {
+  content: '';
+}
+
+/* Closed: the header is the whole card, so it loses its divider. */
+details.cm-steps:not([open]) > summary.cm-steps-head {
+  border-bottom: none;
+}
+
+details.cm-steps > summary .cm-collapse-hint {
+  margin-inline-start: auto;
+}
+
+details.cm-steps[open] .cm-collapse-hint::before {
+  content: 'Hide';
+}
+
+details.cm-steps[open] .cm-collapse-hint::after {
+  transform: rotate(180deg);
+}
+
+details.cm-steps > summary:hover .cm-collapse-hint {
+  background: var(--sl-color-black);
+  color: var(--sl-color-text-accent);
+}
+
+details.cm-steps:hover,
+details.cm-steps[open] {
+  border-color: color-mix(in srgb, var(--sl-color-text-accent) 35%, var(--sl-color-hairline));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  details.cm-steps::details-content {
+    height: 0;
+    overflow: clip;
+    transition: height 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), content-visibility 0.28s allow-discrete;
+  }
+  details.cm-steps[open]::details-content {
+    height: auto;
+  }
+}
+
+/* Walkthrough cards: the step text is the note's own prose, with math, bold and links. */
+.cm-step-text a {
+  color: var(--sl-color-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.cm-step-text .katex-display {
+  margin: 0.6rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+div.cm-step-text {
+  margin: 0 0 0.85rem;
+}
+
+/* ---------- Scrollbars: hidden until something scrolls ---------- */
+
+/* Every scrollbar thumb is transparent at rest. A script in Header.astro adds .cm-scrolling to
+   whatever is scrolling (the page, the sidebar, a wide table or equation) and removes it about a
+   second after scrolling stops. The track keeps its space, so nothing shifts when the thumb shows. */
+html,
+html * {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+html.cm-scrolling,
+html .cm-scrolling {
+  scrollbar-color: var(--sl-color-gray-4) transparent;
+}
+
+/* Safari has no scrollbar-color, so it uses the WebKit pseudo-elements instead. */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: transparent;
+  }
+  .cm-scrolling::-webkit-scrollbar-thumb {
+    background: var(--sl-color-gray-4);
+  }
 }

@@ -1,0 +1,51 @@
+{
+  "name": "15h lora forward pass",
+  "title": "A LoRA layer adds a thin trainable path beside a frozen matrix",
+  "subtitle": "Toy layer with width 3 and rank r = 1; scale alpha / r set to 1; same numbers as the note",
+  "steps": [
+    {
+      "caption": "LoRA keeps the pretrained matrix W frozen (gray) and adds a path through two thin matrices. Training starts with B = 0, so the new path adds nothing and the model begins exactly where it was.",
+      "image": "/images/steps/15h-lora-forward-pass/step-01.png"
+    },
+    {
+      "caption": "The frozen path is the ordinary layer. Row 1 of W times x: 2×2 + 0×4 + 1×6 = 10.",
+      "image": "/images/steps/15h-lora-forward-pass/step-02.png"
+    },
+    {
+      "caption": "The frozen path is the ordinary layer. Row 2 of W times x: 0×2 + 1×4 + 0×6 = 4.",
+      "image": "/images/steps/15h-lora-forward-pass/step-03.png"
+    },
+    {
+      "caption": "The frozen path is the ordinary layer. Row 3 of W times x: 1×2 + 0×4 + 1×6 = 8.",
+      "image": "/images/steps/15h-lora-forward-pass/step-04.png"
+    },
+    {
+      "caption": "After training, A = (0.5, 0.5, 0) and B = (1, 0, 2). A squeezes the 3 inputs into r = 1 number: A x = 3. A rank of 1 means every update this adapter makes points along one direction.",
+      "image": "/images/steps/15h-lora-forward-pass/step-05.png"
+    },
+    {
+      "caption": "B spreads that one number back out to 3 outputs: B × 3 = (3, 0, 6).",
+      "image": "/images/steps/15h-lora-forward-pass/step-06.png"
+    },
+    {
+      "caption": "The layer output adds the two paths: h = W x + B A x = (13, 4, 14). Gradients only change A and B, so W stays exactly as pretrained.",
+      "image": "/images/steps/15h-lora-forward-pass/step-07.png"
+    },
+    {
+      "caption": "Merging for serving: add BA into W once. Row 1 of the merged matrix times x gives 13, the same as before, with no extra work per token.",
+      "image": "/images/steps/15h-lora-forward-pass/step-08.png"
+    },
+    {
+      "caption": "Merging for serving: add BA into W once. Row 2 of the merged matrix times x gives 4, the same as before, with no extra work per token.",
+      "image": "/images/steps/15h-lora-forward-pass/step-09.png"
+    },
+    {
+      "caption": "Merging for serving: add BA into W once. Row 3 of the merged matrix times x gives 14, the same as before, with no extra work per token.",
+      "image": "/images/steps/15h-lora-forward-pass/step-10.png"
+    },
+    {
+      "caption": "The toy adapter trains 6 numbers instead of 9. At the 7B scale a rank 16 adapter on one 4,096 × 4,096 matrix trains 2 × 4,096 × 16 = 131,072 numbers instead of 16,777,216.",
+      "image": "/images/steps/15h-lora-forward-pass/step-11.png"
+    }
+  ]
+}

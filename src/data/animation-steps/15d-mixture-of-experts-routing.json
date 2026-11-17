@@ -5,39 +5,39 @@
   "steps": [
     {
       "caption": "Token 1 has router scores (2.0, 1.0, 0.5, -1.0). Softmax turns them into probabilities 0.61, 0.22, 0.14 and 0.03, and top-2 routing keeps experts 1 and 2.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-01.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-01.png"
     },
     {
       "caption": "Renormalizing the two kept probabilities gives weights 0.731 and 0.269. If expert 1 returns (1, 0) and expert 2 returns (0, 2), the layer outputs 0.731 x (1, 0) + 0.269 x (0, 2) = (0.731, 0.538).",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-02.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-02.png"
     },
     {
       "caption": "Token 2 goes to experts 2 and 3. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-03.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-03.png"
     },
     {
       "caption": "Token 3 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-04.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-04.png"
     },
     {
       "caption": "Token 4 goes to experts 3 and 4. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-05.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-05.png"
     },
     {
       "caption": "Token 5 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-06.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-06.png"
     },
     {
       "caption": "Token 6 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-07.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-07.png"
     },
     {
       "caption": "Six tokens make 12 assignments, a fair share of 3 per expert. Expert 2 received 5 and expert 4 only 1. Left uncorrected this imbalance grows, which is why training adds a load balancing loss.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-08.png"
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-08.png"
     },
     {
       "caption": "Each expert holds 3 x 4,096 x 11,008 = 135.3M weights. Eight per layer gives 37.04B stored, 74.1 GB in bf16, while each token multiplies against 11.07B.",
-      "image": "/images/llm-fundamentals/steps/15d-mixture-of-experts-routing/step-09.png",
+      "image": "/images/steps/15d-mixture-of-experts-routing/step-09.png",
       "heading": "At 7B scale total parameters grow with experts but active ones grow with k"
     }
   ]

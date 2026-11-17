@@ -1,0 +1,33 @@
+{
+  "name": "15i pass at k walkthrough",
+  "title": "Pass at k counts the chance that k picks include a passing sample",
+  "subtitle": "Section 2 example: n = 10 samples for one coding problem, c = 3 of them pass the unit tests",
+  "steps": [
+    {
+      "caption": "We sampled the model 10 times on one problem and ran the unit tests on each answer. Three passed, so c = 3. Pass at k asks how likely a user with k attempts is to get at least one passing answer.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-01.png"
+    },
+    {
+      "caption": "With one attempt the user fails only if the single pick lands on a failure, which happens 7 times in 10. One minus that is 0.30, the plain fraction of passing samples.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-02.png"
+    },
+    {
+      "caption": "With five attempts, failure means all five picks are failures. The outlined set is one of the 21 all-failure sets among 252 possible sets, so pass at 5 is 1 - 21/252, about 0.917.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-03.png"
+    },
+    {
+      "caption": "Plugging 3/10 into 1 - (1 - p)^5 treats the measured 0.3 as exact and gives 0.832. Averaged over many problems that shortcut is biased low, while the counting formula is right on average.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-04.png"
+    },
+    {
+      "caption": "Every budget from 1 to 10 uses the same rule. From k = 8 the value is exactly 1, because 8 picks cannot all come from only 7 failures. The formula needs n at least as large as k.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-05.png",
+      "heading": "Same problem, n = 10 and c = 3, pass at k from the counting formula for every budget k"
+    },
+    {
+      "caption": "A rare success gains the most from extra attempts: p = 0.1 climbs from 0.10 at k = 1 to 0.88 at k = 20. Pass at 1 and pass at 100 can rank two models differently for that reason.",
+      "image": "/images/steps/15i-pass-at-k-walkthrough/step-06.png",
+      "heading": "True pass at k for a per-sample success rate p is $1 - (1 - p)^k$"
+    }
+  ]
+}

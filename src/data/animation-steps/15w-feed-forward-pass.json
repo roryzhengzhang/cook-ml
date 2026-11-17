@@ -1,0 +1,23 @@
+{
+  "name": "15w feed-forward pass",
+  "title": "A feed-forward pass on a two-number token",
+  "subtitle": "Width d = 2, hidden width 4; ReLU and GELU side by side",
+  "steps": [
+    {
+      "caption": "token x = (1, -1)",
+      "image": "/images/steps/15w-feed-forward-pass/step-01.png"
+    },
+    {
+      "caption": "pre-activations: x times each column of W1",
+      "image": "/images/steps/15w-feed-forward-pass/step-02.png"
+    },
+    {
+      "caption": "activations: ReLU and GELU of each unit",
+      "image": "/images/steps/15w-feed-forward-pass/step-03.png"
+    },
+    {
+      "caption": "output: hidden values times the rows of W2",
+      "image": "/images/steps/15w-feed-forward-pass/step-04.png"
+    }
+  ]
+}

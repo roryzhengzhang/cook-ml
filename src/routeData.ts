@@ -13,7 +13,8 @@ function pageLinks(entries: SidebarEntry[], groupLabel?: string): SidebarLink[] 
     if (entry.type === 'group') {
       links.push(...pageLinks(entry.entries, entry.label));
     } else if (!entry.href.includes('#')) {
-      const label = entry.label === 'Introduction' && groupLabel ? groupLabel : entry.label;
+      // Chapter name for a chapter's Introduction link, without the sidebar's "2. " numbering.
+      const label = (entry.label === 'Introduction' && groupLabel ? groupLabel : entry.label).replace(/^\d+\.\s+/, '');
       links.push({ ...entry, label });
     }
   }
@@ -23,6 +24,12 @@ function pageLinks(entries: SidebarEntry[], groupLabel?: string): SidebarLink[] 
 export const onRequest = defineRouteMiddleware((context) => {
   const route = context.locals.starlightRoute;
   if (!context.url.pathname.startsWith('/tutorials/')) return;
+  // The tutorials landing page lists the series; it has no sidebar and no previous or next page.
+  if (context.url.pathname === '/tutorials/') {
+    route.hasSidebar = false;
+    route.pagination = { prev: undefined, next: undefined };
+    return;
+  }
 
   const links = pageLinks(route.sidebar);
   const here = links.findIndex((l) => withoutHash(l.href) === context.url.pathname);

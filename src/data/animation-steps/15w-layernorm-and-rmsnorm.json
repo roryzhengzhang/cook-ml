@@ -1,0 +1,23 @@
+{
+  "name": "15w layernorm and rmsnorm",
+  "title": "Normalizing one vector with LayerNorm and RMSNorm",
+  "subtitle": "Input (1, 3, -1, 5), gain 1 and no offset; epsilon ignored",
+  "steps": [
+    {
+      "caption": "The input vector x = (1, 3, -1, 5).",
+      "image": "/images/steps/15w-layernorm-and-rmsnorm/step-01.png"
+    },
+    {
+      "caption": "LayerNorm centers on the mean and scales to standard deviation 1.",
+      "image": "/images/steps/15w-layernorm-and-rmsnorm/step-02.png"
+    },
+    {
+      "caption": "RMSNorm only divides by the RMS, so signs and the positive mean survive.",
+      "image": "/images/steps/15w-layernorm-and-rmsnorm/step-03.png"
+    },
+    {
+      "caption": "A learned gain then rescales each coordinate.",
+      "image": "/images/steps/15w-layernorm-and-rmsnorm/step-04.png"
+    }
+  ]
+}

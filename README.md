@@ -9,6 +9,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # static site in dist/, including the search index
 npm run preview    # serve dist/ (search works here, not in dev)
+python3 scripts/check_links.py   # after a build: broken anchors and KaTeX errors
 ```
 
 ## Layout
@@ -22,6 +23,7 @@ npm run preview    # serve dist/ (search works here, not in dev)
 | `src/components/` | Header with section tabs, footer, and home page lists |
 | `src/styles/custom.css` | Theme: colors, type, sidebar, figures, tables, math |
 | `public/images/<series>/` | Tutorial figures copied from Obsidian |
+| `public/images/steps/`, `src/data/animation-steps/` | Animation steps exported by `scripts/export_animation_steps.py` |
 | `scripts/import-obsidian.mjs` | Obsidian to site converter |
 
 ## Updating LLM Fundamentals from Obsidian
@@ -31,6 +33,25 @@ The tutorial pages are generated from the Obsidian folder `Machine Learning Shee
 ```bash
 npm run import:llm
 ```
+
+Animations are shown as numbered step-by-step figures rather than videos. Each step is one frame of the animation with its caption as real text. To regenerate the steps after the animation scripts in `~/.claude/scripts/ml-figures/<id>-gifs.py` change, run this before the import:
+
+```bash
+python3 scripts/export_animation_steps.py        # all 15x animations, or pass ids such as 15b 15c
+```
+
+It loads each script without touching the vault, saves every step as a PNG in `public/images/steps/<animation>/`, and writes the captions to `src/data/animation-steps/<animation>.json`. Frames that share a caption are merged into one step, keeping the final frame. The importer then replaces each `![[...mp4]]` embed that has step data with the step figure, and falls back to a looping video when it has none.
+
+Collapsible "deep dive" cards come from collapsed Obsidian callouts. Put the body of a section in a `> [!deep-dive]-` callout right under its heading, and the site shows the heading as the card title with the body collapsed:
+
+```md
+## 8. Bits per byte across tokenizers
+
+> [!deep-dive]-
+> Comparing models is one of the most common reasons...
+```
+
+A `##` heading stays a real section heading inside the card, so the sidebar and links keep working. A callout with its own title (`> [!deep-dive]- Some title`) becomes a card with that title.
 
 The tutorial sidebar is built from the chapter files by `scripts/series-sidebar.mjs`: each chapter is a collapsible group listing its `##` sections. It is read when the dev server starts, so restart `npm run dev` after an import that changes headings.
 

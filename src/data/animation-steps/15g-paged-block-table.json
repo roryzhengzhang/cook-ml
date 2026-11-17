@@ -1,0 +1,43 @@
+{
+  "name": "15g paged block table",
+  "title": "A block table lets each request grow into any free block",
+  "subtitle": "Toy cache of 10 physical blocks holding 4 tokens each; a block is claimed only when the last one is full",
+  "steps": [
+    {
+      "caption": "The cache is split into fixed-size blocks of 4 token slots. Nothing is reserved in advance, and the free list hands out blocks in whatever order they happen to be free.",
+      "image": "/images/steps/15g-paged-block-table/step-01.png"
+    },
+    {
+      "caption": "Request A arrives with a 6-token prompt. It needs ceil(6 / 4) = 2 blocks and gets physical blocks 3 and 7, which are not next to each other. Its block table records the mapping.",
+      "image": "/images/steps/15g-paged-block-table/step-02.png"
+    },
+    {
+      "caption": "Request B arrives with a 3-token prompt and takes block 1. One slot sits empty, which is the only waste a request can have: the unfilled part of its last block.",
+      "image": "/images/steps/15g-paged-block-table/step-03.png"
+    },
+    {
+      "caption": "Decode step 1: both requests write one more key and value. A fills a third slot of block 7 and B fills block 1. No new blocks were needed.",
+      "image": "/images/steps/15g-paged-block-table/step-04.png"
+    },
+    {
+      "caption": "Decode step 2: A fills block 7. B has 5 tokens, its last block is full, so it claims block 8 from the free list.",
+      "image": "/images/steps/15g-paged-block-table/step-05.png"
+    },
+    {
+      "caption": "Decode step 3: A reaches 9 tokens and claims block 0. B reaches 6 tokens and samples its end token.",
+      "image": "/images/steps/15g-paged-block-table/step-06.png"
+    },
+    {
+      "caption": "B is finished, so blocks 1 and 8 go straight back to the free list. Continuous batching can admit a new request at the very next step instead of waiting for A.",
+      "image": "/images/steps/15g-paged-block-table/step-07.png"
+    },
+    {
+      "caption": "Request C arrives with a 7-token prompt and takes blocks 1 and 8, the ones B just released. A request can waste at most 3 slots, the unfilled end of its last block, so here A wastes 3 slots and C wastes 1.",
+      "image": "/images/steps/15g-paged-block-table/step-08.png"
+    },
+    {
+      "caption": "Reserving the maximum length up front, say 16 tokens per request, would claim 4 contiguous blocks each, so had A, B and C all been active together they would need 12 blocks and C would wait. At real scale a 16-token block of the 7B cache is 8 MiB.",
+      "image": "/images/steps/15g-paged-block-table/step-09.png"
+    }
+  ]
+}

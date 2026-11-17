@@ -31,6 +31,12 @@ function sections(markdown) {
   for (const line of markdown.replace(/^---\n[\s\S]*?\n---\n/, '').split('\n')) {
     if (/^\s*(```|~~~)/.test(line)) inFence = !inFence;
     if (inFence) continue;
+    // A "##" section shown as a deep-dive card keeps its heading as raw HTML with a fixed id.
+    const html = line.match(/<h2 class="cm-collapse-title" id="([^"]+)">(.*?)<\/h2>/);
+    if (html) {
+      found.push({ text: html[2].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&'), id: html[1] });
+      continue;
+    }
     const m = line.match(/^(#{2,6})\s+(.*?)\s*#*\s*$/);
     if (!m) continue;
     const text = headingText(m[2]);

@@ -5,31 +5,31 @@
   "steps": [
     {
       "caption": "Before any rotation the query (1, 2) and key (3, 2) score 3 + 4 = 7. Both sit at position 0, 30 degrees apart.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-01.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-01.png"
     },
     {
       "caption": "Query at position 2 turns 90 degrees to (-2, 1). Key at position 1 turns 45 degrees to (0.71, 3.54). They are now 75 degrees apart and the score is 2.121.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-02.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-02.png"
     },
     {
       "caption": "Shift both two positions later. The arrows land somewhere new, but they are still 75 degrees apart, so the score is still 2.121.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-03.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-03.png"
     },
     {
       "caption": "Again at positions 6 and 5. The offset is 1 every time, and the score never moves from 2.121.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-04.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-04.png"
     },
     {
       "caption": "Now move only the key, to position 4. The offset becomes 2, the arrows open to 120 degrees, and the score drops to -4.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-05.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-05.png"
     },
     {
       "caption": "Put both at position 6. The offset is 0, the rotations cancel, and the score is the raw 7 again.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-06.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-06.png"
     },
     {
       "caption": "Every row with offset 1 scores 2.121, offset 2 scores -4 and offset 0 scores 7. The score depends on how far apart the tokens are, not on where they sit.",
-      "image": "/images/llm-fundamentals/steps/15c-rope-relative-angle/step-07.png"
+      "image": "/images/steps/15c-rope-relative-angle/step-07.png"
     }
   ]
 }

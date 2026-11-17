@@ -1,0 +1,47 @@
+{
+  "name": "15h cosine retrieval",
+  "title": "Cosine similarity ranks chunks by direction rather than length",
+  "subtitle": "Toy embeddings with three coordinates: returns, item condition, delivery",
+  "steps": [
+    {
+      "caption": "An embedding model turns each text into a vector. Here each coordinate is a made-up topic score: returns, item condition, delivery. The query asks about returning a damaged item.",
+      "image": "/images/steps/15h-cosine-retrieval/step-01.png"
+    },
+    {
+      "caption": "Lengths come first. Length is the square root of the sum of squares, so c1 = (4, 3, 0) has length √(16 + 9) = 5, c2 has length 1 and c3 = (0, 0, 2) has length 2. The query already has length 1.",
+      "image": "/images/steps/15h-cosine-retrieval/step-02.png"
+    },
+    {
+      "caption": "Dot product with c1: multiply matching coordinates and add. 0.6×4 + 0.8×3 + 0×0 = 4.8.",
+      "image": "/images/steps/15h-cosine-retrieval/step-03.png"
+    },
+    {
+      "caption": "Dot product with c2: multiply matching coordinates and add. 0.6×0 + 0.8×0.6 + 0×0.8 = 0.48.",
+      "image": "/images/steps/15h-cosine-retrieval/step-04.png"
+    },
+    {
+      "caption": "Dot product with c3: multiply matching coordinates and add. 0.6×0 + 0.8×0 + 0×2 = 0.",
+      "image": "/images/steps/15h-cosine-retrieval/step-05.png"
+    },
+    {
+      "caption": "The raw dot product gives c1 a score of 4.8 partly because c1 is a long vector. Doubling a vector doubles its dot product without changing what it is about.",
+      "image": "/images/steps/15h-cosine-retrieval/step-06.png"
+    },
+    {
+      "caption": "Cosine divides by both lengths: 4.8 / (1 × 5) = 0.96. Only the angle between the two arrows is left.",
+      "image": "/images/steps/15h-cosine-retrieval/step-07.png"
+    },
+    {
+      "caption": "Cosine divides by both lengths: 0.48 / (1 × 1) = 0.48. Only the angle between the two arrows is left.",
+      "image": "/images/steps/15h-cosine-retrieval/step-08.png"
+    },
+    {
+      "caption": "Cosine divides by both lengths: 0 / (1 × 2) = 0.00. Only the angle between the two arrows is left.",
+      "image": "/images/steps/15h-cosine-retrieval/step-09.png"
+    },
+    {
+      "caption": "Ranking by cosine gives c1 (0.96), c2 (0.48), c3 (0). With k = 2 the retriever passes c1 and c2 to the model. If c1 is the chunk that answers the question, recall@2 for this query is 1.",
+      "image": "/images/steps/15h-cosine-retrieval/step-10.png"
+    }
+  ]
+}

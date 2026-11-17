@@ -5,83 +5,83 @@
   "steps": [
     {
       "caption": "Training starts with every word split into characters, so the vocabulary is the 8 letters l, o, w, e, r, s, t, n. Each round counts every adjacent pair, weighting by how often the word appears.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-01.png"
+      "image": "/images/steps/15b-bpe-merges/step-01.png"
     },
     {
       "caption": "Round 1: w+e occurs 11 times, more than any other pair. It becomes the new symbol \"we\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-02.png"
+      "image": "/images/steps/15b-bpe-merges/step-02.png"
     },
     {
       "caption": "Round 2: l+o occurs 10 times, more than any other pair. It becomes the new symbol \"lo\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-03.png"
+      "image": "/images/steps/15b-bpe-merges/step-03.png"
     },
     {
       "caption": "Round 3: we+s occurs 9 times, more than any other pair. It ties with s+t, and the pair seen first in the corpus wins. It becomes the new symbol \"wes\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-04.png"
+      "image": "/images/steps/15b-bpe-merges/step-04.png"
     },
     {
       "caption": "Round 4: wes+t occurs 9 times, more than any other pair. It becomes the new symbol \"west\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-05.png"
+      "image": "/images/steps/15b-bpe-merges/step-05.png"
     },
     {
       "caption": "Round 5: n+e occurs 6 times, more than any other pair. It ties with e+west, and the pair seen first in the corpus wins. It becomes the new symbol \"ne\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-06.png"
+      "image": "/images/steps/15b-bpe-merges/step-06.png"
     },
     {
       "caption": "Round 6: ne+west occurs 6 times, more than any other pair. It becomes the new symbol \"newest\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-07.png"
+      "image": "/images/steps/15b-bpe-merges/step-07.png"
     },
     {
       "caption": "Round 7: lo+w occurs 5 times, more than any other pair. It becomes the new symbol \"low\" and every occurrence in the corpus is rewritten.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-08.png"
+      "image": "/images/steps/15b-bpe-merges/step-08.png"
     },
     {
       "caption": "After 7 merges the vocabulary has 8 + 7 = 15 symbols. \"low\" and \"newest\" are single tokens, \"lowest\" is lo + west, and \"lower\" is lo + we + r. The pieces follow frequency, not meaning.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-09.png"
+      "image": "/images/steps/15b-bpe-merges/step-09.png"
     },
     {
       "caption": "The word \"slowest\" never appeared in training. Encoding starts from its characters, s l o w e s t, and tries each learned merge in the order it was learned.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-10.png",
+      "image": "/images/steps/15b-bpe-merges/step-10.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 1, w+e: applies, giving s l o we s t.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-11.png",
+      "image": "/images/steps/15b-bpe-merges/step-11.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 2, l+o: applies, giving s lo we s t.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-12.png",
+      "image": "/images/steps/15b-bpe-merges/step-12.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 3, we+s: applies, giving s lo wes t.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-13.png",
+      "image": "/images/steps/15b-bpe-merges/step-13.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 4, wes+t: applies, giving s lo west.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-14.png",
+      "image": "/images/steps/15b-bpe-merges/step-14.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 5, n+e: no adjacent n followed by e, so nothing changes.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-15.png",
+      "image": "/images/steps/15b-bpe-merges/step-15.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 6, ne+west: no adjacent ne followed by west, so nothing changes.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-16.png",
+      "image": "/images/steps/15b-bpe-merges/step-16.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "Merge 7, lo+w: no adjacent lo followed by w, so nothing changes. Merge 7 cannot fire because merge 1 already joined w to e, which is why order matters.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-17.png",
+      "image": "/images/steps/15b-bpe-merges/step-17.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
       "caption": "\"slowest\" encodes as s + lo + west, 3 tokens from a 15 symbol vocabulary, with no unknown token, even though the word was never seen.",
-      "image": "/images/llm-fundamentals/steps/15b-bpe-merges/step-18.png",
+      "image": "/images/steps/15b-bpe-merges/step-18.png",
       "heading": "Encoding replays the merge list in training order"
     }
   ]

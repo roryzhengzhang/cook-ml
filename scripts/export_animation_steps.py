@@ -33,22 +33,41 @@ from PIL import Image, ImageChops  # noqa: E402
 SCRIPTS = Path.home() / '.claude/scripts/ml-figures'
 ROOT = Path(__file__).resolve().parent.parent
 SERIES = 'llm-fundamentals'
-OUT_IMAGES = ROOT / 'public/images' / SERIES / 'steps'
+# Kept apart from public/images/<series>/, which the Obsidian importer clears on every run.
+OUT_IMAGES = ROOT / 'public/images/steps'
 OUT_DATA = ROOT / 'src/data/animation-steps'
+
+
+# Opening frames that only show empty headers or a bare prompt. Their caption already says
+# everything, so the step is shown as text without an image. Keyed by animation name, 1-based.
+TEXT_ONLY_STEPS = {
+    '15a perplexity walkthrough': {1},
+    '15g speculative accept reject': {1},
+    '15i calibration error walkthrough': {1},
+}
 
 
 def slugify(s):
     return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 
 
-def trim(img, pad=12):
-    """Crop the white margin left where the title and caption used to be."""
+def content_box(img):
     bg = Image.new('RGB', img.size, (255, 255, 255))
-    box = ImageChops.difference(img, bg).point(lambda v: 255 if v > 8 else 0).getbbox()
-    if not box:
-        return img
-    l, t, r, b = box
-    return img.crop((max(0, l - pad), max(0, t - pad), min(img.width, r + pad), min(img.height, b + pad)))
+    return ImageChops.difference(img, bg).point(lambda v: 255 if v > 8 else 0).getbbox()
+
+
+def shared_crop(images, pad=12):
+    """One crop box for every step of an animation, so the picture does not shift between steps.
+    It removes the white margin left where the title and caption used to be."""
+    boxes = [b for b in (content_box(i) for i in images) if b]
+    if not boxes:
+        return lambda img: img
+    w, h = images[0].size
+    l = max(0, min(b[0] for b in boxes) - pad)
+    t = max(0, min(b[1] for b in boxes) - pad)
+    r = min(w, max(b[2] for b in boxes) + pad)
+    b = min(h, max(b[3] for b in boxes) + pad)
+    return lambda img: img.crop((l, t, r, b))
 
 
 def load(path):
@@ -112,12 +131,21 @@ def export(script):
         img_dir = OUT_IMAGES / slug
         shutil.rmtree(img_dir, ignore_errors=True)
         img_dir.mkdir(parents=True)
+        skip = TEXT_ONLY_STEPS.get(anim['name'], set())
+        crop = shared_crop([st['image'] for k, st in enumerate(anim['steps'], 1) if k not in skip])
         steps = []
+        text_only = TEXT_ONLY_STEPS.get(anim['name'], set())
         for i, step in enumerate(anim['steps'], 1):
+            if i in text_only:
+                entry = {'caption': step['caption']}
+                if step['heading']:
+                    entry['heading'] = step['heading']
+                steps.append(entry)
+                continue
             name = f'step-{i:02d}.png'
-            trim(step['image']).quantize(colors=256, method=Image.Quantize.MEDIANCUT).save(
+            crop(step['image']).quantize(colors=256, method=Image.Quantize.MEDIANCUT).save(
                 img_dir / name, optimize=True)
-            entry = {'caption': step['caption'], 'image': f'/images/{SERIES}/steps/{slug}/{name}'}
+            entry = {'caption': step['caption'], 'image': f'/images/steps/{slug}/{name}'}
             if step['heading']:
                 entry['heading'] = step['heading']
             steps.append(entry)
