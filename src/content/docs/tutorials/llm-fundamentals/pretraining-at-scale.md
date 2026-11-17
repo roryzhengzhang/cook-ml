@@ -1,6 +1,6 @@
 ---
 title: "Pretraining"
-description: "How a corpus is built with deduplication, filtering, and mixing, and how documents are packed into training windows."
+description: "How a data corpus, the AdamW optimizer and a compute budget produce a trained base model."
 sidebar:
   order: 5
   label: "Pretraining"

@@ -678,7 +678,7 @@ const WEB_WORDING = [
   // The Obsidian index is an interview-prep index; the site speaks to learners and practitioners.
   [/in a product decision or an interview question start to make sense/g, 'in a product decision or a research paper start to make sense'],
   [/Everything here is written for someone new to the field\.[^\n]*/g,
-    "This tutorial is for anyone who wants to understand how these models work, from newcomers to the field to engineers and researchers who already build with them. For newcomers, the chapters build on each other in order and cover the key ideas behind large language models step by step, from how text becomes tokens to how a finished model is trained, served and evaluated. Each idea starts with a small example before any math appears, so every step can be followed and checked by hand. For engineers and researchers who know the basics, the series works as a refresher: every chapter and section is one click away in the sidebar, and the deep dives hold the extra detail."],
+    "This tutorial is for anyone who wants to understand how these models work, from readers new to large language models to engineers and researchers who already build with them. For newcomers, the chapters build on each other in order and cover the key ideas behind large language models step by step, from how text becomes tokens to how a finished model is trained, served and evaluated. Each idea starts with a small example before any math appears, so every step can be followed and checked by hand. For engineers and researchers who know the basics, the series works as a refresher: every chapter and section is one click away in the sidebar, and the deep dives hold the extra detail."],
   [/\n+Each chapter opens with the problem it answers[^\n]*/g, ''],
   [/ These nine chapters follow one model through its whole life[^.]*\./g, ''],
   // The site outlines the merged pair in the BPE table; the note's plain table does not.
@@ -800,13 +800,13 @@ function firstParagraph(body) {
   return (desc || plain.slice(0, 197) + '...').trim();
 }
 
-// The index note has one "### [[Note]]" heading per chapter followed by a summary paragraph.
-// Use that paragraph as the chapter's description.
+// The index note's Topics table has one "| [[Note]] | summary |" row per chapter.
+// Use that summary as the chapter's description.
 const indexPage = [...pages.values()].find((p) => p.isIndex);
 const summaries = new Map();
 if (indexPage) {
   const indexRaw = fs.readFileSync(path.join(SRC, indexPage.file), 'utf8');
-  for (const m of indexRaw.matchAll(/^### \[\[([^\]|]+)\]\]\s*\n\s*\n([^\n]+)/gm)) {
+  for (const m of indexRaw.matchAll(/^\|\s*\[\[([^\]|\\]+)[^\]]*\]\]\s*\|\s*([^|\n]+?)\s*\|\s*$/gm)) {
     summaries.set(m[1].trim(), m[2].trim());
   }
 }

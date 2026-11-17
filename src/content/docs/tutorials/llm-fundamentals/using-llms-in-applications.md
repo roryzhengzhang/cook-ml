@@ -1,6 +1,6 @@
 ---
 title: "LLM Applications"
-description: "System prompts, in-context examples, and chain of thought steer a frozen model without touching its weights."
+description: "How prompting, retrieval, tools and fine-tuning adapt a finished model to a task."
 sidebar:
   order: 8
   label: "LLM Applications"

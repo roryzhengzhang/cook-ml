@@ -1,6 +1,6 @@
 ---
 title: "Evaluation and Safety"
-description: "Loss, benchmark accuracy, and human preference measure different things, and the chapter covers an unbiased estimate of pass@k and how large an evaluation set must be to detect a given difference."
+description: "How models are measured, and how hallucination, contamination and attacks are checked before release."
 sidebar:
   order: 9
   label: "Evaluation and Safety"

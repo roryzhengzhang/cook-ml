@@ -1,15 +1,15 @@
 ---
 title: "Language Modeling"
-description: "How the chain rule turns a sentence into a product of next-token probabilities, why counting word sequences breaks down, and how a neural network shares statistical strength across contexts."
+description: "How a model predicts the next token, and how cross entropy, perplexity and bits per byte measure the prediction."
 sidebar:
   order: 1
   label: "Language Modeling"
 lastUpdated: 2026-11-13
 ---
 
-Your phone's keyboard guesses the next word from the words already typed. A chatbot writing an essay does the same thing thousands of times in a row. Each guess is a set of odds over every word that could come next, and whichever word gets picked becomes part of the text that the next guess reads.
+When you ask a chatbot a question, it writes its reply one word at a time. At each step, it looks at all the text written so far, gives every word it knows a probability of coming next, and picks one. That word is added to the text, and the same step repeats until the reply is finished.
 
-The program behind both is a **language model**, which gives a probability to every possible continuation of a piece of text. It works in **tokens**, units of text that are usually a whole word or a piece of one, and it can only produce tokens from its **vocabulary**, a fixed list that holds 32,000 entries in the reference 7B model used across this series. Turning the text so far into one probability for each vocabulary entry is called **next token prediction**, and writing, scoring and training all reduce to it. Writing repeats the prediction and appends one chosen token each time. Scoring a sentence multiplies the probabilities the model gave to the tokens that really appeared, and training adjusts the model so those probabilities rise. The figure shows the three predictions behind the short sentence "the cat sat".
+The program that does this is a **language model**, which gives a probability to every possible continuation of a piece of text. It works in **tokens**, units of text that are usually a whole word or a piece of one, and it can only produce tokens from its **vocabulary**, a fixed list that holds 32,000 entries in the reference 7B model used across this series. Turning the text so far into one probability for each vocabulary entry is called **next token prediction**, and writing, scoring and training all reduce to it. Writing repeats the prediction and appends one chosen token each time. Scoring a sentence multiplies the probabilities the model gave to the tokens that really appeared, and training adjusts the model so those probabilities rise. The figure shows the three predictions behind the short sentence "the cat sat".
 
 ![Next token chain](/images/llm-fundamentals/15a-next-token-chain.png)
 
@@ -57,7 +57,7 @@ Here $c(x_{t-1}\, x_t)$ counts how often the pair occurs in the corpus and $c(x_
 
 On that text 76% of held-back three-word sequences never occur in the 1.7 million training words, and about eleven times more training text barely helps at four words and beyond. At the scale of the reference 7B model the arithmetic is starker. With $V = 32{,}000$ there are $32{,}000^3 \approx 3.3 \times 10^{13}$ possible trigrams, and a 2-trillion-token corpus contains at most $2 \times 10^{12}$ trigram occurrences, so at most 6.1% of possible trigrams could ever be seen even once. Possible 4-grams number about $10^{18}$.
 
-### Smoothing on a toy corpus
+### Smoothing
 
 **Smoothing** is any rule that moves a little probability from sequences that were seen to sequences that were not, so nothing gets exactly zero. **Add-one smoothing**, also called Laplace smoothing, pretends every possible pair occurred once more than it did, which gives $(c(x_{t-1}\, x_t) + 1)/(c(x_{t-1}) + V)$. **Backoff** keeps the observed counts but shaves a discount $\delta$ off each one, then hands the freed probability to unseen continuations in proportion to how common each token is on its own. The table works both after the context "dog" in the twelve-token corpus, where the toy vocabulary has $V = 6$ tokens, the context count is $c(\text{dog}) = 1$, and the discount is $\delta = 0.5$. On its own, "the" occurs 3 times, "cat" 2, "sat" 2, "dog" 1, "ran" 1, and the period 3, out of 12 tokens.
 

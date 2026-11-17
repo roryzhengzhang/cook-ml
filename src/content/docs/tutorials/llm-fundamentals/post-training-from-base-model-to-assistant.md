@@ -1,6 +1,6 @@
 ---
 title: "Post-Training"
-description: "What a base model does, and how supervised fine-tuning changes it with loss only on response tokens."
+description: "How fine-tuning, preference learning and reinforcement learning turn a base model into an assistant."
 sidebar:
   order: 6
   label: "Post-Training"

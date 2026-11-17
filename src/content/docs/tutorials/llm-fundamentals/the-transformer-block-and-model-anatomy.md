@@ -1,6 +1,6 @@
 ---
 title: "Transformer Block"
-description: "The residual stream traced through normalization, attention, and the feed-forward network, with LayerNorm set against RMSNorm and pre-norm against post-norm."
+description: "How normalization, attention and the feed-forward network stack into a full model, with its parameter and FLOP counts."
 sidebar:
   order: 4
   label: "Transformer Block"

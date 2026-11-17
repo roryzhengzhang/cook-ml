@@ -1228,3 +1228,8 @@ html .cm-scrolling {
     background: var(--sl-color-gray-4);
   }
 }
+
+/* Series overview: keep chapter names on one line in the Topics table. */
+:is(h2#topics, .sl-heading-wrapper:has(#topics)) + table td:first-child {
+  white-space: nowrap;
+}

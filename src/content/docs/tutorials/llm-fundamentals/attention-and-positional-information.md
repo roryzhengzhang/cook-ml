@@ -1,6 +1,6 @@
 ---
 title: "Attention"
-description: "Attention computed from queries, keys, and values on a three-token example, with the square-root scaling, the causal mask, and the split of the width into heads."
+description: "How queries, keys and values let tokens read each other, and how position information is added back."
 sidebar:
   order: 3
   label: "Attention"

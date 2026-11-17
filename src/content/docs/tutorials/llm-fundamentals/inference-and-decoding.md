@@ -1,6 +1,6 @@
 ---
 title: "Inference"
-description: "Prompt processing and token generation run at very different speeds, and the chapter sizes the key-value cache to show why generation is limited by memory bandwidth."
+description: "How a model generates text, how sampling picks each token, and what makes serving fast and cheap."
 sidebar:
   order: 7
   label: "Inference"
