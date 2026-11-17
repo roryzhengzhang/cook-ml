@@ -19,7 +19,7 @@
       "image": "/images/steps/15i-calibration-error-walkthrough/step-04.png"
     },
     {
-      "caption": "Weight each gap by the share of answers in its bin and add: 0.2 x 0.05 + 0.3 x 0.10 + 0.5 x 0.15 = 0.115. On average the stated confidence overshoots accuracy by 11.5 points.",
+      "caption": "Weighting each gap by the share of answers in its bin and adding gives 0.2 x 0.05 + 0.3 x 0.10 + 0.5 x 0.15 = 0.115. On average the stated confidence overshoots accuracy by 11.5 points.",
       "image": "/images/steps/15i-calibration-error-walkthrough/step-05.png"
     },
     {

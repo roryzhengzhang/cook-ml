@@ -1,0 +1,27 @@
+{
+  "name": "16e all to all dispatch",
+  "title": "Dispatch and combine across four GPUs",
+  "subtitle": "GPU g holds expert g and tokens 2g-1 and 2g; top-1 routing from the balancing example; each token vector is 8 KiB at width 4,096 in bf16",
+  "steps": [
+    {
+      "caption": "Step 1. Each GPU holds one expert and two tokens. The router runs locally and picks top-1 experts: tokens 1, 2, 4 and 6 want expert 1, tokens 3 and 7 want expert 2, token 5 wants expert 3, token 8 expert 4.",
+      "image": "/images/steps/16e-all-to-all-dispatch/step-01.png"
+    },
+    {
+      "caption": "Step 2. Each GPU counts how many tokens it will send to every other GPU and the GPUs swap these counts, so every receiver can reserve space. Three entries, shaded rose, are off the diagonal.",
+      "image": "/images/steps/16e-all-to-all-dispatch/step-02.png"
+    },
+    {
+      "caption": "Step 3. The dispatch all-to-all moves token 4 from GPU 2 and token 6 from GPU 3 to GPU 1, and token 7 from GPU 4 to GPU 2: 3 vectors of 8 KiB, 24 KiB in all. The other five tokens stay home.",
+      "image": "/images/steps/16e-all-to-all-dispatch/step-03.png"
+    },
+    {
+      "caption": "Step 4. Each GPU runs its expert on the tokens it holds: 4 on GPU 1, 2 on GPU 2, 1 each on GPUs 3 and 4. The layer waits for GPU 1, so GPUs 3 and 4 sit idle for three quarters of the expert time.",
+      "image": "/images/steps/16e-all-to-all-dispatch/step-04.png"
+    },
+    {
+      "caption": "Step 5. The combine all-to-all sends the three outputs back along the reverse paths, another 24 KiB. Each home GPU multiplies an output by its gate weight and adds it to that token's residual stream.",
+      "image": "/images/steps/16e-all-to-all-dispatch/step-05.png"
+    }
+  ]
+}

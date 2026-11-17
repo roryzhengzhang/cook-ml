@@ -20,7 +20,7 @@
       "image": "/images/steps/15d-residual-stream-accumulation/step-04.png"
     },
     {
-      "caption": "Zero out block 2 and the final vector moves by exactly its contribution, from (1.25, 1) to (1.75, 0.5). Each block's write stays separately readable, and the same identity path carries gradients back.",
+      "caption": "If block 2 is zeroed out, the final vector moves by exactly its contribution, from (1.25, 1) to (1.75, 0.5). Each block's write stays separately readable, and the same identity path carries gradients back.",
       "image": "/images/steps/15d-residual-stream-accumulation/step-05.png"
     }
   ]

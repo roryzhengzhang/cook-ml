@@ -1,0 +1,27 @@
+{
+  "name": "16b interpolation versus ntk scaling",
+  "title": "Position interpolation and NTK-aware scaling on three RoPE pairs",
+  "subtitle": "Head width 128, base 10,000, trained at 4,096 tokens, served at 131,072 (s = 32)",
+  "steps": [
+    {
+      "caption": "Pairs 0, 32 and 63 turn by 1, 0.01 and 0.000115 radians per position. Training at 4,096 tokens shows them angles up to 4,095, 41 and 0.47 radians. Pairs 0 and 32 wrap many times, while pair 63 never finishes a turn.",
+      "image": "/images/steps/16b-interpolation-versus-ntk-scaling/step-01.png"
+    },
+    {
+      "caption": "Serving 131,072 tokens with no change pushes pair 63 to 15.1 radians, 32 times the largest angle it saw in training. Pairs 0 and 32 only wrap more often, so every angle they produce is still familiar.",
+      "image": "/images/steps/16b-interpolation-versus-ntk-scaling/step-02.png"
+    },
+    {
+      "caption": "Position interpolation divides every position by 32. Pair 63 tops out at 0.47 radians again, but neighbouring tokens on pair 0 now differ by 1.8 degrees instead of 57.3.",
+      "image": "/images/steps/16b-interpolation-versus-ntk-scaling/step-03.png"
+    },
+    {
+      "caption": "NTK-aware scaling raises the base from 10,000 to 338,097. Pair 0 keeps its rate, pair 32 slows 5.8 times, and pair 63 slows 32 times, so it again tops out at 0.47 radians.",
+      "image": "/images/steps/16b-interpolation-versus-ntk-scaling/step-04.png"
+    },
+    {
+      "caption": "Side by side, interpolation slows the three pairs 32, 32 and 32 times, while NTK-aware scaling slows them 1, 5.8 and 32 times. Both fix the slow pair, and only NTK-aware scaling keeps the fast pair sharp.",
+      "image": "/images/steps/16b-interpolation-versus-ntk-scaling/step-05.png"
+    }
+  ]
+}

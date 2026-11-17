@@ -1,0 +1,27 @@
+{
+  "name": "16e load balancing loss",
+  "title": "Switch Transformer load balancing loss on eight tokens",
+  "subtitle": "Four experts, top-1 routing; loss = 4 x sum over experts of f (share of tokens) x P (mean probability)",
+  "steps": [
+    {
+      "caption": "Step 1. The router gives each of the eight tokens a probability for each expert. With top-1 routing each token goes to its largest entry, shaded: token 1 goes to expert 1 at 0.698.",
+      "image": "/images/steps/16e-load-balancing-loss/step-01.png"
+    },
+    {
+      "caption": "Step 2. Counting the shaded cells gives 4, 2, 1 and 1 tokens, so the shares f are 0.5, 0.25, 0.125 and 0.125. A fair share is 2 tokens, or 0.25.",
+      "image": "/images/steps/16e-load-balancing-loss/step-02.png"
+    },
+    {
+      "caption": "Step 3. Averaging each column gives the mean probabilities P of 0.324, 0.272, 0.209 and 0.195. They are less lopsided than f, because softmax spreads some probability onto every expert.",
+      "image": "/images/steps/16e-load-balancing-loss/step-03.png"
+    },
+    {
+      "caption": "Step 4. The products times 4 are 0.6480, 0.2720, 0.1045 and 0.0975, and they sum to 1.122. A perfectly balanced batch gives exactly 1, and a batch where every token goes to one expert approaches 4.",
+      "image": "/images/steps/16e-load-balancing-loss/step-04.png"
+    },
+    {
+      "caption": "Step 5. The loss changes by 4 f times alpha for each unit of P, so the push on expert 1 (2.0) is four times the push on experts 3 and 4 (0.5). Training lowers the probability of the busiest expert most.",
+      "image": "/images/steps/16e-load-balancing-loss/step-05.png"
+    }
+  ]
+}

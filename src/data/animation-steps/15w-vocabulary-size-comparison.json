@@ -1,10 +1,10 @@
 {
   "name": "15w vocabulary size comparison",
   "title": "Comparing a 32,000 and a 128,000 token vocabulary",
-  "subtitle": "Reference 7B model; 1,000 words of held-out chat text",
+  "subtitle": "Reference Llama 2 model; 1,000 words of held-out chat text",
   "steps": [
     {
-      "caption": "Measure tokens per word: 1.316 at 32,000 and 1.261 at 128,000 on the same text.",
+      "caption": "The same text takes 1.316 tokens per word at 32,000 and 1.261 at 128,000.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-01.png"
     },
     {

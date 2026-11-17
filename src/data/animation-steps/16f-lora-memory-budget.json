@@ -1,0 +1,31 @@
+{
+  "name": "16f lora memory budget",
+  "title": "LoRA memory budget for the 7B model",
+  "subtitle": "Rank 16 on all seven matrices of every block; AdamW at 16 bytes per trained parameter; bf16 base",
+  "steps": [
+    {
+      "caption": "Each attention matrix adds 16 x (4,096 + 4,096) = 131,072 parameters and each feed-forward matrix 16 x (4,096 + 11,008) = 241,664, so one layer adds 1,249,280.",
+      "image": "/images/steps/16f-lora-memory-budget/step-01.png"
+    },
+    {
+      "caption": "Over 32 layers the adapters hold 39,976,960 trainable parameters, 0.59% of the model.",
+      "image": "/images/steps/16f-lora-memory-budget/step-02.png"
+    },
+    {
+      "caption": "Only those parameters carry gradients and AdamW state: 16 bytes each is 0.64 GB, against 107.8 GB for full fine-tuning.",
+      "image": "/images/steps/16f-lora-memory-budget/step-03.png"
+    },
+    {
+      "caption": "The frozen base still has to sit in memory in bf16, 13.48 GB, with no gradient or optimizer state. Before activations the total is 14.12 GB.",
+      "image": "/images/steps/16f-lora-memory-budget/step-04.png"
+    },
+    {
+      "caption": "Activations come on top and barely change, since the forward pass is the same. With checkpointing about 2 GB, so the run needs about 16 GB against about 110 GB for full fine-tuning.",
+      "image": "/images/steps/16f-lora-memory-budget/step-05.png"
+    },
+    {
+      "caption": "The trained adapter saved in bf16 is 39,976,960 x 2 bytes = 80 MB, beside a 13.48 GB base that every adapter shares.",
+      "image": "/images/steps/16f-lora-memory-budget/step-06.png"
+    }
+  ]
+}

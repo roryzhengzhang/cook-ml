@@ -1,0 +1,27 @@
+{
+  "name": "16d rounding into formats",
+  "title": "Rounding one number into bf16 and FP8",
+  "subtitle": "value = 2 to the power (exponent minus bias) times (1 + mantissa / 2^bits); round to the nearest grid point",
+  "steps": [
+    {
+      "caption": "A bf16 number has 1 sign bit, 8 exponent bits with bias 127 and 7 mantissa bits. 1.0 is exponent 127 and mantissa 0, and the next number up is 1 + 2^-7 = 1.0078125.",
+      "image": "/images/steps/16d-rounding-into-formats/step-01.png"
+    },
+    {
+      "caption": "1 + 2^-9 = 1.001953 sits a quarter of the way from 1 to 1.0078125, so it rounds down to 1.0. In fp16, with 10 mantissa bits, the same number is stored exactly.",
+      "image": "/images/steps/16d-rounding-into-formats/step-02.png"
+    },
+    {
+      "caption": "0.1 = 1.6 x 2^-4. The fraction 0.6 needs 0.6 x 128 = 76.8 steps of the 7-bit mantissa, which rounds to 77, so bf16 stores 1.6015625 x 2^-4 = 0.100098, an error of 0.1%.",
+      "image": "/images/steps/16d-rounding-into-formats/step-03.png"
+    },
+    {
+      "caption": "With 3 mantissa bits, 0.6 x 8 = 4.8 rounds to 5 and E4M3 stores 0.1015625, 1.6% high. With 2 bits, 0.6 x 4 = 2.4 rounds to 2 and E5M2 stores 0.09375, 6.3% low.",
+      "image": "/images/steps/16d-rounding-into-formats/step-04.png"
+    },
+    {
+      "caption": "E4M3 stops at 448, so 500 overflows. Its smallest step near zero is 2^-9 = 0.00195, so 0.0009 rounds to 0. An FP8 tensor therefore needs a scale factor that moves its values into this window first.",
+      "image": "/images/steps/16d-rounding-into-formats/step-05.png"
+    }
+  ]
+}

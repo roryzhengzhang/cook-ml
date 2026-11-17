@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "import:llm": "node scripts/import-obsidian.mjs",
+    "import:deep": "node scripts/import-obsidian.mjs --src \"$HOME/Library/CloudStorage/GoogleDrive-roryzhang95@gmail.com/My Drive/Obsidian/Personal/Machine Learning Sheet/16 LLM Deep Dive\" --series llm-deep-dive --title \"LLM Deep Dive\"",
+    "link-previews": "node scripts/fetch-link-previews.mjs",
     "astro": "astro"
   },
   "dependencies": {

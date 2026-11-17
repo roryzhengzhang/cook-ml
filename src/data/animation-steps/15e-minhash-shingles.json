@@ -4,7 +4,7 @@
   "subtitle": "Word shingles of length 3; four hash functions give each shingle a random number from 0 to 99",
   "steps": [
     {
-      "caption": "Cut each sentence into runs of three consecutive words, called shingles. The two sentences differ in one word, yet that word sits inside 3 of the 6 shingles of each, so they share only 3 of 9 distinct shingles and J = 0.333.",
+      "caption": "Each sentence is cut into runs of three consecutive words, called shingles. The two sentences differ in one word, yet that word sits inside 3 of the 6 shingles of each, so they share only 3 of 9 distinct shingles and J = 0.333.",
       "image": "/images/steps/15e-minhash-shingles/step-01.png"
     },
     {

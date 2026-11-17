@@ -31,6 +31,14 @@ export const onRequest = defineRouteMiddleware((context) => {
     return;
   }
 
+  // Each tutorial page shows only its own series in the sidebar, next to the "Tutorials" link.
+  // Pagination is then computed from that series alone, so Previous/Next never cross series.
+  const series = context.url.pathname.split('/')[2];
+  const prefix = `/tutorials/${series}/`;
+  const inSeries = (entry: SidebarEntry): boolean =>
+    entry.type === 'group' ? entry.entries.some(inSeries) : entry.href.startsWith(prefix);
+  route.sidebar = route.sidebar.filter((entry) => entry.type === 'link' || inSeries(entry));
+
   const links = pageLinks(route.sidebar);
   const here = links.findIndex((l) => withoutHash(l.href) === context.url.pathname);
   if (here === -1) return;

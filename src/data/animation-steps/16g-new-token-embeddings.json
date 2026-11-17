@@ -1,0 +1,27 @@
+{
+  "name": "16g new token embeddings",
+  "title": "Initializing three new finance tokens",
+  "subtitle": "Llama 2 tokenizer splits measured; toy rows of 3 numbers stand in for rows of 4,096",
+  "steps": [
+    {
+      "caption": "The Llama 2 tokenizer cuts each term into three pieces. Adding the terms gives them ids 32,000 to 32,002, and each needs a new input row and a new output row.",
+      "image": "/images/steps/16g-new-token-embeddings/step-01.png"
+    },
+    {
+      "caption": "Each new input row starts as the average of its pieces' rows. For EBITDA the three piece rows average to (0.3, 0.2, 0.2), so the model reads the new token roughly as it read the pieces.",
+      "image": "/images/steps/16g-new-token-embeddings/step-02.png"
+    },
+    {
+      "caption": "The new output row is also the mean of the pieces' output rows. Its logit is then the mean of the pieces' logits, 1.52, a middling score rather than an arbitrary one.",
+      "image": "/images/steps/16g-new-token-embeddings/step-03.png"
+    },
+    {
+      "caption": "With the mean row, EBITDA gets 0.168 and the pieces give up some probability. A zero row gives it 0.043. A random row twice the usual length scores 4.65 here and takes 0.823, crowding out the real candidates.",
+      "image": "/images/steps/16g-new-token-embeddings/step-04.png"
+    },
+    {
+      "caption": "Training starts with the new rows alone while everything else stays frozen, so the large early gradients on the new rows cannot disturb the trained weights. Then the whole model trains.",
+      "image": "/images/steps/16g-new-token-embeddings/step-05.png"
+    }
+  ]
+}

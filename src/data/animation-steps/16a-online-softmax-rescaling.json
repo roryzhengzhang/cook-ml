@@ -1,0 +1,27 @@
+{
+  "name": "16a online softmax rescaling",
+  "title": "Online softmax over two tiles",
+  "subtitle": "One query row: scores 1, 2 | 4, 3 and values 10, 20 | 30, 40, seen one tile at a time",
+  "steps": [
+    {
+      "caption": "Step 1. Tile 1 has scores 1 and 2, so the running max is 2. The weights e^(1-2) = 0.368 and 1 give a sum of 1.3679 and a weighted sum of 23.679.",
+      "image": "/images/steps/16a-online-softmax-rescaling/step-01.png"
+    },
+    {
+      "caption": "Step 2. Tile 2 brings a score of 4, a new max. Everything stored so far is multiplied by e^(2-4) = 0.1353, so the sum becomes 0.1851 and the weighted sum 3.205.",
+      "image": "/images/steps/16a-online-softmax-rescaling/step-02.png"
+    },
+    {
+      "caption": "Step 3. Tile 2 adds weights e^0 = 1 and e^(-1) = 0.368 with values 30 and 40, so the sum becomes 1.5530 and the weighted sum 47.920.",
+      "image": "/images/steps/16a-online-softmax-rescaling/step-03.png"
+    },
+    {
+      "caption": "Step 4. Dividing gives 47.920 / 1.5530 = 30.856, exactly the output of a softmax over all four scores at once, whose weights are 0.032, 0.087, 0.644 and 0.237.",
+      "image": "/images/steps/16a-online-softmax-rescaling/step-04.png"
+    },
+    {
+      "caption": "Step 5. Skipping the rescale leaves tile 1 measured from its own max of 2, so the sums are 2.7358 and 68.394 and the output is 25.0, as if the two tiles counted equally.",
+      "image": "/images/steps/16a-online-softmax-rescaling/step-05.png"
+    }
+  ]
+}

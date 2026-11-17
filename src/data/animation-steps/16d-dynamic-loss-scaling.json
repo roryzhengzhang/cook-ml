@@ -1,0 +1,27 @@
+{
+  "name": "16d dynamic loss scaling",
+  "title": "Dynamic loss scaling for fp16 gradients",
+  "subtitle": "fp16 holds magnitudes from 5.96e-8 to 65,504; scale starts at 65,536, halves on overflow, doubles after 2 clean steps (toy interval)",
+  "steps": [
+    {
+      "caption": "Unscaled, the smallest gradient of 2e-8 is below half the smallest fp16 number and would round to 0. Times 65,536 it becomes 1.31e-3, and the largest, 0.5, becomes 32,768, below 65,504.",
+      "image": "/images/steps/16d-dynamic-loss-scaling/step-01.png"
+    },
+    {
+      "caption": "This batch has a gradient of 1.2. Times 65,536 that is 78,643, past 65,504, so it becomes infinity. The update is skipped and the scale is halved.",
+      "image": "/images/steps/16d-dynamic-loss-scaling/step-02.png"
+    },
+    {
+      "caption": "The next batch has the same spread. At 32,768 the gradient of 1.2 becomes 39,322 and 2e-8 becomes 6.55e-4, so everything fits and the step goes ahead.",
+      "image": "/images/steps/16d-dynamic-loss-scaling/step-03.png"
+    },
+    {
+      "caption": "A second clean step, largest gradient 0.8 becoming 26,214, completes the toy growth interval of 2, so the scale doubles back to 65,536 to probe for more headroom.",
+      "image": "/images/steps/16d-dynamic-loss-scaling/step-04.png"
+    },
+    {
+      "caption": "Before the update every gradient is divided by the scale in fp32, and only then clipped. With the real growth interval of 2,000, about one step in 2,000 is skipped.",
+      "image": "/images/steps/16d-dynamic-loss-scaling/step-05.png"
+    }
+  ]
+}

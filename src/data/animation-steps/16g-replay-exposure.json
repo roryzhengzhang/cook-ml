@@ -1,0 +1,27 @@
+{
+  "name": "16g replay exposure",
+  "title": "Replay exposure over a 20B-token run",
+  "subtitle": "Domain corpus: 8B unique tokens of filings and 2B of call transcripts; replay ratio 25%",
+  "steps": [
+    {
+      "caption": "A replay ratio of 25% gives 5B of the 20B tokens to general text and leaves 15B for the domain.",
+      "image": "/images/steps/16g-replay-exposure/step-01.png"
+    },
+    {
+      "caption": "Transcripts get 25% of the domain share, more than their 20% of the domain text, so they are read 1.875 times while the filings are read 1.41 times.",
+      "image": "/images/steps/16g-replay-exposure/step-02.png"
+    },
+    {
+      "caption": "Each step reads 512 windows of 4,096 tokens: 128 general, 96 transcript and 288 filing windows. The run takes 9,537 such steps.",
+      "image": "/images/steps/16g-replay-exposure/step-03.png"
+    },
+    {
+      "caption": "The 5B replay tokens follow the original pretraining mixture: 3.6B web, 0.8B code, 0.3B books, 0.2B papers and 0.1B Wikipedia. That is 0.25% of the 2T tokens, so almost all of it is fresh.",
+      "image": "/images/steps/16g-replay-exposure/step-04.png"
+    },
+    {
+      "caption": "With no replay the same 20B tokens read the domain 2.0 times, with 50% replay 1.0 times. Holding domain exposure at 15B instead costs 15B, 20B or 30B tokens, a factor of 1 / (1 - r).",
+      "image": "/images/steps/16g-replay-exposure/step-05.png"
+    }
+  ]
+}

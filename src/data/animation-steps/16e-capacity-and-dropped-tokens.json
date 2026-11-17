@@ -1,0 +1,23 @@
+{
+  "name": "16e capacity and dropped tokens",
+  "title": "Expert capacity on the same eight tokens",
+  "subtitle": "Top-1 loads 4, 2, 1, 1; capacity = capacity factor x 8 tokens x 1 expert per token / 4 experts",
+  "steps": [
+    {
+      "caption": "Step 1. Top-1 routing sends 4, 2, 1 and 1 tokens to the four experts. With a capacity factor of 1, each expert gets 1 x 8 x 1 / 4 = 2 slots, its fair share.",
+      "image": "/images/steps/16e-capacity-and-dropped-tokens/step-01.png"
+    },
+    {
+      "caption": "Step 2. Expert 1 keeps tokens 1 and 2 and drops tokens 4 and 6, which arrived later in the batch. Two of eight tokens, 25%, skip the expert layer, and 6 of the 8 slots hold a token.",
+      "image": "/images/steps/16e-capacity-and-dropped-tokens/step-02.png"
+    },
+    {
+      "caption": "Step 3. A capacity factor of 1.5 gives 3 slots per expert. Only token 6 is dropped, 12.5% of the batch, but 12 slots are computed for 7 tokens.",
+      "image": "/images/steps/16e-capacity-and-dropped-tokens/step-03.png"
+    },
+    {
+      "caption": "Step 4. A capacity factor of 2 gives 4 slots and drops nothing, but 16 slots are reserved for 8 tokens, so half of the expert compute and buffer memory is padding.",
+      "image": "/images/steps/16e-capacity-and-dropped-tokens/step-04.png"
+    }
+  ]
+}

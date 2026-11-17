@@ -1,0 +1,27 @@
+{
+  "name": "16h chunked prefill schedule",
+  "title": "Chunked prefill on one GPU",
+  "subtitle": "7B on one H100: 32 decode streams at 512 tokens of context, a 2,048-token prompt arrives at time 0; prefill at 40% of peak",
+  "steps": [
+    {
+      "caption": "Before the prompt arrives, each iteration advances 32 streams by one token in 6.59 ms: reading 13.48 GB of weights and 8.6 GB of cache.",
+      "image": "/images/steps/16h-chunked-prefill-schedule/step-01.png"
+    },
+    {
+      "caption": "Run unchunked, the 2,048-token prompt and the 32 decode tokens share one iteration of 73.6 ms, so every stream waits that long for its next token.",
+      "image": "/images/steps/16h-chunked-prefill-schedule/step-02.png"
+    },
+    {
+      "caption": "Chunked, iteration 1 carries prompt tokens 1 to 512 plus the 32 decode tokens and takes 18.7 ms. Every stream gets a token.",
+      "image": "/images/steps/16h-chunked-prefill-schedule/step-03.png"
+    },
+    {
+      "caption": "Iterations 2 and 3 carry tokens 513 to 1,536 and take 19.1 and 19.4 ms. Each later chunk attends to more earlier prompt tokens, which adds about 0.35 ms per chunk.",
+      "image": "/images/steps/16h-chunked-prefill-schedule/step-04.png"
+    },
+    {
+      "caption": "Iteration 4 finishes the prompt at 76.9 ms, so its first token comes 3.3 ms later than unchunked, while the longest gap the 32 streams see falls from 73.6 to 19.7 ms.",
+      "image": "/images/steps/16h-chunked-prefill-schedule/step-05.png"
+    }
+  ]
+}

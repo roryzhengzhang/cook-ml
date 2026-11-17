@@ -1,0 +1,31 @@
+{
+  "name": "16f nf4 block quantization",
+  "title": "NF4 quantization of a block of 8 weights",
+  "subtitle": "Weights 0.012, -0.031, 0.004, 0.027, -0.008, 0.045, -0.019, 0.002; 16 NF4 levels from the QLoRA paper",
+  "steps": [
+    {
+      "caption": "The block has 8 weights. Its largest magnitude, 0.045, becomes the block scale, the one number stored at full precision.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-01.png"
+    },
+    {
+      "caption": "Dividing by 0.045 puts every weight between -1 and 1, with the largest one landing exactly on 1.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-02.png"
+    },
+    {
+      "caption": "Each value snaps to the nearest of the 16 NF4 levels, which crowd near zero where most weights lie. Only the 4-bit index of the level is stored.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-03.png"
+    },
+    {
+      "caption": "Multiplying the levels back by 0.045 recovers the weights with a mean error of 0.00081 and a largest error of 0.0017, on the weight 0.027.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-04.png"
+    },
+    {
+      "caption": "A uniform 4-bit grid with levels at multiples of 1/7 does worse on the same block: mean error 0.0012 and largest error 0.0024, because its levels are spread evenly.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-05.png"
+    },
+    {
+      "caption": "A block of 8 pays 4 extra bits per weight for its 32-bit scale. Blocks of 64 pay 0.5, double quantization cuts that to 0.127, and MXFP4 pays 0.25 with an 8-bit scale per 32 weights.",
+      "image": "/images/steps/16f-nf4-block-quantization/step-06.png"
+    }
+  ]
+}

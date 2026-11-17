@@ -1,0 +1,31 @@
+{
+  "name": "16b segment recurrence",
+  "title": "Segment recurrence carrying one fact across segments",
+  "subtitle": "Two layers, three-token segments, memory holds the previous segment from the layer below; toy attention averages what it sees",
+  "steps": [
+    {
+      "caption": "Token 1 carries the value 9, standing for a debt figure, and every other token carries 0. Each layer averages everything it can see: the earlier tokens of its own segment plus the memory of the segment before.",
+      "image": "/images/steps/16b-segment-recurrence/step-01.png"
+    },
+    {
+      "caption": "Segment 1 has no memory. Layer 1 gives 9, 4.5 and 3, and layer 2 averages those into 9, 6.75 and 5.5. The input and layer 1 states of tokens 1 to 3 are stored as memory with no gradient path.",
+      "image": "/images/steps/16b-segment-recurrence/step-02.png"
+    },
+    {
+      "caption": "Segment 2 reads that memory. Layer 1 gives 2.25, 1.8 and 1.5, and layer 2 gives 4.69, 4.11 and 3.68. Without memory every state in this segment would be 0.",
+      "image": "/images/steps/16b-segment-recurrence/step-03.png"
+    },
+    {
+      "caption": "In segment 3 the input memory holds only zeros, so layer 1 gives 0, 0 and 0. Layer 2 still reads layer 1 of segment 2 and gives 1.39, 1.11 and 0.93, so the fact survives one level up.",
+      "image": "/images/steps/16b-segment-recurrence/step-04.png"
+    },
+    {
+      "caption": "In segment 4 both memories hold zeros and the fact is gone. Two layers carried it two segments forward, about one extra segment per layer, and each hop diluted it.",
+      "image": "/images/steps/16b-segment-recurrence/step-05.png"
+    },
+    {
+      "caption": "At real scale, 32 layers and 512-token segments reach back about 16,384 tokens. Each query scores 1,024 keys, its own segment plus memory, while gradients stay inside the current segment.",
+      "image": "/images/steps/16b-segment-recurrence/step-06.png"
+    }
+  ]
+}

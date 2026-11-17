@@ -1,0 +1,29 @@
+{
+  "name": "16a cache bytes per token",
+  "title": "Cache bytes for one token under GQA and MLA",
+  "subtitle": "7B shape in bf16: 32 layers, 32 query heads of width 128",
+  "steps": [
+    {
+      "caption": "Step 1. Plain multi-head attention stores a key and a value for each of 32 heads: 8,192 numbers, 16,384 bytes per layer, 512 KiB per token over 32 layers.",
+      "image": "/images/steps/16a-cache-bytes-per-token/step-01.png"
+    },
+    {
+      "caption": "Step 2. Grouped-query attention with 8 key value heads stores 2,048 numbers, 4,096 bytes per layer, 128 KiB per token.",
+      "image": "/images/steps/16a-cache-bytes-per-token/step-02.png"
+    },
+    {
+      "caption": "Step 3. A 512-number latent plus a 64-number RoPE key stores 576 numbers, 1,152 bytes per layer, 36 KiB per token, the same as grouped-query attention with 2.25 key value heads.",
+      "image": "/images/steps/16a-cache-bytes-per-token/step-03.png"
+    },
+    {
+      "caption": "Step 4. Per 4,096-token sequence the caches are 2 GiB, 512 MiB and 144 MiB, so the free 66.5 GB holds 30, 123 or 440 sequences.",
+      "image": "/images/steps/16a-cache-bytes-per-token/step-04.png",
+      "heading": "One 4,096-token sequence each, in the 66.5 GB an H100 has left after 13.48 GB of weights"
+    },
+    {
+      "caption": "Step 5. At 61 layers the latent cache is 68.6 KiB per token, 3.6 times smaller than grouped-query attention with 8 heads and 57 times smaller than 128 full heads.",
+      "image": "/images/steps/16a-cache-bytes-per-token/step-05.png",
+      "heading": "61 layers and head width 128, the depth of DeepSeek-V3 and Kimi K2"
+    }
+  ]
+}

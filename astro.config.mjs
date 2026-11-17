@@ -36,6 +36,7 @@ export default defineConfig({
         '@fontsource-variable/jetbrains-mono',
         'katex/dist/katex.min.css',
         './src/styles/custom.css',
+        './src/styles/link-preview.css',
       ],
       components: {
         Header: './src/components/Header.astro',
@@ -50,12 +51,18 @@ export default defineConfig({
             "try{if(localStorage.getItem('cm-sidebar')==='collapsed')document.documentElement.dataset.cmSidebar='collapsed'}catch(e){}",
         },
         { tag: 'meta', attrs: { property: 'og:image', content: 'https://cook-ml.com/og.png' } },
+        // Hover previews for links in tutorial text (see public/link-preview.js).
+        { tag: 'script', attrs: { src: '/link-preview.js', defer: true } },
       ],
       sidebar: [
         { label: 'Tutorials', link: '/tutorials/' },
         {
           label: 'LLM Fundamentals',
           items: seriesSidebar('llm-fundamentals'),
+        },
+        {
+          label: 'LLM Deep Dive',
+          items: seriesSidebar('llm-deep-dive'),
         },
       ],
     }),

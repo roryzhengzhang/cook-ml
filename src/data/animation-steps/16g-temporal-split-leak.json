@@ -1,0 +1,27 @@
+{
+  "name": "16g temporal split leak",
+  "title": "A temporal split that leaks and one that does not",
+  "subtitle": "400 test questions about second-quarter 2025 figures from 100 companies, answered from 10-Q filings",
+  "steps": [
+    {
+      "caption": "The split cuts training at July 31 and tests on 10-Q filings from August 1 to 14. No test filing is in training, so the split looks clean.",
+      "image": "/images/steps/16g-temporal-split-leak/step-01.png"
+    },
+    {
+      "caption": "Earnings calls and press releases from July 15 to 31 announce the same quarter's numbers before the 10-Q is filed. 310 of the 400 test answers, 77.5%, sit inside the training data.",
+      "image": "/images/steps/16g-temporal-split-leak/step-02.png"
+    },
+    {
+      "caption": "The model answers 90% of leaked items and 64% of clean ones, so the split reports 337 of 400, or 84.3%, most of it from recall.",
+      "image": "/images/steps/16g-temporal-split-leak/step-03.png"
+    },
+    {
+      "caption": "Cutting training at June 30, the end of the quarter the test asks about, keeps every document that could state those numbers out. The retrained model scores 262 of 400, or 65.5%.",
+      "image": "/images/steps/16g-temporal-split-leak/step-04.png"
+    },
+    {
+      "caption": "Twenty companies were also kept out of all training. Their 80 questions score 47 of 80, or 58.8%, which is the number to quote for companies the model has never read about.",
+      "image": "/images/steps/16g-temporal-split-leak/step-05.png"
+    }
+  ]
+}

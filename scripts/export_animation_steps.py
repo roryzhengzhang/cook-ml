@@ -11,7 +11,7 @@ steps with real text, instead of a video.
 Nothing is written to the vault.
 
 Usage:
-    python3 scripts/export_animation_steps.py            # every 15x-gifs.py script
+    python3 scripts/export_animation_steps.py            # every 15x- and 16x-gifs.py script
     python3 scripts/export_animation_steps.py 15b 15c    # only these notes
 """
 
@@ -157,7 +157,7 @@ def export(script):
 def main():
     wanted = sys.argv[1:]
     OUT_DATA.mkdir(parents=True, exist_ok=True)
-    scripts = sorted(SCRIPTS.glob('15?-gifs.py'))
+    scripts = sorted([*SCRIPTS.glob('15?-gifs.py'), *SCRIPTS.glob('16?-gifs.py')])
     for script in scripts:
         if wanted and not any(script.name.startswith(w) for w in wanted):
             continue

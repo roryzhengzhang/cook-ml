@@ -12,11 +12,11 @@
       "image": "/images/steps/15a-softmax-walkthrough/step-02.png"
     },
     {
-      "caption": "Exponentiate each one: e to the 2.0 is 7.389, e to the -1.0 is 0.368. Every result is positive and the larger logit stays larger.",
+      "caption": "Exponentiating each logit turns 2.0 into 7.389 and -1.0 into 0.368. Every result is positive and the larger logit stays larger.",
       "image": "/images/steps/15a-softmax-walkthrough/step-03.png"
     },
     {
-      "caption": "Divide each exponential by their sum 12.124. The probabilities are 0.609, 0.224, 0.136 and 0.030, and they sum to one.",
+      "caption": "Dividing each exponential by their sum, 12.124, gives the probabilities 0.609, 0.224, 0.136 and 0.030, and they sum to one.",
       "image": "/images/steps/15a-softmax-walkthrough/step-04.png"
     },
     {

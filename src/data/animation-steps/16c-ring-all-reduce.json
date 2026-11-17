@@ -1,0 +1,35 @@
+{
+  "name": "16c ring all reduce",
+  "title": "Ring all-reduce on four GPUs",
+  "subtitle": "GPU k starts with (1, 2, 3, 4) times 10 to the power k - 1. Each step every GPU sends one chunk to its right-hand neighbor",
+  "steps": [
+    {
+      "caption": "Each GPU splits its gradient vector into four chunks. The goal is (1111, 2222, 3333, 4444) on every GPU, and the GPUs pass chunks around the ring 1 to 2 to 3 to 4 and back to 1.",
+      "image": "/images/steps/16c-ring-all-reduce/step-01.png"
+    },
+    {
+      "caption": "Reduce-scatter, step 1: GPU 1 sends chunk 1 to GPU 2, which adds it and gets 11. At the same time GPU 4 sends chunk 4 to GPU 1, which gets 4004, and so on around the ring.",
+      "image": "/images/steps/16c-ring-all-reduce/step-02.png"
+    },
+    {
+      "caption": "Step 2: every GPU forwards the chunk it just added to. GPU 2 sends 11 to GPU 3, which gets 111, and GPU 1 sends 4004 to GPU 2, which gets 4044.",
+      "image": "/images/steps/16c-ring-all-reduce/step-03.png"
+    },
+    {
+      "caption": "Step 3: after three sends each GPU holds one chunk summed over all four GPUs: GPU 1 has 2222, GPU 2 has 3333, GPU 3 has 4444 and GPU 4 has 1111. That is a reduce-scatter.",
+      "image": "/images/steps/16c-ring-all-reduce/step-04.png"
+    },
+    {
+      "caption": "All-gather, step 1: each GPU sends its finished chunk to its neighbor, which overwrites its own copy. GPU 2 now also holds 2222.",
+      "image": "/images/steps/16c-ring-all-reduce/step-05.png"
+    },
+    {
+      "caption": "Step 2: the finished chunks move one more hop, so every finished chunk now sits on three GPUs.",
+      "image": "/images/steps/16c-ring-all-reduce/step-06.png"
+    },
+    {
+      "caption": "Step 3: every GPU holds (1111, 2222, 3333, 4444). Each GPU sent six chunks of a quarter vector each, 1.5 vectors in total, which is 2(p - 1)/p with p = 4.",
+      "image": "/images/steps/16c-ring-all-reduce/step-07.png"
+    }
+  ]
+}

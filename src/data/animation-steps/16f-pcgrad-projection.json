@@ -1,0 +1,27 @@
+{
+  "name": "16f pcgrad projection",
+  "title": "PCGrad on two conflicting gradients",
+  "subtitle": "Task A gradient (4, 0), task B gradient (-1, 1); step size 0.1; a parameter step moves against the summed gradient",
+  "steps": [
+    {
+      "caption": "Task A pulls along (4, 0) and task B along (-1, 1). Their dot product is -4, so the gradients point more than 90 degrees apart and conflict.",
+      "image": "/images/steps/16f-pcgrad-projection/step-01.png"
+    },
+    {
+      "caption": "Adding the raw gradients gives (3, 1). A step of 0.1 against it lowers task A by 1.2 but raises task B by 0.2, because the sum still has a negative dot product with g_B.",
+      "image": "/images/steps/16f-pcgrad-projection/step-02.png"
+    },
+    {
+      "caption": "PCGrad removes from g_A its component along g_B: the coefficient is -4 divided by the squared length 2, so g_A becomes (4, 0) + 2 x (-1, 1) = (2, 2), at right angles to g_B.",
+      "image": "/images/steps/16f-pcgrad-projection/step-03.png"
+    },
+    {
+      "caption": "The same projection runs the other way against the original g_A: the coefficient is -4 / 16, so g_B becomes (-1, 1) + 0.25 x (4, 0) = (0, 1).",
+      "image": "/images/steps/16f-pcgrad-projection/step-04.png"
+    },
+    {
+      "caption": "The projected gradients add to (2, 3). Now both losses fall, A by 0.8 and B by 0.1, so task B no longer gets worse, at the price of a smaller gain on task A.",
+      "image": "/images/steps/16f-pcgrad-projection/step-05.png"
+    }
+  ]
+}

@@ -36,7 +36,7 @@
       "image": "/images/steps/15e-adamw-two-steps/step-08.png"
     },
     {
-      "caption": "Plain gradient descent with the same η moves θ to 0.48 then 0.475. Multiply both gradients by 100 and it jumps to -2.0, while AdamW lands on the same 0.4806, since the ratio cancels the gradient scale.",
+      "caption": "Plain gradient descent with the same η moves θ to 0.48 then 0.475. With both gradients multiplied by 100, it jumps to -2.0, while AdamW lands on the same 0.4806, since the ratio cancels the gradient scale.",
       "image": "/images/steps/15e-adamw-two-steps/step-09.png"
     }
   ]

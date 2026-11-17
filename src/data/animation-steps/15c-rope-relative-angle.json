@@ -1,35 +1,32 @@
 {
   "name": "15c rope relative angle",
-  "title": "Rotating by position keeps the score tied to the offset",
-  "subtitle": "Section 8 toy: raw query (1, 2), raw key (3, 2), each position adds 45 degrees of rotation",
+  "title": "Rotary position embedding on a sentence",
+  "subtitle": "Bank's query and the keys from section 2, one coordinate pair turning 45 degrees per position",
   "steps": [
     {
-      "caption": "Before any rotation the query (1, 2) and key (3, 2) score 3 + 4 = 7. Both sit at position 0, 30 degrees apart.",
+      "caption": "Section 2 projected bank's query to (1, 1) and the keys of the, river and bank. With no position information, bank scores them -1, 2 and 1.",
       "image": "/images/steps/15c-rope-relative-angle/step-01.png"
     },
     {
-      "caption": "Query at position 2 turns 90 degrees to (-2, 1). Key at position 1 turns 45 degrees to (0.71, 3.54). They are now 75 degrees apart and the score is 2.121.",
+      "caption": "Inside the attention layer each query and key turns by 45 degrees per position. Bank, at position 2, turns its query 90 degrees, river's key turns 45 and the stays put.",
       "image": "/images/steps/15c-rope-relative-angle/step-02.png"
     },
     {
-      "caption": "Shift both two positions later. The arrows land somewhere new, but they are still 75 degrees apart, so the score is still 2.121.",
+      "caption": "Bank's scores become 1, 1.414 and 1. After dividing by the square root of 2 and a softmax, bank gives river 0.40 of its attention and the and itself 0.30 each, where section 2 gave river 0.62.",
       "image": "/images/steps/15c-rope-relative-angle/step-03.png"
     },
     {
-      "caption": "Again at positions 6 and 5. The offset is 1 every time, and the score never moves from 2.121.",
+      "caption": "In \"we walked to the river bank\" the same three words sit three places later. Every vector has turned 135 degrees more, but each pair is the same number of tokens apart, so the scores are again 1, 1.414 and 1.",
       "image": "/images/steps/15c-rope-relative-angle/step-04.png"
     },
     {
-      "caption": "Now move only the key, to position 4. The offset becomes 2, the arrows open to 120 degrees, and the score drops to -4.",
+      "caption": "In \"the river and its bank\", river sits three tokens back instead of one. The extra 90 degrees between the arrows drop bank's score for river to -1.414.",
       "image": "/images/steps/15c-rope-relative-angle/step-05.png"
     },
     {
-      "caption": "Put both at position 6. The offset is 0, the rotations cancel, and the score is the raw 7 again.",
-      "image": "/images/steps/15c-rope-relative-angle/step-06.png"
-    },
-    {
-      "caption": "Every row with offset 1 scores 2.121, offset 2 scores -4 and offset 0 scores 7. The score depends on how far apart the tokens are, not on where they sit.",
-      "image": "/images/steps/15c-rope-relative-angle/step-07.png"
+      "caption": "Without position information all three sentences score 2. With RoPE the score depends only on how many tokens separate river and bank, not on where the phrase sits.",
+      "image": "/images/steps/15c-rope-relative-angle/step-06.png",
+      "heading": "Bank's score for river in three sentences"
     }
   ]
 }

@@ -16,7 +16,7 @@
       "image": "/images/steps/15f-dpo-one-pair/step-03.png"
     },
     {
-      "caption": "Multiply by β = 0.1 to get 0.15. This is the same gap a reward model would score, with the implicit reward β × log ratio standing in for r.",
+      "caption": "Multiplying by β = 0.1 gives 0.15. This is the same gap a reward model would score, with the implicit reward β × log ratio standing in for r.",
       "image": "/images/steps/15f-dpo-one-pair/step-04.png"
     },
     {

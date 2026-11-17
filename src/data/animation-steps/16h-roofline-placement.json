@@ -1,0 +1,27 @@
+{
+  "name": "16h roofline placement",
+  "title": "Roofline placement of 7B decode",
+  "subtitle": "H100: 989 dense bf16 TFLOP/s, 3.35 TB/s; 7B in bf16 with empty contexts, so the weights are the only bytes read",
+  "steps": [
+    {
+      "caption": "The ridge point is peak compute over bandwidth, 989 / 3.35 = 295 FLOPs per byte. Left of it the sloped roof caps speed at bytes times bandwidth. Right of it the flat roof caps it at 989 TFLOP/s.",
+      "image": "/images/steps/16h-roofline-placement/step-01.png"
+    },
+    {
+      "caption": "At batch 1 each 2-byte weight does 2 FLOPs, so the intensity is 1. Reading 13.48 GB takes 4.02 ms and the chip does 3.35 trillion FLOPs per second, 0.34% of its peak.",
+      "image": "/images/steps/16h-roofline-placement/step-02.png"
+    },
+    {
+      "caption": "At batch 64 one weight read serves 64 tokens, so the intensity is 64. The arithmetic takes 0.87 ms, hidden inside the same 4.02 ms read, and the chip reaches 214 TFLOP/s.",
+      "image": "/images/steps/16h-roofline-placement/step-03.png"
+    },
+    {
+      "caption": "At batch 256 the arithmetic takes 3.49 ms, still inside the 4.02 ms read. The chip reaches 858 TFLOP/s, 87% of peak, and every step still costs the same 4.02 ms.",
+      "image": "/images/steps/16h-roofline-placement/step-04.png"
+    },
+    {
+      "caption": "At batch 295 the read and the arithmetic both take 4.02 ms, and each extra sequence after that adds time. A 2,048-token prefill already sits near 1,900 FLOPs per byte, far into compute-bound territory.",
+      "image": "/images/steps/16h-roofline-placement/step-05.png"
+    }
+  ]
+}

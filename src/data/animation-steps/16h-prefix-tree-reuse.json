@@ -1,0 +1,23 @@
+{
+  "name": "16h prefix tree reuse",
+  "title": "Prefix tree shared by three requests",
+  "subtitle": "7B model; S is a 1,024-token system prompt; each node is a run of tokens whose cache is stored once",
+  "steps": [
+    {
+      "caption": "Request 1 finds nothing cached, so it computes all 1,084 prompt tokens. Its 180 generated tokens are stored too, so the tree holds one run of 1,264 tokens.",
+      "image": "/images/steps/16h-prefix-tree-reuse/step-01.png"
+    },
+    {
+      "caption": "Request 2 matches the first 1,024 tokens, so the run splits at that point and only its 90 new tokens are computed. Its time to first token falls from 38.0 ms to about 4 ms, one weight read.",
+      "image": "/images/steps/16h-prefix-tree-reuse/step-02.png"
+    },
+    {
+      "caption": "Request 3 continues the first conversation, so it matches S, q1 and a1, 1,264 tokens, and computes only its 40-token question.",
+      "image": "/images/steps/16h-prefix-tree-reuse/step-03.png"
+    },
+    {
+      "caption": "Across the three requests the server computed 1,214 of 3,502 prompt tokens, 65% less, and the tree stores 1,394 tokens, 697 MiB, instead of 1,751 MiB for three separate caches.",
+      "image": "/images/steps/16h-prefix-tree-reuse/step-04.png"
+    }
+  ]
+}

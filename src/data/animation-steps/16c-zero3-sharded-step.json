@@ -1,0 +1,31 @@
+{
+  "name": "16c zero3 sharded step",
+  "title": "A ZeRO-3 training step on two GPUs",
+  "subtitle": "Layer 1 has weights a and b, layer 2 has c and d. GPU 1 owns a and c, GPU 2 owns b and d, each with its own optimizer state",
+  "steps": [
+    {
+      "caption": "At rest each GPU stores only the weights it owns and their AdamW state: GPU 1 holds a = 0.5 and c = 2.0, GPU 2 holds b = -1.0 and d = 0.25. Each GPU has its own micro-batch.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-01.png"
+    },
+    {
+      "caption": "Forward, layer 1: an all-gather gives both GPUs a and b. Each runs layer 1 on its own micro-batch, then drops the weight it borrowed.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-02.png"
+    },
+    {
+      "caption": "Forward, layer 2: another all-gather lends c and d, each GPU runs layer 2 and drops the borrowed weight again. At no point does a GPU hold more than one borrowed weight.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-03.png"
+    },
+    {
+      "caption": "Backward, layer 2: c and d are gathered a second time. GPU 1 computes gradients 0.2 and -0.4, GPU 2 computes 0.6 and 0.0. A reduce-scatter averages them and hands each owner its own: c gets 0.4 on GPU 1, d gets -0.2 on GPU 2.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-04.png"
+    },
+    {
+      "caption": "Backward, layer 1: a and b are gathered, local gradients are 0.1 and 0.3 on GPU 1 and -0.3 and 0.5 on GPU 2. After the reduce-scatter GPU 1 keeps a: -0.1 and GPU 2 keeps b: 0.4.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-05.png"
+    },
+    {
+      "caption": "Update: each GPU steps only the weights it owns. With a plain step of learning rate 0.1 in place of AdamW, a becomes 0.51 and c becomes 1.96 on GPU 1, b becomes -1.04 and d becomes 0.27 on GPU 2.",
+      "image": "/images/steps/16c-zero3-sharded-step/step-06.png"
+    }
+  ]
+}

@@ -12,6 +12,8 @@ npm run preview    # serve dist/ (search works here, not in dev)
 python3 scripts/check_links.py   # after a build: broken anchors and KaTeX errors
 ```
 
+Hovering a link in tutorial text opens a preview card (`public/link-preview.js`, styled in `src/styles/link-preview.css`). Links between pages are previewed from the target page itself. External links read `public/link-previews.json`, which `npm run link-previews` fills in for links that have no preview yet (arXiv papers through the arXiv API, other pages from their title, description and image tags). Run it after an import that adds external links; `npm run link-previews -- --all` refreshes every entry.
+
 ## Layout
 
 | Path | What it holds |
@@ -37,7 +39,7 @@ npm run import:llm
 Animations are shown as numbered step-by-step figures rather than videos. Each step is one frame of the animation with its caption as real text. To regenerate the steps after the animation scripts in `~/.claude/scripts/ml-figures/<id>-gifs.py` change, run this before the import:
 
 ```bash
-python3 scripts/export_animation_steps.py        # all 15x animations, or pass ids such as 15b 15c
+python3 scripts/export_animation_steps.py        # all 15x and 16x animations, or pass ids such as 15b 16c
 ```
 
 It loads each script without touching the vault, saves every step as a PNG in `public/images/steps/<animation>/`, and writes the captions to `src/data/animation-steps/<animation>.json`. Frames that share a caption are merged into one step, keeping the final frame. The importer then replaces each `![[...mp4]]` embed that has step data with the step figure, and falls back to a looping video when it has none.
@@ -56,6 +58,14 @@ A `##` heading stays a real section heading inside the card, so the sidebar and 
 The tutorial sidebar is built from the chapter files by `scripts/series-sidebar.mjs`: each chapter is a collapsible group listing its `##` sections. It is read when the dev server starts, so restart `npm run dev` after an import that changes headings.
 
 The script regenerates `src/content/docs/tutorials/llm-fundamentals/` and `public/images/llm-fundamentals/`, so do not hand-edit those files. It converts `![[figure]]` embeds into images, links between chapters into site links, and links to unpublished notes into plain text.
+
+LLM Deep Dive, the advanced follow-on series, comes from `Machine Learning Sheet/16 LLM Deep Dive` the same way:
+
+```bash
+npm run import:deep
+```
+
+Links between published series (`PUBLISHED` in `scripts/import-obsidian.mjs`) become site links, so a Deep Dive chapter can link a Fundamentals section. Each tutorial page shows only its own series in the sidebar (`src/routeData.ts`).
 
 To import another series, pass the folder and a slug, then add a sidebar group in `astro.config.mjs` and a card in `src/components/SeriesGrid.astro`:
 

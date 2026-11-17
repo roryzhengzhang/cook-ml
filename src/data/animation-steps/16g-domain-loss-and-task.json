@@ -1,0 +1,27 @@
+{
+  "name": "16g domain loss and task",
+  "title": "Held-out loss and task accuracy for two checkpoints",
+  "subtitle": "Reference 7B before and after 20B tokens of domain-adaptive pretraining; same fine-tuning recipe on both",
+  "steps": [
+    {
+      "caption": "The Llama 2 tokenizer writes every digit as its own token, so 16% of the tokens in recent 10-K filings are single digits. The held-out loss is split into those tokens and all the others.",
+      "image": "/images/steps/16g-domain-loss-and-task/step-01.png"
+    },
+    {
+      "caption": "Before domain-adaptive pretraining the other tokens cost 1.80 nats and the digits 2.60, so the average is 0.84 x 1.80 + 0.16 x 2.60 = 1.928 nats, a perplexity of 6.88.",
+      "image": "/images/steps/16g-domain-loss-and-task/step-02.png"
+    },
+    {
+      "caption": "After 20B tokens the other tokens fall to 1.45 while the digits rise to 2.70. The average still drops to 1.650 nats, a perplexity of 5.21.",
+      "image": "/images/steps/16g-domain-loss-and-task/step-03.png"
+    },
+    {
+      "caption": "After the same fine-tuning, exact match falls from 710 to 680 of 1,000. Scale and format errors shrink a little, but wrong-period answers grow from 95 to 145.",
+      "image": "/images/steps/16g-domain-loss-and-task/step-04.png"
+    },
+    {
+      "caption": "The 0.278-nat drop is 0.84 x (-0.35) = -0.294 from the other tokens plus 0.16 x 0.10 = +0.016 from the digits. The average rewards the text the task never asks about.",
+      "image": "/images/steps/16g-domain-loss-and-task/step-05.png"
+    }
+  ]
+}

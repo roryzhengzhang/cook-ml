@@ -1,0 +1,31 @@
+{
+  "name": "16b retrieval versus full context cost",
+  "title": "Cost of one question with the full filing or six retrieved chunks",
+  "subtitle": "Reference 7B in bf16 on one H100; prefill at 40% of 989 TFLOP/s, decode limited by 3.35 TB/s; 200-token answer",
+  "steps": [
+    {
+      "caption": "One question about net debt. The full filing puts 96,000 tokens in the prompt, while retrieval puts in six chunks of 1,000 tokens, 6,000 in all. Both write a 200-token answer on one H100.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-01.png"
+    },
+    {
+      "caption": "Prefill of the full filing costs 3.71 x 10^15 FLOPs, 1.29 x 10^15 for the weights and 2.42 x 10^15 for attention, which is 9.38 seconds. The six chunks cost 9.0 x 10^13 FLOPs, 0.23 seconds.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-02.png"
+    },
+    {
+      "caption": "The cache holds 0.5 MiB per token: 50.3 GB for the filing beside 13.5 GB of weights, so one request fills the GPU. The six chunks need 3.1 GB, room for 21 such requests.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-03.png"
+    },
+    {
+      "caption": "Each decode step reads the weights and the whole cache: 63.8 GB, or 19.0 ms, for the filing against 16.6 GB, or 5.0 ms, for the chunks. The 200-token answer takes 3.81 against 0.99 seconds.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-04.png"
+    },
+    {
+      "caption": "In total the question costs 13.2 GPU-seconds with the full filing and 1.2 with retrieval, about 11 times more, and the long request also keeps the whole GPU to itself.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-05.png"
+    },
+    {
+      "caption": "Retrieval can miss evidence. If each of the three passages is retrieved with probability 0.8, all three arrive together only 0.8^3 = 0.51 of the time, while the full filing always contains them.",
+      "image": "/images/steps/16b-retrieval-versus-full-context-cost/step-06.png"
+    }
+  ]
+}

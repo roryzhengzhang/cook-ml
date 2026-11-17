@@ -17,7 +17,7 @@ The chapters follow the order in which a model is built and then used. Language 
 
 The series builds on the basics of machine learning rather than teaching them. Every example is still worked by hand rather than in code, so no programming is needed. The chapters recall a term from these subjects briefly where they first use it, but they do not teach the subjects themselves:
 
-- **Machine learning basics.** Training adjusts a model's parameters to lower a loss on training data, usually by gradient descent, and the model is judged on data it has not seen. Overfitting, train and test splits, and the learning rate come up throughout.
+- **Machine learning basics.** Training usually adjusts a model's parameters by gradient descent to lower a loss on training data. The model is judged on data it has not seen. Overfitting, train and test splits, and the learning rate come up throughout.
 - **Neural networks.** A layer multiplies its input by a weight matrix and applies a nonlinearity, and backpropagation finds the gradient of the loss for every weight.
 - **Probability and statistics.** Conditional probability, distributions, expected value, variance and likelihood. Language modeling rests on the chain rule of probability and on maximum likelihood.
 - **Linear algebra.** Vectors, matrices, dot products and matrix multiplication, which make up nearly every computation inside a transformer.

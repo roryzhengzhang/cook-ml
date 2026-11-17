@@ -27,7 +27,7 @@
       "image": "/images/steps/15g-speculative-accept-reject/step-06.png"
     },
     {
-      "caption": "Sum of the bars: 1 + 0.8 + 0.64 + 0.512 + 0.410 = (1 - 0.8^5) / (1 - 0.8) = 3.36 tokens per target pass, against exactly 1 without speculation.",
+      "caption": "The bars add up to 1 + 0.8 + 0.64 + 0.512 + 0.410 = (1 - 0.8^5) / (1 - 0.8) = 3.36 tokens per target pass, against exactly 1 without speculation.",
       "image": "/images/steps/15g-speculative-accept-reject/step-07.png",
       "heading": "With acceptance 0.8 and four drafts a round emits 3.36 tokens on average"
     }

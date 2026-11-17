@@ -12,23 +12,23 @@
       "image": "/images/steps/15d-mixture-of-experts-routing/step-02.png"
     },
     {
-      "caption": "Token 2 goes to experts 2 and 3. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
+      "caption": "Token 2 goes to experts 2 and 3. Only those two experts run for it. The other two hold their weights in memory and do no arithmetic for this token.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-03.png"
     },
     {
-      "caption": "Token 3 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
+      "caption": "Token 3 goes to experts 1 and 2. Only those two experts run for it. The other two hold their weights in memory and do no arithmetic for this token.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-04.png"
     },
     {
-      "caption": "Token 4 goes to experts 3 and 4. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
+      "caption": "Token 4 goes to experts 3 and 4. Only those two experts run for it. The other two hold their weights in memory and do no arithmetic for this token.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-05.png"
     },
     {
-      "caption": "Token 5 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
+      "caption": "Token 5 goes to experts 1 and 2. Only those two experts run for it. The other two hold their weights in memory and do no arithmetic for this token.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-06.png"
     },
     {
-      "caption": "Token 6 goes to experts 1 and 2. Only those two experts run for it; the other two hold their weights in memory and do no arithmetic for this token.",
+      "caption": "Token 6 goes to experts 1 and 2. Only those two experts run for it. The other two hold their weights in memory and do no arithmetic for this token.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-07.png"
     },
     {

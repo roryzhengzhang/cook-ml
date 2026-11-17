@@ -1,0 +1,27 @@
+{
+  "name": "16d checkpoint interval",
+  "title": "Picking a checkpoint interval",
+  "subtitle": "70B model on 2,048 GPUs; waste = checkpoint time / interval + interval / (2 x mean time between failures)",
+  "steps": [
+    {
+      "caption": "Llama 3 saw 419 unexpected interruptions in 54 days on 16,384 GPUs, one every 3.1 hours. At the same rate per GPU, 2,048 GPUs fail every 24.7 hours, and a failure loses half an interval of work on average.",
+      "image": "/images/steps/16d-checkpoint-interval/step-01.png"
+    },
+    {
+      "caption": "A checkpoint stores master weights and both Adam moments, 12 bytes per parameter or 827.7 GB. At an assumed 10 GB/s of storage bandwidth, training waits 83 seconds per checkpoint.",
+      "image": "/images/steps/16d-checkpoint-interval/step-02.png"
+    },
+    {
+      "caption": "Writing often wastes time on checkpoints, and writing rarely wastes work after failures. The total waste is the sum of the two curves.",
+      "image": "/images/steps/16d-checkpoint-interval/step-03.png"
+    },
+    {
+      "caption": "The minimum sits where the two terms are equal, at the square root of 2 x 83 s x 24.7 h, which is 64 minutes or about 1,790 steps of 2.1 seconds. Each term is then 2.2% and the total 4.3%.",
+      "image": "/images/steps/16d-checkpoint-interval/step-04.png"
+    },
+    {
+      "caption": "Copying the shards to host memory and writing them in the background cuts the blocking time to about a second. The best interval drops to 7 minutes and the waste to under 0.5%.",
+      "image": "/images/steps/16d-checkpoint-interval/step-05.png"
+    }
+  ]
+}

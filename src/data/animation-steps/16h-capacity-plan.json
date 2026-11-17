@@ -1,0 +1,31 @@
+{
+  "name": "16h capacity plan",
+  "title": "Capacity plan for the 70B",
+  "subtitle": "50 requests per second, 1,000-token prompts, 500-token replies; targets: TTFT under 1 s at p99, TPOT under 30 ms",
+  "steps": [
+    {
+      "caption": "50 requests per second with 1,000-token prompts and 500-token replies make 50,000 prompt tokens and 25,000 output tokens per second.",
+      "image": "/images/steps/16h-capacity-plan/step-01.png"
+    },
+    {
+      "caption": "One replica is 8 H100s with tensor parallelism. Each GPU holds 17.24 GB of weights and keeps 8 GB in reserve, leaving 54.76 GB for cache, 1.34 million tokens across the node.",
+      "image": "/images/steps/16h-capacity-plan/step-02.png"
+    },
+    {
+      "caption": "At 40% of peak a replica prefills 22,941 tokens per second, so prompts alone need 2.18 replicas. Four replicas would spend 54.5% of their time on prefill.",
+      "image": "/images/steps/16h-capacity-plan/step-03.png"
+    },
+    {
+      "caption": "At 4 replicas, guessing a TPOT of 23 ms gives 12.5 x 500 x 0.023 = 144 decoding sequences each. A step then takes 10.4 ms, and dividing by the 45.5% left after prefill gives 22.9 ms, which matches the guess.",
+      "image": "/images/steps/16h-capacity-plan/step-04.png"
+    },
+    {
+      "caption": "A 1,000-token prompt needs 44 ms of a whole replica. Shared with decode and queued behind other prompts, it still finishes in a few hundred milliseconds at most, far inside 1 s.",
+      "image": "/images/steps/16h-capacity-plan/step-05.png"
+    },
+    {
+      "caption": "At a 65-per-second peak, 4 replicas spend 71% of their time on prefill and TPOT jumps to 80 ms. Five replicas hold it at 25 ms, so the plan is 5 replicas, 40 H100s.",
+      "image": "/images/steps/16h-capacity-plan/step-06.png"
+    }
+  ]
+}

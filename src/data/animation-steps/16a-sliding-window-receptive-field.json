@@ -1,0 +1,28 @@
+{
+  "name": "16a sliding window receptive field",
+  "title": "Reach of a sliding window through layers",
+  "subtitle": "12 tokens; each layer lets a token read itself and the two tokens before it",
+  "steps": [
+    {
+      "caption": "Step 1. In layer 1, token 12 reads tokens 10, 11 and 12. The whole layer computes 33 pairs instead of the 78 that full causal attention would need.",
+      "image": "/images/steps/16a-sliding-window-receptive-field/step-01.png"
+    },
+    {
+      "caption": "Step 2. In layer 2, token 12 again reads positions 10 to 12, but token 10 already carries tokens 8 and 9 from layer 1, so token 12 now depends on tokens 8 to 12.",
+      "image": "/images/steps/16a-sliding-window-receptive-field/step-02.png"
+    },
+    {
+      "caption": "Step 3. Each further layer adds two positions: 6, then 4, then 2, and token 1 arrives after layer 6.",
+      "image": "/images/steps/16a-sliding-window-receptive-field/step-03.png"
+    },
+    {
+      "caption": "Step 4. With layer 2 switched to full causal attention, token 12 reads every layer-1 output directly, so token 1 reaches it after two layers instead of six.",
+      "image": "/images/steps/16a-sliding-window-receptive-field/step-04.png"
+    },
+    {
+      "caption": "Step 5. At real scale a window of 4,096 over 32 layers reaches about 131,000 positions on paper, while interleaved global layers reach the whole context within a few layers.",
+      "image": "/images/steps/16a-sliding-window-receptive-field/step-05.png",
+      "heading": "How far back the last token of a 131,072-token context can draw information, layer by layer"
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 // What it does:
 //   - Turns each note into a Markdown page with Starlight frontmatter.
 //   - Copies `![[figure.png]]` embeds into public/images/<series>/ and rewrites them as images.
-//   - Rewrites `[[Note#Heading|alias]]` links to pages in the same series as site links.
+//   - Rewrites `[[Note#Heading|alias]]` links to pages of any published series as site links.
 //     Links to notes outside the series become plain text, since those notes are not published.
 //   - Drops Obsidian-only lines (tag line, Parent link, Last updated).
 
@@ -35,7 +35,6 @@ const SERIES_TITLE = args.title ?? 'LLM Fundamentals';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const OUT_DOCS = path.join(ROOT, 'src/content/docs/tutorials', SERIES);
 const OUT_IMAGES = path.join(ROOT, 'public/images', SERIES);
-const URL_BASE = `/tutorials/${SERIES}/`;
 
 const slugify = (s) =>
   s
@@ -62,29 +61,49 @@ const SHORT_TITLES = {
   '15g': 'Inference',
   '15h': 'LLM Applications',
   '15i': 'Evaluation and Safety',
+  '16a': 'Efficient Attention',
+  '16b': 'Long Context',
+  '16c': 'Parallelism',
+  '16d': 'Numerics and Stability',
+  '16e': 'Mixture of Experts',
+  '16f': 'Efficient Adaptation',
+  '16g': 'Domain Adaptation',
+  '16h': 'Serving Systems',
 };
 
-const files = fs
-  .readdirSync(SRC)
-  .filter((f) => f.endsWith('.md'))
-  .sort();
+// Published series. Links from one published series to another become site links; links to
+// any other note are rendered as plain text, since those notes are not on the site.
+const PUBLISHED = [
+  { folder: '15 LLM Fundamentals', series: 'llm-fundamentals', title: 'LLM Fundamentals' },
+  { folder: '16 LLM Deep Dive', series: 'llm-deep-dive', title: 'LLM Deep Dive' },
+];
 
-// Build the page map first, so links between notes can be resolved.
-const pages = new Map(); // note name -> { slug, title, order, isIndex }
-let order = 1;
-for (const file of files) {
-  const name = file.replace(/\.md$/, '');
-  const isIndex = / - Index$/.test(name);
-  if (isIndex) {
-    pages.set(name, { name, file, slug: '', title: SERIES_TITLE, order: 0, isIndex });
-    continue;
+// Build the page map first, so links between notes can be resolved. `own` marks the pages of
+// the series being imported; the other published series are only mapped for their links.
+const pages = new Map(); // note name -> { slug, title, order, isIndex, base, own }
+function mapSeries(dir, series, seriesTitle, own) {
+  if (!fs.existsSync(dir)) return;
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort();
+  const base = `/tutorials/${series}/`;
+  let order = 1;
+  for (const file of files) {
+    const name = file.replace(/\.md$/, '');
+    const isIndex = / - Index$/.test(name);
+    if (isIndex) {
+      pages.set(name, { name, file, slug: '', title: seriesTitle, order: 0, isIndex, base, own });
+      continue;
+    }
+    const { code, title } = parseNoteName(name);
+    pages.set(name, { name, file, slug: slugify(title), title: SHORT_TITLES[code] ?? title, order: order++, isIndex, base, own });
   }
-  const { code, title } = parseNoteName(name);
-  pages.set(name, { name, file, slug: slugify(title), title: SHORT_TITLES[code] ?? title, order: order++, isIndex });
 }
+for (const s of PUBLISHED) {
+  if (s.series !== SERIES) mapSeries(path.join(VAULT, s.folder), s.series, s.title, false);
+}
+mapSeries(SRC, SERIES, SERIES_TITLE, true);
 
 const pageUrl = (page, heading) => {
-  const base = page.slug ? `${URL_BASE}${page.slug}/` : URL_BASE;
+  const base = page.slug ? `${page.base}${page.slug}/` : page.base;
   return heading ? `${base}#${new GithubSlugger().slug(heading.replace(/^\d+\.\s*/, ''))}` : base;
 };
 
@@ -166,6 +185,36 @@ const STEP_TITLES = {
   '15h lora forward pass': 'LoRA forward pass',
   '15i pass at k walkthrough': 'pass@k',
   '15i calibration error walkthrough': 'Calibration error',
+  '16a cache bytes per token': 'Cache bytes per token',
+  '16a sliding window receptive field': 'Sliding-window reach',
+  '16a online softmax rescaling': 'Online softmax',
+  '16b interpolation versus ntk scaling': 'RoPE extension',
+  '16b segment recurrence': 'Segment recurrence',
+  '16b retrieval versus full context cost': 'Retrieval versus long context',
+  '16c ring all reduce': 'Ring all-reduce',
+  '16c zero3 sharded step': 'ZeRO-3 step',
+  '16c tensor parallel mlp': 'Tensor-parallel MLP',
+  '16c pipeline 1f1b': '1F1B pipeline',
+  '16f pcgrad projection': 'PCGrad projection',
+  '16f lora memory budget': 'LoRA memory budget',
+  '16f nf4 block quantization': 'NF4 quantization',
+  '16f batched adapters': 'Batched adapters',
+  '16d rounding into formats': 'Rounding into bf16 and FP8',
+  '16d dynamic loss scaling': 'Dynamic loss scaling',
+  '16d z-loss three logits': 'z-loss',
+  '16d checkpoint interval': 'Checkpoint interval',
+  '16e load balancing loss': 'Load-balancing loss',
+  '16e capacity and dropped tokens': 'Capacity and dropped tokens',
+  '16e expert bias balancing': 'Bias-based balancing',
+  '16e all to all dispatch': 'All-to-all dispatch',
+  '16g new token embeddings': 'New token embeddings',
+  '16g replay exposure': 'Replay exposure',
+  '16g domain loss and task': 'Domain loss against task quality',
+  '16g temporal split leak': 'Temporal split',
+  '16h roofline placement': 'Roofline placement',
+  '16h chunked prefill schedule': 'Chunked prefill',
+  '16h prefix tree reuse': 'Prefix tree reuse',
+  '16h capacity plan': 'Capacity plan',
 };
 
 function stepFigure(file) {
@@ -195,7 +244,7 @@ function stepFigure(file) {
     `<details class="cm-steps not-content" data-anim="${slugify(data.name)}">`,
     `<summary class="cm-steps-head"><span class="cm-steps-title"><span class="cm-steps-label">Step-by-step example:</span> ${richText(STEP_TITLES[data.name] ?? data.title)}</span>` +
       `<span class="cm-collapse-hint" aria-hidden="true"></span>` +
-      (data.subtitle ? `<span class="cm-steps-sub">${richText(replaceSectionRefsPlain(data.subtitle))}</span>` : '') +
+      (stepIntro(slugify(data.name), data) ? `<span class="cm-steps-sub">${richText(replaceSectionRefsPlain(stepIntro(slugify(data.name), data)))}</span>` : '') +
       `</summary>`,
     `<ol class="cm-steps-list">`,
     ...items,
@@ -401,6 +450,66 @@ function tokenTables(body) {
 }
 
 
+// What each step-by-step example is about, shown under its title: the situation and its starting
+// numbers in one or two plain sentences. Keyed by the exported step set (src/data/animation-steps/<key>.json).
+// Falls back to the animation's own subtitle, which is written for the frame and is often just a list.
+const stepIntro = (key, data) => STEP_INTROS[key] ?? data.subtitle;
+const STEP_INTROS = {
+  '15a-perplexity-walkthrough': 'A model scores the sentence "the cat sat", giving the token that really came next probability 0.2, then 0.1, then 0.3. The example turns those three probabilities into an average loss in nats and then into a perplexity.',
+  '15a-softmax-walkthrough': 'After the context "the cat", four candidate tokens get raw scores of 2.0, 1.0, 0.5 and −1.0. The example turns them into probabilities that sum to one, then shows how temperature sharpens or flattens them.',
+  '15b-bpe-merges': 'A tiny training corpus holds low 5 times, lower 2 times, lowest 3 times and newest 6 times. Byte pair encoding starts from single letters and keeps merging the most frequent neighbouring pair into a new token.',
+  '15b-embedding-lookup': 'A five-token vocabulary gives each token a row of 3 learned numbers. The example fetches the vector for "cat", id 1, once by multiplying a one-hot vector by the table and once by reading the row directly.',
+  '15c-qkv-walkthrough': 'In the phrase "the river bank", each token is a vector of just two numbers so every product fits on screen. The token bank turns into a query, compares it with all three keys, and comes out carrying mostly the information of river.',
+  '15c-rope-relative-angle': 'The query of bank and the keys from the attention example are rotated by their positions, 45 degrees per step. Placing the same phrase at different points in a sentence shows that the score depends only on how far apart two tokens are.',
+  '15d-mixture-of-experts-routing': 'A layer with four expert feed-forward networks keeps the top two for each token. The first token is followed from its router scores to its weighted output, then five more tokens show how unevenly the work spreads over the experts.',
+  '15d-residual-stream-accumulation': 'One token enters as the two-number vector (1, 0), and three blocks each add a small vector to it instead of replacing it. The example tracks the running sum and shows that each block\'s contribution can still be read off and removed.',
+  '15e-adamw-two-steps': 'One parameter starts at 0.5 and sees a gradient of 2.0, then 0.5, with learning rate 0.01 and weight decay 0.1. Two AdamW updates are worked by hand and compared with plain gradient descent on the same gradients.',
+  '15e-minhash-shingles': 'Two sentences that differ in a single word are cut into overlapping three-word shingles. Four hash functions turn each sentence into a short signature, and the matching minimums estimate how much the two overlap without comparing them word by word.',
+  '15e-sequence-packing': 'Four short documents, each closed by an end-of-document token, have to fill training windows of 8 tokens. The example compares padding each document with packing them back to back, then adds the mask that stops packed documents from reading each other.',
+  '15f-dpo-one-pair': 'One prompt has a preferred answer and a rejected one, each scored by the model being trained and by a frozen copy of where it started. The example works one DPO update from those four log probabilities, with no reward model and no sampling.',
+  '15f-grpo-group-advantages': 'The model answers "what is 17 × 24?" four times, and a checker marks an answer right when it equals 408. Each answer\'s advantage comes from comparing its reward with the rest of the group, with no critic network.',
+  '15g-paged-block-table': 'Three requests, A, B and C, share a key-value cache of 10 blocks that hold 4 tokens each. A block table hands each request a block only when it needs one, and the example follows it as requests grow, finish and free their blocks.',
+  '15g-speculative-accept-reject': 'After "My coffee is", a small draft model guesses four tokens ahead and the large target model checks them in one pass. Each guess is kept or rejected by comparing the two models\' probabilities, and the example counts how many tokens a round yields on average.',
+  '15g-temperature-reshaping': 'After "My coffee is too", six candidate words have logits from 3.0 down to 0.0. Their probabilities are recomputed at temperatures 1, 0.5, 2 and close to 0, which reshape the distribution but never change the order.',
+  '15h-cosine-retrieval': 'A customer asks about returning a damaged item, and three help-center chunks compete to answer. Toy embeddings with three topic scores, returns, item condition and delivery, rank the chunks by cosine similarity and pass the top two to the model.',
+  '15h-lora-forward-pass': 'A frozen 3 by 3 weight matrix gets a rank-1 LoRA path beside it, made of two thin matrices. One input runs through both paths before and after training, and the trained numbers are counted against a full update.',
+  '15i-calibration-error-walkthrough': 'A model answers 100 questions and states a confidence for each. The answers are grouped into three confidence bins, and each bin\'s average confidence is compared with how often its answers were actually right.',
+  '15i-pass-at-k-walkthrough': 'A coding model is sampled 10 times on one problem, and 3 of the answers pass the unit tests. The example works out the chance that a user who gets k attempts sees at least one passing answer.',
+  '15w-feed-forward-pass': 'A token with the two-number vector (1, −1) goes through a feed-forward network that widens it to 4 hidden numbers and brings it back to 2. ReLU and GELU are applied side by side to show where they differ.',
+  '15w-layernorm-and-rmsnorm': 'The vector (1, 3, −1, 5) is normalized twice, once by LayerNorm and once by RMSNorm, with a gain of 1 and no offset. LayerNorm subtracts the mean first and RMSNorm skips that step.',
+  '15w-vocabulary-size-comparison': 'The reference Llama 2 model\'s 32,000-token vocabulary is compared with a 128,000-token one on the same 1,000 words of chat text. The comparison counts tokens, embedding parameters, and how often each row of the table gets trained.',
+  '16a-cache-bytes-per-token': 'The key-value cache that one token leaves behind is priced in bytes under plain multi-head attention on the 7B shape, under grouped-query attention with 8 key-value heads, and under the latent attention of DeepSeek-V3.',
+  '16a-online-softmax-rescaling': 'One query attends to four keys with scores 1, 2, 4 and 3 and values 10, 20, 30 and 40, but only two keys fit in fast memory at a time. The exact softmax output is built tile by tile by rescaling a running sum.',
+  '16a-sliding-window-receptive-field': 'Twelve tokens pass through layers in which each token reads only itself and the two tokens before it. The example tracks how far back token 12 can see after each layer and how many pairs each layer computes.',
+  '16b-interpolation-versus-ntk-scaling': 'A model trained on 4,096-token windows is stretched to read 131,072 tokens, 32 times longer. Three of the 64 rotation frequencies in one 128-wide attention head show how position interpolation and NTK-aware scaling keep the angles inside the range seen in training.',
+  '16b-retrieval-versus-full-context-cost': 'One question about net debt in a 96,000-token annual filing is answered on one H100 once with the whole filing in the prompt and once with six retrieved chunks of 1,000 tokens. Both are priced in seconds and memory, then in the chance that retrieval misses evidence.',
+  '16b-segment-recurrence': 'A debt figure sits in the first token of a document read in three-token segments, where each layer also sees a memory of the segment before. With two layers and attention that simply averages, the example traces how far the figure travels.',
+  '16c-pipeline-1f1b': 'A model split into four pipeline stages, one per GPU, trains on a batch cut into eight micro-batches. Each forward and backward pass is scheduled slot by slot, and the example measures how long the stages sit idle.',
+  '16c-ring-all-reduce': 'Four GPUs each hold a gradient vector of four numbers, and every GPU needs their sum. Chunks travel around a ring, summed in three steps and copied back in three more, and the example counts the bytes each GPU sends.',
+  '16c-tensor-parallel-mlp': 'A two-layer MLP with a hidden width of 4 is split across two GPUs, each holding half of each weight matrix. The input (1, 2) runs through both halves, and one sum at the end recovers exactly what a single GPU would compute.',
+  '16c-zero3-sharded-step': 'A two-layer model with four weights trains on two GPUs, and each GPU stores only two of the weights with their optimizer state. One training step is followed through gathering weights before use, sharing gradients, and updating only the owned weights.',
+  '16d-checkpoint-interval': 'The 70B training run on 2,048 GPUs expects a failure about every 25 hours, and every checkpoint pauses training while it is written. The example finds the save interval that wastes the least time, then shows how saving in the background shortens it.',
+  '16d-rounding-into-formats': 'Four numbers, 1 + 2^-9, 0.1, 500 and 0.0009, are rounded into bf16 and the two FP8 formats. The example shows how far apart neighbouring values sit in each format, and where a value overflows or rounds to zero.',
+  '16d-dynamic-loss-scaling': 'Gradients as small as 2e-8 round to zero in fp16, whose positive numbers run from about 6e-8 to 65,504. The loss is multiplied by a scale that halves after an overflow and doubles after clean steps, followed over five training steps.',
+  '16d-z-loss-three-logits': 'A three-token output with logits 2, 1 and 0 is trained toward the first token. The example computes the cross entropy and the small z-loss penalty on the softmax normalizer, then shows why letting the logits drift upward costs precision in bf16.',
+  '16e-all-to-all-dispatch': 'Four GPUs each hold one expert and two of eight tokens, and every token has to reach the expert its router picked. The dispatch exchange sends the tokens out, the combine exchange brings the results back, and the example counts the bytes on the wire.',
+  '16e-capacity-and-dropped-tokens': 'The same eight tokens are routed top-1 and land unevenly on four experts: 4, 2, 1 and 1. Each expert gets a fixed number of slots set by the capacity factor, and the example counts dropped tokens and wasted slots at two factors.',
+  '16e-expert-bias-balancing': 'The same eight tokens start out overloading expert 1 with 4 tokens against a fair share of 2. Instead of an extra loss, each expert gets a bias on its routing score, nudged by 0.05 per step until the load evens out.',
+  '16e-load-balancing-loss': 'Eight tokens are routed top-1 across four experts, and expert 1 receives half of them. The Switch Transformer balancing loss is computed from each expert\'s share of tokens and mean router probability, showing which expert it pushes hardest.',
+  '16f-batched-adapters': 'Three tokens in one batch come from requests that use two different LoRA adapters, a legal one and a medical one, on the same frozen base matrix. The base is applied once to all three, and each token then adds its own adapter\'s path.',
+  '16f-lora-memory-budget': 'Rank 16 LoRA adapters go on all seven weight matrices in each of the reference 7B model\'s 32 blocks. The example counts the trained parameters, then adds up training memory, optimizer state and the saved adapter size against full fine-tuning.',
+  '16f-nf4-block-quantization': 'Eight small weights, between −0.031 and 0.045, are stored in 4 bits each with the NF4 format from QLoRA. The block is scaled by its largest weight, each value is rounded to one of 16 levels, and the example measures the error and what the scale costs in bits.',
+  '16f-pcgrad-projection': 'Two tasks share one model, and their gradients (4, 0) and (−1, 1) point more than 90 degrees apart, so a plain summed step makes task B worse. PCGrad removes the conflicting part of each gradient before adding them.',
+  '16g-domain-loss-and-task': 'The reference Llama 2 model is scored before and after 20 billion tokens of continued pretraining on filings, once by held-out loss and once by accuracy at pulling figures from a 10-Q. Splitting the loss by token type shows why it falls while the task gets worse.',
+  '16g-new-token-embeddings': 'Three finance terms such as EBITDA, each cut into three pieces by the Llama 2 tokenizer, get whole-word tokens of their own. Their new input and output rows are built from the rows of their pieces, using rows of 3 numbers in place of 4,096.',
+  '16g-replay-exposure': 'A 20-billion-token continued pretraining run draws on 10 billion tokens of filings and call transcripts, mixed with replayed general text. The example works out how often the run reads the domain data at replay ratios of 0, 25 and 50 percent.',
+  '16g-temporal-split-leak': 'A test set of 400 questions about second-quarter 2025 figures from 100 companies is answered from 10-Q filings. A date cutoff that looks clean still leaks most answers through earlier earnings calls, and the example finds the cutoff and holdout that give an honest score.',
+  '16h-capacity-plan': 'A product sends the 70B model 50 requests a second, each with a 1,000-token prompt and a 500-token reply, and promises a first token within a second and a new token every 30 ms. The example sizes the number of 8-GPU replicas, including a traffic peak.',
+  '16h-chunked-prefill-schedule': 'The 7B model on one H100 is generating for 32 users when a 2,048-token prompt arrives. Running the prompt in one piece is compared with cutting it into chunks between decode steps, measured by the longest stall the 32 users see.',
+  '16h-prefix-tree-reuse': 'Three requests to the 7B model start with the same 1,024-token system prompt, and the third continues the first conversation. A prefix tree stores each shared run of cached tokens once, and the example counts the prompt tokens computed and the cache memory saved.',
+  '16h-roofline-placement': 'The 7B model decodes on one H100 at batch sizes of 1, 64 and 256, with empty contexts so the weights are the only bytes read. Each batch is placed on the roofline to see whether memory bandwidth or arithmetic sets its speed.',
+};
+
 // Worked walkthroughs. A "###" walkthrough whose steps are a numbered list becomes one
 // step-by-step card: each step keeps the note's own text (math rendered) and gets a figure,
 // taken from the animation that replays the same example or from 15w-gifs.py. `frames` maps
@@ -408,10 +517,10 @@ function tokenTables(body) {
 // appends further frames, with their captions, for content the text steps do not cover.
 // `replaces` removes the separate animation card, which would otherwise repeat the example.
 const WALKTHROUGHS = {
-  'The 32,000 against 128,000 comparison': { title: 'Vocabulary size comparison', steps: '15w-vocabulary-size-comparison', frames: [1, 2, 3, 4, 5] },
+  'Comparison of 32,000 and 128,000 vocabularies': { title: 'Vocabulary size comparison', steps: '15w-vocabulary-size-comparison', frames: [1, 2, 3, 4, 5] },
   'A lookup computed both ways': { title: 'Embedding lookup', steps: '15b-embedding-lookup', frames: [1, null, 4, 5, 6], replaces: true },
   'A complete calculation on three tokens': { title: 'Attention on three tokens', steps: '15c-qkv-walkthrough', frames: [4, 5, 6, 7, 8, 10], replaces: true },
-  'A rotation worked to numbers': { title: 'Rotary position embedding', steps: '15c-rope-relative-angle', frames: [2, 3, 4, 5], extra: [6, 7], replaces: true },
+  'RoPE on a sentence': { title: 'Rotary position embedding', steps: '15c-rope-relative-angle', frames: [2, 3, 4, 5], extra: [6], replaces: true },
   'Three blocks on a two-number stream': { title: 'Residual stream', steps: '15d-residual-stream-accumulation', frames: [1, 2, 4, 5], replaces: true },
   'One vector normalized both ways': { title: 'LayerNorm versus RMSNorm', steps: '15w-layernorm-and-rmsnorm', frames: [1, 2, 3, 4] },
   'A feed-forward pass on a two-number token': { title: 'Feed-forward pass', steps: '15w-feed-forward-pass', frames: [1, 2, 3, 4] },
@@ -421,6 +530,37 @@ const WALKTHROUGHS = {
   'A cosine ranking worked by hand': { title: 'Cosine retrieval', steps: '15h-cosine-retrieval', frames: [2, 5, 9, 10], replaces: true },
   'A rank one LoRA layer worked by hand': { title: 'LoRA forward pass', steps: '15h-lora-forward-pass', frames: [4, 5, 6, 7, 10], extra: [11], replaces: true },
   'A pass at k calculation': { title: 'pass@k', steps: '15i-pass-at-k-walkthrough', frames: [1, 2, 3, 4, 5], extra: [6], replaces: true },
+  // LLM Deep Dive
+  'Cache bytes for one token under GQA and MLA': { title: 'Cache bytes per token', steps: '16a-cache-bytes-per-token', frames: [1, 2, 3, 4, 5] },
+  'Reach of a sliding window through layers': { title: 'Sliding-window reach', steps: '16a-sliding-window-receptive-field', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Online softmax over two tiles': { title: 'Online softmax', steps: '16a-online-softmax-rescaling', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Three frequencies under two extension rules': { title: 'RoPE extension', steps: '16b-interpolation-versus-ntk-scaling', frames: [1, 2, 3, 4, 5], replaces: true },
+  'A segment recurrence state update': { title: 'Segment recurrence', steps: '16b-segment-recurrence', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'The cost of one question both ways': { title: 'Retrieval versus long context', steps: '16b-retrieval-versus-full-context-cost', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'Ring all-reduce on four GPUs': { title: 'Ring all-reduce', steps: '16c-ring-all-reduce', frames: [1, 2, 3, 4, 5, 6, 7], replaces: true },
+  'A sharded ZeRO-3 step': { title: 'ZeRO-3 step', steps: '16c-zero3-sharded-step', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'A tensor-parallel MLP on two GPUs': { title: 'Tensor-parallel MLP', steps: '16c-tensor-parallel-mlp', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'Filling a four-stage pipeline with 1F1B': { title: '1F1B pipeline', steps: '16c-pipeline-1f1b', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'PCGrad on two conflicting gradients': { title: 'PCGrad projection', steps: '16f-pcgrad-projection', frames: [1, 2, 3, 4, 5], replaces: true },
+  'The 7B at rank 16 on every matrix': { title: 'LoRA memory budget', steps: '16f-lora-memory-budget', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'NF4 on a block of eight weights': { title: 'NF4 quantization', steps: '16f-nf4-block-quantization', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'Two adapters in one batch': { title: 'Batched adapters', steps: '16f-batched-adapters', frames: [1, 2, 3, 4, 5, 6], replaces: true },
+  'Rounding numbers into bf16 and FP8': { title: 'Rounding into bf16 and FP8', steps: '16d-rounding-into-formats', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Dynamic loss scaling over five steps': { title: 'Dynamic loss scaling', steps: '16d-dynamic-loss-scaling', frames: [1, 2, 3, 4, 5], replaces: true },
+  'z-loss on three logits': { title: 'z-loss', steps: '16d-z-loss-three-logits', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Picking a checkpoint interval': { title: 'Checkpoint interval', steps: '16d-checkpoint-interval', frames: [1, 2, 3, 4, 5], replaces: true },
+  'A balancing loss on eight tokens': { title: 'Load-balancing loss', steps: '16e-load-balancing-loss', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Capacity on the same eight tokens': { title: 'Capacity and dropped tokens', steps: '16e-capacity-and-dropped-tokens', frames: [1, 2, 3, 4], replaces: true },
+  'Bias updates over three steps': { title: 'Bias-based balancing', steps: '16e-expert-bias-balancing', frames: [1, 2, 3, 4], replaces: true },
+  'Dispatch and combine across four GPUs': { title: 'All-to-all dispatch', steps: '16e-all-to-all-dispatch', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Three new finance tokens': { title: 'New token embeddings', steps: '16g-new-token-embeddings', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Replay exposure over a 20B-token run': { title: 'Replay exposure', steps: '16g-replay-exposure', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Two checkpoints scored two ways': { title: 'Domain loss against task quality', steps: '16g-domain-loss-and-task', frames: [1, 2, 3, 4, 5], replaces: true },
+  'A temporal split that leaks and one that does not': { title: 'Temporal split', steps: '16g-temporal-split-leak', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Three decode batch sizes on the roofline': { title: 'Roofline placement', steps: '16h-roofline-placement', frames: [1, 2, 3, 4, 5], replaces: true },
+  'A chunked prefill schedule': { title: 'Chunked prefill', steps: '16h-chunked-prefill-schedule', frames: [1, 2, 3, 4, 5], replaces: true },
+  'Three requests sharing one system prompt': { title: 'Prefix tree reuse', steps: '16h-prefix-tree-reuse', frames: [1, 2, 3, 4], replaces: true },
+  'A capacity plan for the 70B': { title: 'Capacity plan', steps: '16h-capacity-plan', frames: [1, 2, 3, 4, 5, 6] },
 };
 
 // Paragraphs that explain a step-by-step example go inside its card, so a reader who leaves the
@@ -491,7 +631,10 @@ function mdInline(md) {
 function walkthroughCards(body) {
   let lines = body.split('\n');
   for (const [heading, cfg] of Object.entries(WALKTHROUGHS)) {
-    const h = lines.indexOf(`### ${heading}`);
+    // Worked examples are titled "### Practice: <name>" in the notes. WALKTHROUGHS is keyed by <name>,
+    // which also gives the card its data-walkthrough id.
+    let h = lines.indexOf(`### Practice: ${heading}`);
+    if (h === -1) h = lines.indexOf(`### ${heading}`);
     if (h === -1) continue;
     const json = path.join(STEPS_DIR, `${cfg.steps}.json`);
     if (!fs.existsSync(json)) {
@@ -526,7 +669,7 @@ function walkthroughCards(body) {
       `<details class="cm-steps not-content" data-walkthrough="${slugify(heading)}">`,
       `<summary class="cm-steps-head"><span class="cm-steps-title"><span class="cm-steps-label">Step-by-step example:</span> ${escapeHtml(cfg.title)}</span>` +
         `<span class="cm-collapse-hint" aria-hidden="true"></span>` +
-        (data.subtitle ? `<span class="cm-steps-sub">${richText(replaceSectionRefsPlain(data.subtitle))}</span>` : '') +
+        (stepIntro(cfg.steps, data) ? `<span class="cm-steps-sub">${richText(replaceSectionRefsPlain(stepIntro(cfg.steps, data)))}</span>` : '') +
         `</summary>`,
       `<ol class="cm-steps-list">`,
       ...steps.map(
@@ -584,6 +727,29 @@ function unwrapCallouts(text) {
   const lines = text.split('\n');
   const out = [];
   for (let i = 0; i < lines.length; i++) {
+    // A "> [!model] Title" callout becomes an always-open highlighted card. Its anchor is the
+    // Obsidian block id on its own line after the callout ("^reference-llama-2-model"), so links
+    // written as [[Note#^reference-llama-2-model|...]] work in the vault and on the site alike.
+    const card = lines[i].match(/^>\s*\[!model\]\s*(.*)$/i);
+    if (card) {
+      let j = i + 1;
+      const inner = [];
+      while (j < lines.length && /^>/.test(lines[j])) inner.push(lines[j++].replace(/^> ?/, ''));
+      let k = j;
+      while (k < lines.length && lines[k].trim() === '') k++;
+      const blockId = lines[k]?.match(/^\^([\w-]+)\s*$/)?.[1];
+      const id = blockId ?? slugify(card[1]);
+      out.push(
+        `<aside class="cm-model-card" id="${id}">`,
+        `<p class="cm-model-title"><span class="cm-model-label">Running example</span>${escapeHtml(card[1].trim())}</p>`,
+        '',
+        ...inner,
+        '',
+        '</aside>',
+      );
+      i = blockId ? k : j - 1;
+      continue;
+    }
     const m = lines[i].match(/^>\s*\[!deep-dive\][-+]?\s*(.*)$/i);
     if (!m) {
       out.push(lines[i]);
@@ -701,15 +867,18 @@ const WEB_WORDING = [
   [/The first pair in each row is the one line 6 merges in that round\./g, 'The first pair in each row, outlined, is the one line 6 merges in that round.'],
 ];
 
-// "15a" -> "chapter 1" in prose. Leaves image paths and URLs alone.
+// "15a" -> "chapter 1" in prose, for the codes of the series being imported (its folder number).
+// Leaves image paths and URLs alone.
+const SERIES_NO = path.basename(SRC).match(/^(\d+)/)?.[1] ?? '15';
 const chapterNo = (letter) => letter.charCodeAt(0) - 96;
 function chapterWords(text) {
+  const c = () => `${SERIES_NO}([a-z])`;
   return text
-    .replace(/(?<=[\s(])15([a-i]), 15([a-i]), and 15([a-i])(?=[\s,.;:)])/g, (_, a, b, c) =>
-      `chapters ${chapterNo(a)}, ${chapterNo(b)}, and ${chapterNo(c)}`)
-    .replace(/(?<=[\s(])15([a-i]) (to|and) 15([a-i])(?=[\s,.;:)])/g, (_, a, w, b) =>
+    .replace(new RegExp(`(?<=[\\s(])${c()}, ${c()}, and ${c()}(?=[\\s,.;:)])`, 'g'), (_, a, b, d) =>
+      `chapters ${chapterNo(a)}, ${chapterNo(b)}, and ${chapterNo(d)}`)
+    .replace(new RegExp(`(?<=[\\s(])${c()} (to|and) ${c()}(?=[\\s,.;:)])`, 'g'), (_, a, w, b) =>
       `chapters ${chapterNo(a)} ${w} ${chapterNo(b)}`)
-    .replace(/(?<=[\s(])15([a-i])(?=[\s,.;:)])/g, (_, a) => `chapter ${chapterNo(a)}`);
+    .replace(new RegExp(`(?<=[\\s(])${c()}(?=[\\s,.;:)])`, 'g'), (_, a) => `chapter ${chapterNo(a)}`);
 }
 
 function convertBody(body) {
@@ -818,7 +987,7 @@ function firstParagraph(body) {
 
 // The index note's Topics table has one "| [[Note]] | summary |" row per chapter.
 // Use that summary as the chapter's description.
-const indexPage = [...pages.values()].find((p) => p.isIndex);
+const indexPage = [...pages.values()].find((p) => p.own && p.isIndex);
 const summaries = new Map();
 if (indexPage) {
   const indexRaw = fs.readFileSync(path.join(SRC, indexPage.file), 'utf8');
@@ -835,6 +1004,7 @@ fs.mkdirSync(OUT_DOCS, { recursive: true });
 fs.mkdirSync(OUT_IMAGES, { recursive: true });
 
 for (const page of pages.values()) {
+  if (!page.own) continue;
   const raw = fs.readFileSync(path.join(SRC, page.file), 'utf8');
   const updated = raw.match(/\*\*Last updated:\s*(\d{4}-\d{2}-\d{2})\*\*/)?.[1];
   const withoutH1 = raw.replace(/^#\s+.*\n/, '');
@@ -862,7 +1032,7 @@ for (const page of pages.values()) {
   fs.writeFileSync(outFile, `${frontmatter}\n${body}\n`);
 }
 
-console.log(`Imported ${pages.size} pages into ${path.relative(ROOT, OUT_DOCS)}`);
+console.log(`Imported ${[...pages.values()].filter((p) => p.own).length} pages into ${path.relative(ROOT, OUT_DOCS)}`);
 console.log(`Copied ${copiedFigures.size} figures into ${path.relative(ROOT, OUT_IMAGES)}`);
 if (missingFigures.length) console.warn(`Missing figures: ${missingFigures.join(', ')}`);
 if (droppedLinks.size) console.log(`Unpublished link targets rendered as text: ${droppedLinks.size}`);

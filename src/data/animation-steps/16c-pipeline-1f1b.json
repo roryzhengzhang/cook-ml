@@ -1,0 +1,31 @@
+{
+  "name": "16c pipeline 1f1b",
+  "title": "One-forward-one-backward schedule on four stages",
+  "subtitle": "Four pipeline stages, eight micro-batches; forward (F) and backward (B) passes drawn one slot each",
+  "steps": [
+    {
+      "caption": "Slots 1 to 4 fill the pipeline: micro-batch 1 moves down one stage per slot while stage 1 keeps starting new forwards. Stage 1 now holds activations for 4 micro-batches.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-01.png"
+    },
+    {
+      "caption": "Slot 5: stage 4 has the loss for micro-batch 1, so it runs that backward pass at once instead of starting another forward.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-02.png"
+    },
+    {
+      "caption": "Slots 6 to 8: the backward of micro-batch 1 climbs to stage 1, freeing its activations at each stage. Stages 3 and 2 already alternate one forward with one backward.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-03.png"
+    },
+    {
+      "caption": "Slots 9 to 16 are the steady state: every stage is busy, alternating one forward and one backward, and stage 1 never holds more than 4 micro-batches at once.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-04.png"
+    },
+    {
+      "caption": "Slots 17 to 22 drain the pipeline: the last backwards climb up while the lower stages run out of work.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-05.png"
+    },
+    {
+      "caption": "Each stage is busy 16 of 22 slots, so the bubble is 6/22 = 3/11 = 27%, the same as (p - 1)/(m + p - 1). Running all 8 forwards first gives the same bubble but makes stage 1 hold 8 micro-batches, not 4.",
+      "image": "/images/steps/16c-pipeline-1f1b/step-06.png"
+    }
+  ]
+}

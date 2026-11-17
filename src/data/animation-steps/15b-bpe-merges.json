@@ -45,37 +45,37 @@
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 1, w+e: applies, giving s l o we s t.",
+      "caption": "Merge 1, w+e, applies and gives s l o we s t.",
       "image": "/images/steps/15b-bpe-merges/step-11.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 2, l+o: applies, giving s lo we s t.",
+      "caption": "Merge 2, l+o, applies and gives s lo we s t.",
       "image": "/images/steps/15b-bpe-merges/step-12.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 3, we+s: applies, giving s lo wes t.",
+      "caption": "Merge 3, we+s, applies and gives s lo wes t.",
       "image": "/images/steps/15b-bpe-merges/step-13.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 4, wes+t: applies, giving s lo west.",
+      "caption": "Merge 4, wes+t, applies and gives s lo west.",
       "image": "/images/steps/15b-bpe-merges/step-14.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 5, n+e: no adjacent n followed by e, so nothing changes.",
+      "caption": "Merge 5, n+e, does not apply, because no n sits right before e, so nothing changes.",
       "image": "/images/steps/15b-bpe-merges/step-15.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 6, ne+west: no adjacent ne followed by west, so nothing changes.",
+      "caption": "Merge 6, ne+west, does not apply, because no ne sits right before west, so nothing changes.",
       "image": "/images/steps/15b-bpe-merges/step-16.png",
       "heading": "Encoding replays the merge list in training order"
     },
     {
-      "caption": "Merge 7, lo+w: no adjacent lo followed by w, so nothing changes. Merge 7 cannot fire because merge 1 already joined w to e, which is why order matters.",
+      "caption": "Merge 7, lo+w, does not apply, because no lo sits right before w, so nothing changes. Merge 7 cannot fire because merge 1 already joined w to e, which is why order matters.",
       "image": "/images/steps/15b-bpe-merges/step-17.png",
       "heading": "Encoding replays the merge list in training order"
     },

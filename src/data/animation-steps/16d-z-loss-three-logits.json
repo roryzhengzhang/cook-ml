@@ -1,0 +1,27 @@
+{
+  "name": "16d z-loss three logits",
+  "title": "z-loss on three logits",
+  "subtitle": "Softmax over logits; cross entropy with the first token correct; z-loss = 0.0001 times (log Z) squared",
+  "steps": [
+    {
+      "caption": "Logits 2, 1 and 0 give probabilities 0.665, 0.245 and 0.090. The log of the softmax normalizer, log Z, is 2.408.",
+      "image": "/images/steps/16d-z-loss-three-logits/step-01.png"
+    },
+    {
+      "caption": "Adding 100 to every logit leaves the probabilities and the cross entropy of 0.408 unchanged, because the cross entropy gradient, -0.335, 0.245 and 0.090, sums to zero. Only log Z moves, to 102.408.",
+      "image": "/images/steps/16d-z-loss-three-logits/step-02.png"
+    },
+    {
+      "caption": "The z-loss 0.0001 x (log Z)^2 is 0.00058 for the original logits and 1.049 for the shifted ones, so it is the only term that tells the two apart.",
+      "image": "/images/steps/16d-z-loss-three-logits/step-03.png"
+    },
+    {
+      "caption": "Its gradient is 2 x 0.0001 x log Z x p, here 0.0136, 0.0050 and 0.0018. All three are positive, so a gradient step lowers every logit and pulls log Z back toward 0.",
+      "image": "/images/steps/16d-z-loss-three-logits/step-04.png"
+    },
+    {
+      "caption": "Drift costs precision. In bf16 the gap between neighbouring numbers is 0.0156 near 2, 0.5 near 102 and 4 near 1,000, so large logits can no longer hold small differences.",
+      "image": "/images/steps/16d-z-loss-three-logits/step-05.png"
+    }
+  ]
+}

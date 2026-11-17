@@ -1245,3 +1245,52 @@ html .cm-scrolling {
 :is(h2#topics, .sl-heading-wrapper:has(#topics)) + table td:first-child {
   white-space: nowrap;
 }
+
+/* ---------- Running example model card (a "> [!model]" callout in the notes) ---------- */
+
+.sl-markdown-content .cm-model-card {
+  margin-block: 2rem;
+  padding: 1.1rem 1.25rem 0.6rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-inline-start: 4px solid var(--cm-brand);
+  border-radius: 0.75rem;
+  background: var(--cm-surface-tint);
+  scroll-margin-top: calc(var(--sl-nav-height) + 1.5rem);
+}
+
+.sl-markdown-content .cm-model-card:target {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cm-brand) 25%, transparent);
+}
+
+.sl-markdown-content .cm-model-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--sl-color-white);
+}
+
+.sl-markdown-content .cm-model-label {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sl-color-text-accent);
+  background: var(--sl-color-accent-low);
+}
+
+.sl-markdown-content .cm-model-card > p:not(.cm-model-title) {
+  font-size: 0.95rem;
+  color: var(--sl-color-gray-2);
+}
+
+.sl-markdown-content .cm-model-card table {
+  display: table;
+  width: 100%;
+  margin-block: 0.9rem 0.6rem;
+  background: var(--sl-color-bg);
+}

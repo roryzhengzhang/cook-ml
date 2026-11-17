@@ -1,0 +1,23 @@
+{
+  "name": "16e expert bias balancing",
+  "title": "Per-expert bias updates over three training steps",
+  "subtitle": "Selection uses score + bias; the gate weight uses the score alone; bias step 0.05 (a teaching value)",
+  "steps": [
+    {
+      "caption": "Step 1. All biases start at 0, so selection matches plain top-1 and the loads are 4, 2, 1, 1. Expert 1 is over the mean of 2 and loses 0.05, while experts 3 and 4 are under and gain 0.05.",
+      "image": "/images/steps/16e-expert-bias-balancing/step-01.png"
+    },
+    {
+      "caption": "Step 2. Token 4 now compares 0.388 - 0.05 = 0.338 for expert 1 with 0.358 + 0.05 = 0.408 for expert 3, so it moves to expert 3. Loads become 3, 2, 2, 1, and experts 1 and 4 move another 0.05.",
+      "image": "/images/steps/16e-expert-bias-balancing/step-02.png"
+    },
+    {
+      "caption": "Step 3. Token 6 compares 0.451 - 0.10 = 0.351 for expert 1 with 0.288 + 0.10 = 0.388 for expert 4 and moves. Every expert now holds 2 tokens, so no bias changes.",
+      "image": "/images/steps/16e-expert-bias-balancing/step-03.png"
+    },
+    {
+      "caption": "Step 4. The bias only decides where a token goes. Token 6 reaches expert 4 because of the bias, but its output is weighted by its unbiased score 0.288, so the training loss never sees the bias.",
+      "image": "/images/steps/16e-expert-bias-balancing/step-04.png"
+    }
+  ]
+}

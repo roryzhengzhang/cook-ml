@@ -19,7 +19,7 @@
       "image": "/images/steps/15a-perplexity-walkthrough/step-04.png"
     },
     {
-      "caption": "Average the loss over the 3 tokens to get 1.705 nats, then exponentiate. Perplexity 5.50 means the model was as uncertain as a fair choice among about 5.5 tokens at each step.",
+      "caption": "The loss averages 1.705 nats over the 3 tokens, and exponentiating that average gives the perplexity. Perplexity 5.50 means the model was as uncertain as a fair choice among about 5.5 tokens at each step.",
       "image": "/images/steps/15a-perplexity-walkthrough/step-05.png"
     },
     {
