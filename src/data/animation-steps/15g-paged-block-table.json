@@ -36,7 +36,7 @@
       "image": "/images/steps/15g-paged-block-table/step-08.png"
     },
     {
-      "caption": "Reserving the maximum length up front, say 16 tokens per request, would claim 4 contiguous blocks each, so had A, B and C all been active together they would need 12 blocks and C would wait. At real scale a 16-token block of the 7B cache is 8 MiB.",
+      "caption": "Reserving the maximum length up front, say 16 tokens per request, would claim 4 contiguous blocks each, so had A, B and C all been active together they would need 12 blocks and C would wait. For the story model a 16-token block of the cache is 48 KiB.",
       "image": "/images/steps/15g-paged-block-table/step-09.png"
     }
   ]

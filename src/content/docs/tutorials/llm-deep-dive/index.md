@@ -1,17 +1,38 @@
 ---
 title: "LLM Deep Dive"
-description: "The reference Llama 2 model from LLM Fundamentals fits on a single 80 GB GPU for inference. Training it does not fit, because AdamW state alone is 108 GB before a single activation is stored."
+description: "The story model from LLM Fundamentals has 11 million parameters, and its whole training state takes 176 MB. At larger scales the same calculations lead to different choices."
 sidebar:
   order: 0
   label: "Overview"
 lastUpdated: 2026-11-16
 ---
 
-The [reference Llama 2 model](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/#reference-llama-2-model) from LLM Fundamentals fits on a single 80 GB GPU for inference. Training it does not fit, because AdamW state alone is 108 GB before a single activation is stored. Its 70B sibling needs about 1.1 TB of training state, so it has to be split across many GPUs. Serving it to a few hundred concurrent users is a scheduling problem as much as a modeling one. LLM Fundamentals explains what each part of a large language model does. This series covers what happens when those parts meet real limits, such as contexts of a hundred thousand tokens, thousands of accelerators, a budget that pays for 13 billion active parameters out of 47 billion, a domain the base model has barely seen, and a latency target on every request.
+The [story model](/tutorials/llm-fundamentals/#story-model) from LLM Fundamentals has 11 million parameters, and its whole training state takes 176 MB. At larger scales the same calculations lead to different choices. Llama 2 7B fits on a single 80 GB GPU for inference, while its AdamW training state alone takes 108 GB before activations. Llama 2 70B needs about 1.1 TB of training state, so training spans many GPUs. Serving a model that size to a few hundred concurrent users also takes careful scheduling. LLM Fundamentals explains what each part of a large language model does. This series covers what happens when those parts meet real limits, such as contexts of a hundred thousand tokens, thousands of accelerators, a budget that pays for 13 billion active parameters out of 47 billion, a domain the base model has barely seen, and a latency target on every request.
 
 Each chapter takes one topic and goes a level down, into the mechanism inside, its cost worked out to actual numbers, the ways it fails and the design decision it supports. Each mechanism is also placed among the choices current open models make, such as latent attention in DeepSeek-V3, hybrid linear attention in Qwen3-Next and interleaved local and global layers in Gemma 3.
 
-Three reference models recur across the chapters, and their numbers agree everywhere. The [7B decoder](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/#reference-llama-2-model) from Fundamentals, shaped like Llama 2 7B, stays the default. A 70B decoder shaped like Llama 2 70B is the model that does not fit on one GPU, so the parallelism and serving chapters size it. It has 80 layers, width 8,192 and 8 grouped key-value heads. A mixture-of-experts model shaped like Mixtral 8x7B carries the expert chapter. It has 46.7 billion parameters, of which 12.9 billion are active per token. Hardware numbers assume H100 GPUs, eight to a node. Plots are either exact calculations under stated assumptions or explicitly marked teaching schematics, not measured benchmark results.
+LLM Fundamentals follows its 11-million-parameter story model, which trains on one GPU in minutes. This series compares three larger models to show where memory, communication and latency change the design. The 7B model shows the limits of one GPU, the 70B model shows what changes when weights span several GPUs, and Mixtral 8x7B shows how the total and active parameter counts differ in a mixture of experts. Hardware numbers assume H100 GPUs, eight to a node. Plots are either exact calculations under stated assumptions or explicitly marked teaching schematics, not measured benchmark results.
+
+<aside class="cm-model-card" id="scale-reference-models">
+<p class="cm-model-title">Scale reference models</p>
+
+Like the [story model](/tutorials/llm-fundamentals/#story-model), these three decoders use pre-norm blocks with RMSNorm, rotary positions and SwiGLU. Their attention layouts, vocabulary sizes and feed-forward layers differ. Their shapes copy Meta's openly released [Llama 2](https://www.llama.com/llama2/) 7B and 70B and Mistral's [Mixtral 8x7B](https://mistral.ai/news/mixtral-of-experts), whose designs are published, so every number can be checked. Whenever a chapter says "the reference 7B", "the 70B" or "the MoE model", it means one of these.
+
+| Part | 7B | 70B | MoE |
+| --- | --- | --- | --- |
+| Blocks | 32 | 80 | 32 |
+| Width | 4,096 | 8,192 | 4,096 |
+| Query heads | 32 of width 128 | 64 of width 128 | 32 of width 128 |
+| Key-value heads | 32 (full multi-head) | 8 (grouped) | 8 (grouped) |
+| Feed-forward width | 11,008, SwiGLU | 28,672, SwiGLU | 8 experts of 14,336, top-2 |
+| Vocabulary | 32,000, untied tables | 32,000, untied tables | 32,000, untied tables |
+| Context | 4,096 tokens | 4,096 tokens | 32,768 tokens |
+| Parameters | 6.74 billion | 69.0 billion | 46.7 billion, 12.9 billion active |
+| Weights in bf16 | 13.48 GB | 137.95 GB | 93.41 GB |
+| KV cache per token | 512 KiB | 320 KiB | 128 KiB |
+| AdamW training state | 108 GB | 1.10 TB | 747 GB |
+
+</aside>
 
 ## Reading order and prerequisites
 

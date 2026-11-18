@@ -20,7 +20,7 @@
       "image": "/images/steps/15e-sequence-packing/step-04.png"
     },
     {
-      "caption": "A document mask removes those 15 pairs, leaving 15 inside A plus 6 inside B. Without it the model learns from false context. At real scale, with documents averaging 600 tokens, padding to n = 4,096 would waste about 85 percent of every window.",
+      "caption": "A document mask removes those 15 pairs, leaving 15 inside A plus 6 inside B. Without it the model learns from false context. The story model uses the same mask on its rows of 512 tokens, where packed stories never read each other.",
       "image": "/images/steps/15e-sequence-packing/step-05.png"
     }
   ]

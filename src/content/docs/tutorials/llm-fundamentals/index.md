@@ -9,7 +9,41 @@ lastUpdated: 2026-11-13
 
 Large language models went from research projects to everyday tools in a few years, and a lot of what gets said about them is guesswork. Why does a model that tops a benchmark disappoint on your own data? Why does each word of an answer cost more to produce than each word of the prompt? Why does an assistant sometimes agree with you when you are wrong? None of these answers is a secret. They follow from a small number of mechanisms, and once you can see those mechanisms, choices that look arbitrary in a product decision or a research paper start to make sense.
 
-This tutorial is for anyone who wants to understand how these models work, from readers new to large language models to engineers and researchers who already build with them. For newcomers, the chapters build on each other in order and cover the key ideas behind large language models step by step, from how text becomes tokens to how a finished model is trained, served and evaluated. Each idea starts with a small example before any math appears, so every step can be followed and checked by hand. For engineers and researchers who know the basics, the series works as a refresher: every chapter and section is one click away in the sidebar, and the deep dives hold the extra detail.
+This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives.
+
+<aside class="cm-model-card cm-notebook-card" id="story-model">
+<div class="cm-notebook-kicker" id="story-model-project">Project</div>
+<p class="cm-notebook-title">Language model for storytelling</p>
+
+The project builds a small Transformer from scratch and trains it to write short stories. During pretraining, the model learns to predict the next token in [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories). Given an opening such as "One day", the goal is to continue it as a coherent story.
+
+For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct). A request can ask the model to use specific words, include a sentence, follow a plot summary, or add features such as dialogue and a plot twist. An optional Direct Preference Optimization (DPO) lab takes a copy of the SFT model and runs one update to favor a story that uses every requested word over one that misses a word. The notebook gives the base and SFT models the same held-out requests. It checks words and sentences automatically and shows both stories for reviewing plot and features. Pretraining, SFT, and the DPO lab can all run on a single GPU.
+
+<div class="cm-notebook-specs" role="region" aria-label="Model specifications" tabindex="0">
+
+| Part | Value | Explained in |
+| --- | --- | --- |
+| Vocabulary | 4,096 tokens from a byte-level BPE (256 bytes, 4 special tokens, 3,836 merges) | [Tokenization](/tutorials/llm-fundamentals/tokenization-and-embeddings/#vocabulary-size) |
+| Input and output tables | one shared table, 1.57 million numbers | [Tokenization](/tutorials/llm-fundamentals/tokenization-and-embeddings/#weight-tying) |
+| Context window | 512 tokens | [Attention](/tutorials/llm-fundamentals/attention-and-positional-information/#quadratic-cost-and-the-key-value-cache) |
+| Attention heads | 6 per block, 64 numbers wide, sharing 2 key-value heads | [Attention](/tutorials/llm-fundamentals/attention-and-positional-information/#multi-head-attention) |
+| Positions | rotary position embedding | [Attention](/tutorials/llm-fundamentals/attention-and-positional-information/#rotary-position-embedding) |
+| Width | 384 numbers per token | [Transformer Block](/tutorials/llm-fundamentals/the-transformer-block-and-model-anatomy/#the-residual-stream) |
+| Blocks | 6 | [Transformer Block](/tutorials/llm-fundamentals/the-transformer-block-and-model-anatomy/#the-decoder-block) |
+| Feed-forward width | 1,024, with SwiGLU | [Transformer Block](/tutorials/llm-fundamentals/the-transformer-block-and-model-anatomy/#swiglu) |
+| Parameters | 11.0 million | [Transformer Block](/tutorials/llm-fundamentals/the-transformer-block-and-model-anatomy/#parameter-counting) |
+| Weights in memory | 44.1 MB in float32, 22.0 MB in bf16 | [Pretraining](/tutorials/llm-fundamentals/pretraining-at-scale/#mixed-precision) |
+| Pretraining data | 45.4 million tokens of TinyStories | [Pretraining](/tutorials/llm-fundamentals/pretraining-at-scale/#the-compute-budget) |
+| Instruction tuning data | 60,000 [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct) pairs | [Post-Training](/tutorials/llm-fundamentals/post-training-from-base-model-to-assistant/#supervised-fine-tuning) |
+
+</div>
+
+<div class="cm-notebook-actions"><a href="/tutorials/llm-fundamentals/notebook/">Browse the notebook <span aria-hidden="true">↗</span></a></div>
+</aside>
+
+![Story model architecture](/images/llm-fundamentals/15-story-model-architecture.png)
+
+The figure above shows the overall architecture of the language model we’ll implement in the project notebook.
 
 ## Reading order and prerequisites
 

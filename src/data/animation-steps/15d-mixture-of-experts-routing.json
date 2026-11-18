@@ -36,9 +36,9 @@
       "image": "/images/steps/15d-mixture-of-experts-routing/step-08.png"
     },
     {
-      "caption": "Each expert holds 3 x 4,096 x 11,008 = 135.3M weights. Eight per layer gives 37.04B stored, 74.1 GB in bf16, while each token multiplies against 11.07B.",
+      "caption": "Each expert holds 3 x 384 x 1,024 = 1.18M weights. Eight per block gives 60.58M stored, 121.2 MB in bf16, while each token multiplies against 18.11M.",
       "image": "/images/steps/15d-mixture-of-experts-routing/step-09.png",
-      "heading": "At 7B scale total parameters grow with experts but active ones grow with k"
+      "heading": "In the story model total parameters grow with experts but active ones grow with k"
     }
   ]
 }

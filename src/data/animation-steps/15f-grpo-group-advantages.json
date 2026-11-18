@@ -22,12 +22,12 @@
     {
       "caption": "A second prompt that the model already solves: all four samples are right, so every reward is 1.",
       "image": "/images/steps/15f-grpo-group-advantages/step-05.png",
-      "heading": "An easy prompt teaches the model nothing"
+      "heading": "When all rewards tie"
     },
     {
-      "caption": "The mean is 1 and the standard deviation is 0, so every advantage is 0 and the prompt gives no gradient. An all-wrong group behaves the same way.",
+      "caption": "Equal rewards give zero advantage for every sample, so this group gives no reward gradient. An all-wrong group behaves the same way.",
       "image": "/images/steps/15f-grpo-group-advantages/step-06.png",
-      "heading": "An easy prompt teaches the model nothing"
+      "heading": "When all rewards tie"
     }
   ]
 }

@@ -3,9 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
+import remarkStoryNotebook, { notebookFile } from './scripts/remark-story-notebook.mjs';
 import rehypeKatex from 'rehype-katex';
 import rehypeMathNowrap from './scripts/rehype-math-nowrap.mjs';
-import { seriesSidebar } from './scripts/series-sidebar.mjs';
+import { notebookPageFile, notebookSidebar, seriesSidebar } from './scripts/series-sidebar.mjs';
 
 export default defineConfig({
   site: 'https://cook-ml.com',
@@ -15,11 +16,21 @@ export default defineConfig({
   markdown: {
     // Tutorials use $...$ and $$...$$ math, rendered with KaTeX at build time.
     processor: unified({
-      remarkPlugins: [remarkMath],
+      remarkPlugins: [remarkMath, remarkStoryNotebook],
       rehypePlugins: [[rehypeKatex, { strict: false }], rehypeMathNowrap],
     }),
   },
   integrations: [
+    {
+      name: 'cook-ml-notebook',
+      hooks: {
+        'astro:config:setup': ({ addWatchFile }) => {
+          addWatchFile(notebookFile);
+          addWatchFile(notebookPageFile);
+          addWatchFile(new URL('./scripts/remark-story-notebook.mjs', import.meta.url));
+        },
+      },
+    },
     starlight({
       title: 'Cook ML',
       description: 'Clear, worked-through tutorials on machine learning, from first principles to practical systems.',
@@ -53,12 +64,16 @@ export default defineConfig({
         { tag: 'meta', attrs: { property: 'og:image', content: 'https://cook-ml.com/og.png' } },
         // Hover previews for links in tutorial text (see public/link-preview.js).
         { tag: 'script', attrs: { src: '/link-preview.js', defer: true } },
+        { tag: 'script', attrs: { src: '/story-codepad.js', defer: true } },
       ],
       sidebar: [
         { label: 'Tutorials', link: '/tutorials/' },
         {
           label: 'LLM Fundamentals',
-          items: seriesSidebar('llm-fundamentals'),
+          items: [
+            ...seriesSidebar('llm-fundamentals'),
+            notebookSidebar(),
+          ],
         },
         {
           label: 'LLM Deep Dive',

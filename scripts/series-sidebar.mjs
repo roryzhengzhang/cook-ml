@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import GithubSlugger from 'github-slugger';
+import { notebookPage, notebookStages } from './remark-story-notebook.mjs';
 
 const DOCS = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../src/content/docs');
 
@@ -24,7 +25,7 @@ const headingText = (raw) =>
     .trim();
 
 // Slug every heading in document order, exactly as Astro does, so ids match.
-function sections(markdown) {
+function sections(markdown, maxDepth = 2) {
   const slugger = new GithubSlugger();
   const found = [];
   let inFence = false;
@@ -34,16 +35,38 @@ function sections(markdown) {
     // A "##" section shown as a deep-dive card keeps its heading as raw HTML with a fixed id.
     const html = line.match(/<h2 class="cm-collapse-title" id="([^"]+)">(.*?)<\/h2>/);
     if (html) {
-      found.push({ text: html[2].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&'), id: html[1] });
+      found.push({ text: html[2].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&'), id: html[1], depth: 2 });
       continue;
     }
     const m = line.match(/^(#{2,6})\s+(.*?)\s*#*\s*$/);
     if (!m) continue;
     const text = headingText(m[2]);
     const id = slugger.slug(text);
-    if (m[1].length === 2) found.push({ text, id });
+    const depth = m[1].length;
+    if (depth <= maxDepth) found.push({ text, id, depth });
   }
   return found;
+}
+
+export const notebookPageFile = path.join(DOCS, 'story-model-notebook.md');
+
+export function notebookSidebar() {
+  const markdown = fs.readFileSync(notebookPageFile, 'utf8').replace(
+    '<!-- notebook -->',
+    notebookStages.map(([, title]) => `### ${title}`).join('\n'),
+  );
+  return {
+    label: 'Project notebook',
+    collapsed: true,
+    items: [
+      { label: 'Introduction', link: notebookPage },
+      ...sections(markdown, 3).map(({ text, id, depth }) => ({
+        label: text,
+        link: `${notebookPage}#${id}`,
+        ...(depth === 3 && { attrs: { class: 'cm-sidebar-subsection' } }),
+      })),
+    ],
+  };
 }
 
 export function seriesSidebar(series, { overviewLabel = 'Overview' } = {}) {

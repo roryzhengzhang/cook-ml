@@ -55,9 +55,15 @@ Collapsible "deep dive" cards come from collapsed Obsidian callouts. Put the bod
 
 A `##` heading stays a real section heading inside the card, so the sidebar and links keep working. A callout with its own title (`> [!deep-dive]- Some title`) becomes a card with that title.
 
-The tutorial sidebar is built from the chapter files by `scripts/series-sidebar.mjs`: each chapter is a collapsible group listing its `##` sections. It is read when the dev server starts, so restart `npm run dev` after an import that changes headings.
+The tutorial sidebar is built by `scripts/series-sidebar.mjs`. Each chapter is a collapsible group listing its `##` sections. The Project notebook group also lists its subsections and the stages generated from the notebook. The sidebar is read when the dev server starts, so restart `npm run dev` after an import that changes headings.
 
 The script regenerates `src/content/docs/tutorials/llm-fundamentals/` and `public/images/llm-fundamentals/`, so do not hand-edit those files. It converts `![[figure]]` embeds into images, links between chapters into site links, and links to unpublished notes into plain text.
+
+### LLM Fundamentals project notebook
+
+`public/notebooks/llm-fundamentals.ipynb` contains the runnable project and the source for the site’s codepads. An exposed Python cell has a stable Jupyter cell ID and a `metadata.cookml` object with its title, summary, chapter slug and section heading. The Markdown renderer inserts the cell beside that section and links it to the same cell in the web view. Leave the chapter and section out of the metadata for notebook-only cells. The Obsidian import can regenerate every chapter without rewriting the notebook or copying Python into Markdown. The project page `src/content/docs/story-model-notebook.md` holds the background, hardware and run instructions, and the renderer replaces its `<!-- notebook -->` marker with every cell in one notebook frame. Each markdown cell becomes the explanation above the code cell that follows it, and stage headings group the cells.
+
+Use Python 3.12 and install the notebook tools with `python -m pip install torch jupyterlab`. The default CPU profile trains on an offline fixture. For the public-data run, install `datasets==3.6.0 "huggingface_hub<1"` as well and start Jupyter with `COOK_ML_PROFILE=story jupyter lab`. The story profile streams TinyStories for pretraining and [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct) for supervised fine-tuning. It chooses CUDA when available or Apple MPS. Set `COOK_ML_DEVICE=cuda` or `COOK_ML_DEVICE=mps` to choose explicitly. The story profile runs 8,000 pretraining updates and 3,500 fine-tuning updates. The notebook saves separate `base.pt` and `sft-instruct.pt` checkpoints. `COOK_ML_RESUME=1` resumes a matching run, and `COOK_ML_LABS=1` enables the optional experiments.
 
 LLM Deep Dive, the advanced follow-on series, comes from `Machine Learning Sheet/16 LLM Deep Dive` the same way:
 

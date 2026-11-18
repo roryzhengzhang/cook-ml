@@ -23,7 +23,7 @@
       "image": "/images/steps/15a-perplexity-walkthrough/step-05.png"
     },
     {
-      "caption": "A model that spreads probability evenly over the whole vocabulary pays ln 32,000 = 10.37 nats on every token, so its perplexity is the vocabulary size. Real models start training near this number.",
+      "caption": "A model that spreads probability evenly over the story model's 4,096 tokens pays ln 4,096 = 8.32 nats on every token, so its perplexity is the vocabulary size. The untrained story model scored 8.08 nats, a perplexity of 3,219, close to this number.",
       "image": "/images/steps/15a-perplexity-walkthrough/step-06.png"
     }
   ]

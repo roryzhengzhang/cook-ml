@@ -9,11 +9,32 @@ element id on the target page, and that no page contains a KaTeX error. Exits 1 
 """
 
 import glob
+import json
 import os
 import re
 import sys
+from pathlib import Path
 
 DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'dist')
+NOTEBOOK = Path(DIST).parent / 'public/notebooks/llm-fundamentals.ipynb'
+SERIES = '/tutorials/llm-fundamentals/'
+
+
+def check_notebook(ids, problems):
+    source = NOTEBOOK.read_bytes()
+    download = Path(DIST) / 'notebooks/llm-fundamentals.ipynb'
+    if not download.is_file() or download.read_bytes() != source:
+        problems.append('Notebook download does not match the source notebook')
+    web_cells = ids.get(SERIES + 'notebook/', set())
+    for cell in json.loads(source)['cells']:
+        if cell['cell_type'] != 'code':
+            continue
+        cell_id = cell['id']
+        if cell_id not in web_cells:
+            problems.append(f'Notebook web view is missing cell {cell_id}')
+        chapter = cell['metadata']['cookml'].get('chapter')
+        if chapter and f'codepad-{cell_id}' not in ids.get(f'{SERIES}{chapter}/', set()):
+            problems.append(f'{chapter}: missing codepad for {cell_id}')
 
 
 def main():
@@ -46,6 +67,7 @@ def main():
         if frag not in ids.get(path, set()):
             problems.append(f'sidebar: broken link {path}#{frag}')
 
+    check_notebook(ids, problems)
     print(f'{len(pages)} pages, {checked} anchors checked, {len(problems)} problems')
     for p in problems:
         print('  ' + p)

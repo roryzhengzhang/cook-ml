@@ -1872,6 +1872,12 @@
   "description": "Dataset with 2.4k rows (Tabular, Text). Explore, preview and download it on Hugging Face.",
   "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/datasets/openai/mrcr.png"
  },
+ "https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct": {
+  "site": "huggingface.co",
+  "title": "roneneldan/TinyStoriesInstruct · Datasets at Hugging Face",
+  "description": "Dataset with 22M rows (Text). Explore, preview and download it on Hugging Face.",
+  "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/datasets/roneneldan/TinyStoriesInstruct.png"
+ },
  "https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/main/config.json": {
   "site": "huggingface.co",
   "title": "config.json · deepseek-ai/DeepSeek-V3 at main",

@@ -130,13 +130,14 @@
     const target = id && id !== '_top' ? doc.getElementById(id) : null;
     const body = el('div', 'cm-lp-body');
 
-    if (target?.classList.contains('cm-model-card')) {
-      const title = target.querySelector('.cm-model-title')?.cloneNode(true);
+    const modelCard = target?.closest('.cm-model-card');
+    if (modelCard) {
+      const title = modelCard.querySelector('.cm-model-title, .cm-notebook-title')?.cloneNode(true);
       if (title) {
         title.className = 'cm-lp-model-title';
         body.append(title);
       }
-      const table = target.querySelector('table');
+      const table = modelCard.querySelector('table');
       if (table) {
         const copy = table.cloneNode(true);
         copy.querySelectorAll('a').forEach((a) => a.replaceWith(...a.childNodes));

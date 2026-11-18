@@ -1,26 +1,26 @@
 {
   "name": "15w vocabulary size comparison",
-  "title": "Comparing a 32,000 and a 128,000 token vocabulary",
-  "subtitle": "Reference Llama 2 model; 1,000 words of held-out chat text",
+  "title": "Comparing a 4,096 and a 16,384 token vocabulary",
+  "subtitle": "Story model; 1,500 held-out TinyStories stories, 228,247 words",
   "steps": [
     {
-      "caption": "The same text takes 1.316 tokens per word at 32,000 and 1.261 at 128,000.",
+      "caption": "The same stories take 2.219 tokens per word at 4,096 and 2.173 at 16,384.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-01.png"
     },
     {
-      "caption": "Each token costs 13.21 billion FLOPs at 32,000 and 14.00 billion at 128,000.",
+      "caption": "Each token costs 22.03 million FLOPs at 4,096 and 31.47 million at 16,384.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-02.png"
     },
     {
-      "caption": "With 15% fewer tokens the bigger vocabulary costs about 0.90 of the smaller one.",
+      "caption": "Even 15% fewer tokens leaves the bigger vocabulary at 1.21 times the cost. It breaks even only at 30% fewer tokens.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-03.png"
     },
     {
-      "caption": "Training stores 4,096 x V logits as 4-byte numbers for every sequence.",
+      "caption": "Training stores 512 x V logits as 4-byte numbers for every row.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-04.png"
     },
     {
-      "caption": "Four times as many rows share slightly fewer tokens, so each row is seen far less often.",
+      "caption": "Four times as many rows share 2% fewer tokens, so each row is seen far less often.",
       "image": "/images/steps/15w-vocabulary-size-comparison/step-05.png"
     }
   ]

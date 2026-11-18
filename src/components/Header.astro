@@ -187,6 +187,14 @@ const path = Astro.url.pathname;
     );
     if (!links.length) return;
 
+    // Same-page links keep the document open, so dismiss the mobile menu before jumping.
+    const menu = document.getElementById('starlight__sidebar');
+    for (const link of links) {
+      link.addEventListener('click', () => {
+        if (menu?.matches(':popover-open')) menu.hidePopover();
+      });
+    }
+
     const byId = new Map(links.map((a) => [decodeURIComponent(new URL(a.href).hash.slice(1)), a]));
     const headings = [...byId.keys()]
       .map((id) => document.getElementById(id))

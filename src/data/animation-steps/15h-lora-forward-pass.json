@@ -44,7 +44,7 @@
       "image": "/images/steps/15h-lora-forward-pass/step-10.png"
     },
     {
-      "caption": "The toy adapter trains 6 numbers instead of 9. At the 7B scale a rank 16 adapter on one 4,096 × 4,096 matrix trains 2 × 4,096 × 16 = 131,072 numbers instead of 16,777,216.",
+      "caption": "The toy adapter trains 6 numbers instead of 9. On the story model a rank 16 adapter on one 384 × 384 query projection trains 2 × 384 × 16 = 12,288 numbers instead of 147,456.",
       "image": "/images/steps/15h-lora-forward-pass/step-11.png"
     }
   ]

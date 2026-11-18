@@ -24,9 +24,9 @@
       "image": "/images/steps/15b-embedding-lookup/step-05.png"
     },
     {
-      "caption": "Multiplying a one-hot vector with 32,000 entries by the 32,000 by 4,096 table would cost 2 x 32,000 x 4,096 = 262,144,000 floating-point operations to produce 4,096 numbers that a lookup copies directly, 8,192 bytes at 2 bytes each.",
+      "caption": "Multiplying a one-hot vector with 4,096 entries by the 4,096 by 384 table would cost 2 x 4,096 x 384 = 3,145,728 floating-point operations to produce 384 numbers that a lookup copies directly, 1,536 bytes at 4 bytes each.",
       "image": "/images/steps/15b-embedding-lookup/step-06.png",
-      "heading": "At real scale the lookup is a memory read, not arithmetic"
+      "heading": "At the story model's scale the lookup is a memory read, not arithmetic"
     }
   ]
 }

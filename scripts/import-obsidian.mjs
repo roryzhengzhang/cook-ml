@@ -477,7 +477,7 @@ const STEP_INTROS = {
   '15i-pass-at-k-walkthrough': 'A coding model is sampled 10 times on one problem, and 3 of the answers pass the unit tests. The example works out the chance that a user who gets k attempts sees at least one passing answer.',
   '15w-feed-forward-pass': 'A token with the two-number vector (1, −1) goes through a feed-forward network that widens it to 4 hidden numbers and brings it back to 2. ReLU and GELU are applied side by side to show where they differ.',
   '15w-layernorm-and-rmsnorm': 'The vector (1, 3, −1, 5) is normalized twice, once by LayerNorm and once by RMSNorm, with a gain of 1 and no offset. LayerNorm subtracts the mean first and RMSNorm skips that step.',
-  '15w-vocabulary-size-comparison': 'The reference Llama 2 model\'s 32,000-token vocabulary is compared with a 128,000-token one on the same 1,000 words of chat text. The comparison counts tokens, embedding parameters, and how often each row of the table gets trained.',
+  '15w-vocabulary-size-comparison': 'The story model\'s 4,096-token vocabulary is compared with a 16,384-token one trained the same way on the same 20,000 TinyStories stories, and both are measured on 1,500 held-out stories. The comparison counts tokens per word, compute per 1,000 words, logit memory and how often each row of the table gets trained.',
   '16a-cache-bytes-per-token': 'The key-value cache that one token leaves behind is priced in bytes under plain multi-head attention on the 7B shape, under grouped-query attention with 8 key-value heads, and under the latent attention of DeepSeek-V3.',
   '16a-online-softmax-rescaling': 'One query attends to four keys with scores 1, 2, 4 and 3 and values 10, 20, 30 and 40, but only two keys fit in fast memory at a time. The exact softmax output is built tile by tile by rescaling a running sum.',
   '16a-sliding-window-receptive-field': 'Twelve tokens pass through layers in which each token reads only itself and the two tokens before it. The example tracks how far back token 12 can see after each layer and how many pairs each layer computes.',
@@ -500,7 +500,7 @@ const STEP_INTROS = {
   '16f-lora-memory-budget': 'Rank 16 LoRA adapters go on all seven weight matrices in each of the reference 7B model\'s 32 blocks. The example counts the trained parameters, then adds up training memory, optimizer state and the saved adapter size against full fine-tuning.',
   '16f-nf4-block-quantization': 'Eight small weights, between −0.031 and 0.045, are stored in 4 bits each with the NF4 format from QLoRA. The block is scaled by its largest weight, each value is rounded to one of 16 levels, and the example measures the error and what the scale costs in bits.',
   '16f-pcgrad-projection': 'Two tasks share one model, and their gradients (4, 0) and (−1, 1) point more than 90 degrees apart, so a plain summed step makes task B worse. PCGrad removes the conflicting part of each gradient before adding them.',
-  '16g-domain-loss-and-task': 'The reference Llama 2 model is scored before and after 20 billion tokens of continued pretraining on filings, once by held-out loss and once by accuracy at pulling figures from a 10-Q. Splitting the loss by token type shows why it falls while the task gets worse.',
+  '16g-domain-loss-and-task': 'The reference 7B model is scored before and after 20 billion tokens of continued pretraining on filings, once by held-out loss and once by accuracy at pulling figures from a 10-Q. Splitting the loss by token type shows why it falls while the task gets worse.',
   '16g-new-token-embeddings': 'Three finance terms such as EBITDA, each cut into three pieces by the Llama 2 tokenizer, get whole-word tokens of their own. Their new input and output rows are built from the rows of their pieces, using rows of 3 numbers in place of 4,096.',
   '16g-replay-exposure': 'A 20-billion-token continued pretraining run draws on 10 billion tokens of filings and call transcripts, mixed with replayed general text. The example works out how often the run reads the domain data at replay ratios of 0, 25 and 50 percent.',
   '16g-temporal-split-leak': 'A test set of 400 questions about second-quarter 2025 figures from 100 companies is answered from 10-Q filings. A date cutoff that looks clean still leaks most answers through earlier earnings calls, and the example finds the cutoff and holdout that give an honest score.',
@@ -517,7 +517,7 @@ const STEP_INTROS = {
 // appends further frames, with their captions, for content the text steps do not cover.
 // `replaces` removes the separate animation card, which would otherwise repeat the example.
 const WALKTHROUGHS = {
-  'Comparison of 32,000 and 128,000 vocabularies': { title: 'Vocabulary size comparison', steps: '15w-vocabulary-size-comparison', frames: [1, 2, 3, 4, 5] },
+  'Comparison of 4,096 and 16,384 vocabularies': { title: 'Vocabulary size comparison', steps: '15w-vocabulary-size-comparison', frames: [1, 2, 3, 4, 5] },
   'A lookup computed both ways': { title: 'Embedding lookup', steps: '15b-embedding-lookup', frames: [1, null, 4, 5, 6], replaces: true },
   'A complete calculation on three tokens': { title: 'Attention on three tokens', steps: '15c-qkv-walkthrough', frames: [4, 5, 6, 7, 8, 10], replaces: true },
   'RoPE on a sentence': { title: 'Rotary position embedding', steps: '15c-rope-relative-angle', frames: [2, 3, 4, 5], extra: [6], replaces: true },
@@ -728,8 +728,8 @@ function unwrapCallouts(text) {
   const out = [];
   for (let i = 0; i < lines.length; i++) {
     // A "> [!model] Title" callout becomes an always-open highlighted card. Its anchor is the
-    // Obsidian block id on its own line after the callout ("^reference-llama-2-model"), so links
-    // written as [[Note#^reference-llama-2-model|...]] work in the vault and on the site alike.
+    // Obsidian block id on its own line after the callout ("^story-model"), so links
+    // written as [[Note#^story-model|...]] work in the vault and on the site alike.
     const card = lines[i].match(/^>\s*\[!model\]\s*(.*)$/i);
     if (card) {
       let j = i + 1;
@@ -739,9 +739,32 @@ function unwrapCallouts(text) {
       while (k < lines.length && lines[k].trim() === '') k++;
       const blockId = lines[k]?.match(/^\^([\w-]+)\s*$/)?.[1];
       const id = blockId ?? slugify(card[1]);
+      const title = escapeHtml(card[1].trim());
+      if (id === 'story-model') {
+        const specs = inner.findIndex((line) => line.startsWith('|'));
+        if (specs < 0) throw new Error('The story model card needs a specifications table');
+        out.push(
+          `<aside class="cm-model-card cm-notebook-card" id="${id}">`,
+          '<div class="cm-notebook-kicker" id="story-model-project">Project</div>',
+          `<p class="cm-notebook-title">${title}</p>`,
+          '',
+          ...inner.slice(0, specs),
+          '<div class="cm-notebook-specs" role="region" aria-label="Model specifications" tabindex="0">',
+          '',
+          ...inner.slice(specs),
+          '',
+          '</div>',
+          '',
+          '<div class="cm-notebook-actions"><a href="/tutorials/llm-fundamentals/notebook/">Browse the notebook <span aria-hidden="true">↗</span></a></div>',
+          '</aside>',
+        );
+        i = blockId ? k : j - 1;
+        continue;
+      }
+      const label = id === 'scale-reference-models' ? '' : '<span class="cm-model-label">Running example</span>';
       out.push(
         `<aside class="cm-model-card" id="${id}">`,
-        `<p class="cm-model-title"><span class="cm-model-label">Running example</span>${escapeHtml(card[1].trim())}</p>`,
+        `<p class="cm-model-title">${label}${title}</p>`,
         '',
         ...inner,
         '',
@@ -852,15 +875,13 @@ const WEB_WORDING = [
   // The series overview on the site stops after the chapter list. The quick reference, interview
   // habits, design exercise and study order stay in the Obsidian index only.
   [/\n## Cross cutting quick reference\n[\s\S]*?(?=\n\*\*Last updated|$)/g, '\n'],
-  // The series overview reads as one introduction: no "Overview" heading, and no paragraph
-  // spotlighting the running toy and 7B examples (each chapter introduces them where they appear).
+  // The site introduction describes the notebook project without an extra Overview heading.
   [/\n## Overview\n/g, ''],
-  [/\n\nTwo running examples recur across the notes\.[^\n]*/g, ''],
   [/\bNumbered sections then build\b/g, 'Sections then build'],
   // The Obsidian index is an interview-prep index; the site speaks to learners and practitioners.
   [/in a product decision or an interview question start to make sense/g, 'in a product decision or a research paper start to make sense'],
   [/Everything here is written for someone new to the field\.[^\n]*/g,
-    "This tutorial is for anyone who wants to understand how these models work, from readers new to large language models to engineers and researchers who already build with them. For newcomers, the chapters build on each other in order and cover the key ideas behind large language models step by step, from how text becomes tokens to how a finished model is trained, served and evaluated. Each idea starts with a small example before any math appears, so every step can be followed and checked by hand. For engineers and researchers who know the basics, the series works as a refresher: every chapter and section is one click away in the sidebar, and the deep dives hold the extra detail."],
+    "This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives."],
   [/\n+Each chapter opens with the problem it answers[^\n]*/g, ''],
   [/ These nine chapters follow one model through its whole life[^.]*\./g, ''],
   // The site outlines the merged pair in the BPE table; the note's plain table does not.
