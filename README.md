@@ -10,7 +10,7 @@
   <a href="./public/notebooks/llm-fundamentals.ipynb">Get the notebook file</a>
 </p>
 
-Cook ML makes machine learning easier to understand by connecting worked examples to code you can run. The tutorials start with how language models work, ground the ideas in a storytelling model you train from scratch, and show how larger models change the engineering decisions.
+Cook ML is a place to learn and revisit the fundamentals of machine learning, understand why methods work, and connect recent research to what teams build in practice. The tutorials develop ideas step by step, with worked examples you can check by hand and code you can run.
 
 ## Tutorials
 
