@@ -1,0 +1,15 @@
+{
+  "name": "17d baseline two outcomes",
+  "title": "A baseline across two outcomes",
+  "subtitle": "A fixed baseline keeps the mean update and changes the variation.",
+  "steps": [
+    {
+      "caption": "The two original gradient estimates vary around a mean of 0.24.",
+      "image": "/images/steps/17d-baseline-two-outcomes/step-01.png"
+    },
+    {
+      "caption": "The baseline reduces variance by a factor of nine here.",
+      "image": "/images/steps/17d-baseline-two-outcomes/step-02.png"
+    }
+  ]
+}

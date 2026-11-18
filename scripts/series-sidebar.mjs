@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import GithubSlugger from 'github-slugger';
-import { notebookPage, notebookStages } from './remark-story-notebook.mjs';
+import { storyNotebook } from './remark-story-notebook.mjs';
 
 const DOCS = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../src/content/docs');
 
@@ -48,21 +48,19 @@ function sections(markdown, maxDepth = 2) {
   return found;
 }
 
-export const notebookPageFile = path.join(DOCS, 'story-model-notebook.md');
-
-export function notebookSidebar() {
-  const markdown = fs.readFileSync(notebookPageFile, 'utf8').replace(
+export function notebookSidebar(project = storyNotebook) {
+  const markdown = fs.readFileSync(path.join(DOCS, project.pageFile), 'utf8').replace(
     '<!-- notebook -->',
-    notebookStages.map(([, title]) => `### ${title}`).join('\n'),
+    project.stages.map(([, title]) => `### ${title}`).join('\n'),
   );
   return {
     label: 'Project notebook',
     collapsed: true,
     items: [
-      { label: 'Introduction', link: notebookPage },
+      { label: 'Introduction', link: project.page },
       ...sections(markdown, 3).map(({ text, id, depth }) => ({
         label: text,
-        link: `${notebookPage}#${id}`,
+        link: `${project.page}#${id}`,
         ...(depth === 3 && { attrs: { class: 'cm-sidebar-subsection' } }),
       })),
     ],

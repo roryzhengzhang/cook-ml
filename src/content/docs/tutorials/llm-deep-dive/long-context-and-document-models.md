@@ -4,7 +4,7 @@ description: "How RoPE scaling, staged long-context training and mixed positiona
 sidebar:
   order: 2
   label: "Long Context"
-lastUpdated: 2026-11-16
+lastUpdated: 2026-11-18
 ---
 
 A 120-page annual report filed as a 10-K comes to about 96,000 tokens, at an estimated 800 tokens per page. That is 23 times the 4,096-token window the reference 7B model was trained on, and well inside the 131,072-token window that many current models advertise. Fitting is the easy part. A question as plain as "what was net debt under the credit agreement at year end?" needs three passages from three different parts of the filing. They are a definition in the liquidity discussion on page 58, the cash balance on page 66, and a debt table with a footnote on page 91. The answer is $1{,}840 - 140 - 310 = 1{,}390$ million, and a model that misses the footnote answers 1,530 with the same confidence.
@@ -85,7 +85,7 @@ The steps follow pairs 0, 32 and 63 through both rules at $s = 32$. They show th
 Interpolation's weakness is step 3. The pairs that told "the" from the word after it now see two tokens as 1/32 of a position apart, so local word order blurs and quality drops until fine-tuning teaches the model the new spacing. The [Position Interpolation paper](https://arxiv.org/abs/2306.15595) reports that about 1,000 fine-tuning steps recover it. NTK-aware scaling often works with little or no fine-tuning at small factors, but it has its own flaw. Pairs 46 to 62 never completed a turn in training, yet NTK-aware scaling slows them by less than 32. Pair 46 is slowed 12.6 times, so at 131,072 tokens it still reaches 13.9 radians against the 5.5 it saw in training, and those pairs stay partly out of range.
 
 ## YaRN
-**YaRN** comes from [Peng and colleagues](https://arxiv.org/abs/2309.00071). It treats each pair according to how many turns it completes inside the trained window, $r_i = L/\lambda_i$, where $L = 4{,}096$ is the trained length. A pair that wraps many times needs no help, a pair that never wraps needs full interpolation, and pairs in between get a blend. The blend weight is the **ramp function**:
+In rotary position embeddings, some coordinate pairs complete many turns inside the original window while others barely turn at all. The amount of rescaling can depend on which kind of pair we are working with. **YaRN** comes from [Peng and colleagues](https://arxiv.org/abs/2309.00071). It treats each pair according to how many turns it completes inside the trained window, $r_i = L/\lambda_i$, where $L = 4{,}096$ is the trained length. A pair that wraps many times needs no help, a pair that never wraps needs full interpolation, and pairs in between get a blend. The blend weight is the **ramp function**:
 
 $$
 \gamma(r) = \begin{cases} 0 & r < \alpha \\ (r - \alpha)/(\beta - \alpha) & \alpha \le r \le \beta \\ 1 & r > \beta \end{cases}, \qquad \theta_i' = (1 - \gamma(r_i))\,\frac{\theta_i}{s} + \gamma(r_i)\,\theta_i.

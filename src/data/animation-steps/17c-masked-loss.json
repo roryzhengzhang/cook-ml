@@ -1,0 +1,19 @@
+{
+  "name": "17c masked loss",
+  "title": "Masked loss on a tool trace",
+  "subtitle": "An illustrative assistant training mask with five target positions.",
+  "steps": [
+    {
+      "caption": "All five illustrative target probabilities are available before masking.",
+      "image": "/images/steps/17c-masked-loss/step-01.png"
+    },
+    {
+      "caption": "Only three policy targets enter the average, giving 0.768 nats.",
+      "image": "/images/steps/17c-masked-loss/step-02.png"
+    },
+    {
+      "caption": "The incorrect mask counts the user input and tool result, giving 1.520 nats.",
+      "image": "/images/steps/17c-masked-loss/step-03.png"
+    }
+  ]
+}

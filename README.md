@@ -14,11 +14,10 @@ Cook ML is a place to learn and revisit the fundamentals of machine learning, un
 
 ## Tutorials
 
-| Resource | What it covers |
+| Series | What it covers |
 | --- | --- |
-| [LLM Fundamentals](https://cook-ml.com/tutorials/llm-fundamentals/) | **Start here.** Nine chapters on how language models represent text, learn from data, generate responses, and are evaluated. |
+| [LLM Fundamentals](https://cook-ml.com/tutorials/llm-fundamentals/) | **Start here.** Nine chapters on language models, from text and tokens through training, inference, and evaluation. The [project notebook](https://cook-ml.com/tutorials/llm-fundamentals/notebook/) shows how to train and evaluate a storytelling model from scratch in PyTorch. |
 | [LLM Deep Dive](https://cook-ml.com/tutorials/llm-deep-dive/) | **Go deeper.** Eight chapters on efficient attention, long context, distributed training, adaptation, and serving at scale. |
-| [Project notebook](https://cook-ml.com/tutorials/llm-fundamentals/notebook/) | **Build it.** Train and evaluate a small language model for storytelling from scratch in PyTorch. Code examples in Fundamentals link to their notebook cells. |
 
 ## Get started locally
 

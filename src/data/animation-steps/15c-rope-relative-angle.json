@@ -1,32 +1,32 @@
 {
   "name": "15c rope relative angle",
   "title": "Rotary position embedding on a sentence",
-  "subtitle": "Bank's query and the keys from section 2, one coordinate pair turning 45 degrees per position",
+  "subtitle": "The pronoun's query and the keys from section 2, one coordinate pair turning 45 degrees per position",
   "steps": [
     {
-      "caption": "Section 2 projected bank's query to (1, 1) and the keys of the, river and bank. With no position information, bank scores them -1, 2 and 1.",
+      "caption": "Section 2 projected it's query to (1, 1) and the keys of “she”, “lit” and “it”. With no position information, it scores them -1, 2 and 1.",
       "image": "/images/steps/15c-rope-relative-angle/step-01.png"
     },
     {
-      "caption": "Inside the attention layer each query and key turns by 45 degrees per position. Bank, at position 2, turns its query 90 degrees, river's key turns 45 and the stays put.",
+      "caption": "Inside the attention layer each query and key turns by 45 degrees per position. The pronoun, at position 2, turns its query 90 degrees, lit's key turns 45 and she stays put.",
       "image": "/images/steps/15c-rope-relative-angle/step-02.png"
     },
     {
-      "caption": "Bank's scores become 1, 1.414 and 1. After dividing by the square root of 2 and a softmax, bank gives river 0.40 of its attention and the and itself 0.30 each, where section 2 gave river 0.62.",
+      "caption": "The pronoun's scores become 1, 1.414 and 1. After dividing by the square root of 2 and a softmax, it gives lit 0.40 of its attention and she and itself 0.30 each, where section 2 gave lit 0.62.",
       "image": "/images/steps/15c-rope-relative-angle/step-03.png"
     },
     {
-      "caption": "In \"we walked to the river bank\" the same three words sit three places later. Every vector has turned 135 degrees more, but each pair is the same number of tokens apart, so the scores are again 1, 1.414 and 1.",
+      "caption": "In \"in the attic she lit it\" the same three words sit three places later. Every vector has turned 135 degrees more, but each pair is the same number of tokens apart, so the scores are again 1, 1.414 and 1.",
       "image": "/images/steps/15c-rope-relative-angle/step-04.png"
     },
     {
-      "caption": "In \"the river and its bank\", river sits three tokens back instead of one. The extra 90 degrees between the arrows drop bank's score for river to -1.414.",
+      "caption": "In \"she lit and carried it\", lit sits three tokens back instead of one. The extra 90 degrees between the arrows drop the pronoun's score for lit to -1.414.",
       "image": "/images/steps/15c-rope-relative-angle/step-05.png"
     },
     {
-      "caption": "Without position information all three sentences score 2. With RoPE the score depends only on how many tokens separate river and bank, not on where the phrase sits.",
+      "caption": "Without position information all three sentences score 2. With RoPE the score depends only on how many tokens separate lit and it, not on where the phrase sits.",
       "image": "/images/steps/15c-rope-relative-angle/step-06.png",
-      "heading": "Bank's score for river in three sentences"
+      "heading": "The pronoun's score for lit in three sentences"
     }
   ]
 }

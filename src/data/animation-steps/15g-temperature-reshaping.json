@@ -1,10 +1,10 @@
 {
   "name": "15g temperature reshaping",
   "title": "Temperature reshapes one distribution without changing its order",
-  "subtitle": "Prompt \"My coffee is too\"; logits 3.0, 2.5, 2.0, 1.5, 1.0, 0.0; probability = exp(logit / T) / sum",
+  "subtitle": "Prompt \"The attic was too\"; logits 3.0, 2.5, 2.0, 1.5, 1.0, 0.0; probability = exp(logit / T) / sum",
   "steps": [
     {
-      "caption": "At T = 1 the model's own probabilities are used. Each logit is exponentiated and divided by the sum of all six exponentials, so hot gets 20.09 / 47.86 = 0.420.",
+      "caption": "At T = 1 the model's own probabilities are used. Each logit is exponentiated and divided by the sum of all six exponentials, so dark gets 20.09 / 47.86 = 0.420.",
       "image": "/images/steps/15g-temperature-reshaping/step-01.png"
     },
     {
@@ -20,7 +20,7 @@
       "image": "/images/steps/15g-temperature-reshaping/step-04.png"
     },
     {
-      "caption": "At T = 0.5 every logit doubles, so the gap between hot and strong grows from 0.5 to 1.0. Hot rises to 0.635 and loud falls from 0.021 to 0.002. The ranking never changes.",
+      "caption": "At T = 0.5 every logit doubles, so the gap between dark and cold grows from 0.5 to 1.0. Dark rises to 0.635 and bright falls from 0.021 to 0.002. The ranking never changes.",
       "image": "/images/steps/15g-temperature-reshaping/step-05.png"
     },
     {
@@ -40,7 +40,7 @@
       "image": "/images/steps/15g-temperature-reshaping/step-09.png"
     },
     {
-      "caption": "At T = 2 every logit halves, so hot falls to 0.290 and loud rises to 0.065, about three times its T = 1 share. Unlikely words now get drawn noticeably more often.",
+      "caption": "At T = 2 every logit halves, so dark falls to 0.290 and bright rises to 0.065, about three times its T = 1 share. Unlikely words now get drawn noticeably more often.",
       "image": "/images/steps/15g-temperature-reshaping/step-10.png"
     },
     {

@@ -1,0 +1,19 @@
+{
+  "name": "17i promotion gates for policy v2",
+  "title": "Promotion gates for policy V2",
+  "subtitle": "The candidate needs 16 new-case successes and 18 retention successes.",
+  "steps": [
+    {
+      "caption": "The prompt-only candidate falls short on the new policy.",
+      "image": "/images/steps/17i-promotion-gates-for-policy-v2/step-01.png"
+    },
+    {
+      "caption": "The fresh-only candidate falls short on retained skills.",
+      "image": "/images/steps/17i-promotion-gates-for-policy-v2/step-02.png"
+    },
+    {
+      "caption": "The mixed candidate clears the score gates and still needs a clean violation check.",
+      "image": "/images/steps/17i-promotion-gates-for-policy-v2/step-03.png"
+    }
+  ]
+}

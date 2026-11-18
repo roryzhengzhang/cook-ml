@@ -1,0 +1,19 @@
+{
+  "name": "17h rollout batch on one GPU",
+  "title": "A rollout batch on one GPU",
+  "subtitle": "The last attempt returns after 12 seconds, then the model updates.",
+  "steps": [
+    {
+      "caption": "The fourth attempt determines the batch's rollout duration.",
+      "image": "/images/steps/17h-rollout-batch-on-one-gpu/step-01.png"
+    },
+    {
+      "caption": "Training and weight handoff bring total time to 20 seconds.",
+      "image": "/images/steps/17h-rollout-batch-on-one-gpu/step-02.png"
+    },
+    {
+      "caption": "The batch processes four attempts in 20 seconds.",
+      "image": "/images/steps/17h-rollout-batch-on-one-gpu/step-03.png"
+    }
+  ]
+}

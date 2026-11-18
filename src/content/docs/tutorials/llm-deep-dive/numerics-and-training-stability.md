@@ -4,7 +4,7 @@ description: "How bf16, FP8 and microscaled 4-bit arithmetic, recomputation, QK-
 sidebar:
   order: 4
   label: "Numerics and Stability"
-lastUpdated: 2026-11-16
+lastUpdated: 2026-11-18
 ---
 
 In bf16, 256 plus 1 is 256. The format keeps 8 significant bits, so between 256 and 512 it can only store even numbers, and 257 rounds back to 256. No error is raised and no warning appears. The [reference 7B model](/tutorials/llm-deep-dive/#scale-reference-models) takes about 477,000 optimizer steps, and each step performs about $1.7 \times 10^{17}$ multiplications and additions, every one rounded to some format. A large run spreads that arithmetic over thousands of GPUs, and at that scale some piece of hardware stops working every few hours.
@@ -165,7 +165,7 @@ The steps below take three logits, shift them by 100, and follow what the cross 
 </details>
 
 ## Gradient clipping
-[Gradient clipping](/tutorials/llm-fundamentals/pretraining-at-scale/#loss-spikes) rescales the whole gradient when its norm exceeds a threshold. The threshold is usually 1.0, and Llama 2 and DeepSeek-V3 both use 1.0. Its place in the step matters. The gradient is first summed across data-parallel GPUs, then divided by the loss scale if one is used, then measured. With sharded optimizers each GPU holds a slice, so the global norm needs one more all-reduce of a single number per GPU. Clipping comes last, just before the optimizer.
+An unusually large gradient can make the optimizer take a step much larger than usual. [Gradient clipping](/tutorials/llm-fundamentals/pretraining-at-scale/#loss-spikes) limits that step by rescaling the gradient when its norm exceeds a threshold. The threshold is usually 1.0, and Llama 2 and DeepSeek-V3 both use 1.0. Its place in the step matters. The gradient is first summed across data-parallel GPUs, then divided by the loss scale if one is used, then measured. With sharded optimizers each GPU holds a slice, so the global norm needs one more all-reduce of a single number per GPU. Clipping comes last, just before the optimizer.
 
 The clip rate is the fraction of steps on which clipping fires, and it is a cheap health signal. A healthy run clips occasionally, while a run that clips on most steps has a lower effective learning rate than its schedule says. A gradient norm that climbs over hundreds of steps often precedes a loss spike, so it warns earlier than the loss does, and some runs skip any update whose norm exceeds a multiple of its recent average.
 

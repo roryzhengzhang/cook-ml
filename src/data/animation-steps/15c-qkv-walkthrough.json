@@ -1,26 +1,26 @@
 {
   "name": "15c qkv walkthrough",
   "title": "Three projections turn each token into a question an advert and a payload",
-  "subtitle": "Section 2 toy: width 2; the token bank asks its question of all three tokens",
+  "subtitle": "Section 2 toy: width 2; the query for “it” is scored against all three keys",
   "steps": [
     {
       "caption": "Each token starts as a vector x. In a trained model it has thousands of numbers. Here it has two, chosen so the arithmetic fits on the screen.",
       "image": "/images/steps/15c-qkv-walkthrough/step-01.png"
     },
     {
-      "caption": "Each x times W_Q gives its query, the question it asks. For bank, (1, 1) times W_Q gives (1, 1).",
+      "caption": "Each x times W_Q gives its query, the question it asks. For “it”, (1, 1) times W_Q gives (1, 1).",
       "image": "/images/steps/15c-qkv-walkthrough/step-02.png"
     },
     {
-      "caption": "The same x times W_K gives its key, the advert it shows to other tokens. river advertises (1, 1).",
+      "caption": "The same x times W_K gives its key, the advert it shows to other tokens. lit advertises (1, 1).",
       "image": "/images/steps/15c-qkv-walkthrough/step-03.png"
     },
     {
-      "caption": "And x times W_V gives its value, the payload it hands over when read. river carries (2, 0).",
+      "caption": "And x times W_V gives its value, the payload it hands over when read. lit carries (2, 0).",
       "image": "/images/steps/15c-qkv-walkthrough/step-04.png"
     },
     {
-      "caption": "A dot product scores every key against bank's query: −1 for the, 2 for river, 1 for bank itself.",
+      "caption": "A dot product scores every key against the pronoun's query: −1 for she, 2 for lit, 1 for itself.",
       "image": "/images/steps/15c-qkv-walkthrough/step-05.png"
     },
     {
@@ -32,15 +32,15 @@
       "image": "/images/steps/15c-qkv-walkthrough/step-07.png"
     },
     {
-      "caption": "Dividing by that sum gives the weights 0.0743, 0.6200 and 0.3057, which add to one, and river gets the most.",
+      "caption": "Dividing by that sum gives the weights 0.0743, 0.6200 and 0.3057, which add to one, and lit gets the most.",
       "image": "/images/steps/15c-qkv-walkthrough/step-08.png"
     },
     {
-      "caption": "Each value is scaled by its weight and the results are added. That sum is the attention output for bank.",
+      "caption": "Each value is scaled by its weight and the results are added. That sum is the attention output for “it”.",
       "image": "/images/steps/15c-qkv-walkthrough/step-09.png"
     },
     {
-      "caption": "The output (1.8514, 0.3800) is mostly river's payload (2, 0). bank now carries information about the word next to it, which is what makes it a river bank.",
+      "caption": "The output (1.8514, 0.3800) is mostly lit's payload (2, 0). The pronoun now carries information about the action “lit”.",
       "image": "/images/steps/15c-qkv-walkthrough/step-10.png"
     }
   ]

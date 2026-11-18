@@ -4,7 +4,7 @@ description: "Where attention's time and memory go, and how grouped and latent k
 sidebar:
   order: 1
   label: "Efficient Attention"
-lastUpdated: 2026-11-16
+lastUpdated: 2026-11-18
 ---
 
 Attention is called quadratic, yet at the length the [reference 7B model](/tutorials/llm-deep-dive/#scale-reference-models) was trained on, the label barely shows. At 4,096 tokens, comparing each token with the tokens before it costs about 8% of a layer's arithmetic, and the feed-forward network in the same layer costs eight times as much. At 32,768 tokens the two are about equal. At 131,072 tokens attention costs four times the feed-forward network.
@@ -114,7 +114,7 @@ The steps below count the bytes one token adds to the cache under three designs 
 
 ## Fixed sparse patterns
 
-**Sparse attention** computes only a chosen subset of the query and key pairs and treats the rest as masked. If each token reads a fixed number of keys, the work grows in proportion to the length instead of its square. On 16 tokens full causal attention computes $16 \times 17 / 2 = 136$ pairs. Each pattern below keeps only a band of them, so a token added at the end costs a fixed number of new pairs rather than one pair per earlier token.
+A token near the end of a long document might only need to read a few nearby tokens. **Sparse attention** computes scores for selected query and key pairs and treats the other pairs as masked. If each token reads a fixed number of keys, the work grows in proportion to the length instead of its square. On 16 tokens full causal attention computes $16 \times 17 / 2 = 136$ pairs. Each pattern below keeps only a band of them, so a token added at the end costs a fixed number of new pairs rather than one pair per earlier token.
 
 ![Sparse attention patterns](/images/llm-deep-dive/16a-sparse-attention-patterns.png)
 
@@ -286,7 +286,7 @@ Here $S_{t-1}^{\top} k_t$ is what the state returns for the key before the write
 **Lightning attention** is an IO-aware way to compute linear attention for training, used in [MiniMax-01](https://arxiv.org/abs/2501.08313). Within a block of tokens it uses the ordinary query-times-key product, and between blocks it passes the running state. That avoids the slow step-by-step running sum over the whole sequence. Whatever the update rule, a fixed state holds a bounded number of distinct facts, so exact recall of one specific earlier token is weaker than with a cache. That is why the production models in the [state space models](#state-space-models) section keep some softmax layers.
 
 ## State space models
-A **state space model** carries a fixed-size state per channel and updates it with a linear recurrence $h_t = \bar{A}_t h_{t-1} + \bar{B}_t x_t$. It then reads an output $y_t = C_t h_t$. Here $x_t$ is the token's input, $h_t$ the state, and $\bar{A}_t$, $\bar{B}_t$ and $C_t$ say how much to keep, how much to write and what to read. Earlier models fixed these numbers for every token, so the model could not decide what to remember from what it read. [S4](https://arxiv.org/abs/2111.00396) is one example. [Mamba](https://arxiv.org/abs/2312.00752) computes them from the token, which is called selectivity. A per-token **step size** $\Delta_t$ sets $\bar{A}_t = e^{\Delta_t A}$. With $A = -1$, a step size of 0.01 keeps 0.990 of the state and writes 0.010 of the input, while a step size of 3 keeps only 0.050 and writes 0.950. A name can be written with a large step and then held across hundreds of tokens with small ones.
+A running summary offers another way to carry information forward. When a token arrives, the model can keep some of the old summary and add information from the new token. A **state space model** does this by keeping a fixed-size state for each channel and updating it with a linear recurrence $h_t = \bar{A}_t h_{t-1} + \bar{B}_t x_t$. It then reads an output $y_t = C_t h_t$. Here $x_t$ is the token's input, $h_t$ the state, and $\bar{A}_t$, $\bar{B}_t$ and $C_t$ say how much to keep, how much to write and what to read. Earlier models fixed these numbers for every token, so the model could not decide what to remember from what it read. [S4](https://arxiv.org/abs/2111.00396) is one example. [Mamba](https://arxiv.org/abs/2312.00752) computes them from the token, which is called selectivity. A per-token **step size** $\Delta_t$ sets $\bar{A}_t = e^{\Delta_t A}$. With $A = -1$, a step size of 0.01 keeps 0.990 of the state and writes 0.010 of the input, while a step size of 3 keeps only 0.050 and writes 0.950. A name can be written with a large step and then held across hundreds of tokens with small ones.
 
 Because $\bar{A}_t$ changes with the token, the convolution shortcut S4 used no longer works. With fixed numbers, every output is the same weighted sum of earlier inputs. Each weight depends only on how far back the input is, so a whole sequence can be computed as one long convolution. Once the keep factor changes from token to token, the weights differ at every position and no single convolution describes them. Mamba instead runs a **selective scan** in a kernel that keeps the state in SRAM, the same IO-aware idea as FlashAttention. The scan is a parallel prefix computation, which works because the update is linear in the state.
 

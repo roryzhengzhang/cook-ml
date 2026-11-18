@@ -1,21 +1,21 @@
 ---
 title: "LLM Fundamentals"
-description: "Large language models went from research projects to everyday tools in a few years, and a lot of what gets said about them is guesswork."
+description: "When a language model sees \"One day\", how does it decide what to write next? This series follows that choice from the text the model reads to the probabilities it produces."
 sidebar:
   order: 0
   label: "Overview"
 lastUpdated: 2026-11-13
 ---
 
-Large language models went from research projects to everyday tools in a few years, and a lot of what gets said about them is guesswork. Why does a model that tops a benchmark disappoint on your own data? Why does each word of an answer cost more to produce than each word of the prompt? Why does an assistant sometimes agree with you when you are wrong? None of these answers is a secret. They follow from a small number of mechanisms, and once you can see those mechanisms, choices that look arbitrary in a product decision or a research paper start to make sense.
+When a language model sees "One day", how does it decide what to write next? This series follows that choice from the text the model reads to the probabilities it produces. The same small model gives us a way to see how training changes those probabilities and how to tell whether its answers have improved.
 
-This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives.
+This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. The project is designed to run on a single consumer GPU, including the built-in GPU on an Apple Silicon Mac. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives.
 
 <aside class="cm-model-card cm-notebook-card" id="story-model">
 <div class="cm-notebook-kicker" id="story-model-project">Project</div>
 <p class="cm-notebook-title">Language model for storytelling</p>
 
-The project builds a small Transformer from scratch and trains it to write short stories. During pretraining, the model learns to predict the next token in [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories). Given an opening such as "One day", the goal is to continue it as a coherent story.
+The project builds a small language model from scratch.
 
 For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct). A request can ask the model to use specific words, include a sentence, follow a plot summary, or add features such as dialogue and a plot twist. An optional Direct Preference Optimization (DPO) lab takes a copy of the SFT model and runs one update to favor a story that uses every requested word over one that misses a word. The notebook gives the base and SFT models the same held-out requests. It checks words and sentences automatically and shows both stories for reviewing plot and features. Pretraining, SFT, and the DPO lab can all run on a single GPU.
 
@@ -43,13 +43,15 @@ For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct]
 
 ![Story model architecture](/images/llm-fundamentals/15-story-model-architecture.png)
 
-The figure above shows the overall architecture of the language model we’ll implement in the project notebook.
+The diagram follows the model from an input token to its next-token scores. Each block updates the same 384-number vector. At the end, the output head turns that vector into 4,096 scores, one for each token in the vocabulary.
 
 ## Reading order and prerequisites
 
-The chapters follow the order in which a model is built and then used. Language modeling sets the goal of predicting the next token, tokenization decides what a token is, and attention and the transformer block assemble the network that makes the prediction. Those four form the foundation, and the rest of the series uses their terms without defining them again. Pretraining and post-training then turn that network into an assistant, and inference, applications and evaluation cover what happens once the model is finished. These later topics lean on the foundation more than on each other. Pretraining and inference both turn the model's parameter count into time and memory, while applications and evaluation draw on everything before them.
+The first four chapters explain what the model predicts and how it makes a prediction. Language Modeling starts with the probability of a short sentence. Tokenization explains why the model might see more tokens than words in that sentence. Attention and the Transformer Block then follow those tokens through the network.
 
-The series builds on the basics of machine learning rather than teaching them. Every example is still worked by hand rather than in code, so no programming is needed. The chapters recall a term from these subjects briefly where they first use it, but they do not teach the subjects themselves:
+Pretraining and Post-Training use that network to build the two checkpoints compared in the notebook. The last three chapters use a trained model to explain how text is generated, how applications give the model context and tools, and how teams check the results. The chapter examples can be followed by hand. The notebook runs the same ideas in Python.
+
+Some familiarity with the following topics will make the worked examples easier to follow.
 
 - **Machine learning basics.** Training usually adjusts a model's parameters by gradient descent to lower a loss on training data. The model is judged on data it has not seen. Overfitting, train and test splits, and the learning rate come up throughout.
 - **Neural networks.** A layer multiplies its input by a weight matrix and applies a nonlinearity, and backpropagation finds the gradient of the loss for every weight.
@@ -70,3 +72,5 @@ The series builds on the basics of machine learning rather than teaching them. E
 | [Inference](/tutorials/llm-fundamentals/inference-and-decoding/) | How a model generates text, how sampling picks each token, and what makes serving fast and cheap. |
 | [LLM Applications](/tutorials/llm-fundamentals/using-llms-in-applications/) | How prompting, retrieval, tools and fine-tuning adapt a finished model to a task. |
 | [Evaluation and Safety](/tutorials/llm-fundamentals/evaluation-reliability-and-safety/) | How models are measured, and how hallucination, contamination and attacks are checked before release. |
+
+[LLM Deep Dive](/tutorials/llm-deep-dive/) follows the same ideas into larger systems, where long prompts, GPU memory, and serving many users change the design. [Training Tool-Using Agent With RL](/tutorials/rl-for-llm-agents/) picks up after post-training and shows how to train and evaluate a model that makes several tool calls to complete a task.

@@ -31,6 +31,13 @@
   "date": "2015-03",
   "description": "A very simple way to improve the performance of almost any machine learning algorithm is to train many different models on the same data and then to average their predictions. Unfortunately, making predictions using a whole ensemble of models is cumbersome and may be too computationally expensive to allow deployment to a large number of users, especially if the individual models are large neural nets. Caruana and…"
  },
+ "https://arxiv.org/abs/1506.02438": {
+  "site": "arXiv",
+  "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation",
+  "authors": "John Schulman, Philipp Moritz, Sergey Levine et al.",
+  "date": "2015-06",
+  "description": "Policy gradient methods are an appealing approach in reinforcement learning because they directly optimize the cumulative reward and can straightforwardly be used with nonlinear function approximators such as neural networks. The two main challenges are the large number of samples typically required, and the difficulty of obtaining stable and steady improvement despite the nonstationarity of the incoming data. We…"
+ },
  "https://arxiv.org/abs/1506.03099": {
   "site": "arXiv",
   "title": "Scheduled Sampling for Sequence Prediction with Recurrent Neural Networks",
@@ -184,6 +191,13 @@
   "authors": "Aaron Harlap, Deepak Narayanan, Amar Phanishayee et al.",
   "date": "2018-06",
   "description": "PipeDream is a Deep Neural Network(DNN) training system for GPUs that parallelizes computation by pipelining execution across multiple machines. Its pipeline parallel computing model avoids the slowdowns faced by data-parallel training when large models and/or limited network bandwidth induce high communication-to-computation ratios. PipeDream reduces communication by up to 95% for large DNNs relative to…"
+ },
+ "https://arxiv.org/abs/1806.07857": {
+  "site": "arXiv",
+  "title": "RUDDER: Return Decomposition for Delayed Rewards",
+  "authors": "Jose A. Arjona-Medina, Michael Gillhofer, Michael Widrich et al.",
+  "date": "2018-06",
+  "description": "We propose RUDDER, a novel reinforcement learning approach for delayed rewards in finite Markov decision processes (MDPs). In MDPs the Q-values are equal to the expected immediate reward plus the expected future rewards. The latter are related to bias problems in temporal difference (TD) learning and to high variance problems in Monte Carlo (MC) learning. Both problems are even more severe when rewards are delayed.…"
  },
  "https://arxiv.org/abs/1807.03819": {
   "site": "arXiv",
@@ -429,6 +443,13 @@
   "authors": "Tom B. Brown, Benjamin Mann, Nick Ryder et al.",
   "date": "2020-05",
   "description": "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from…"
+ },
+ "https://arxiv.org/abs/2006.10739": {
+  "site": "arXiv",
+  "title": "Fourier Features Let Networks Learn High Frequency Functions in Low Dimensional Domains",
+  "authors": "Matthew Tancik, Pratul P. Srinivasan, Ben Mildenhall et al.",
+  "date": "2020-06",
+  "description": "We show that passing input points through a simple Fourier feature mapping enables a multilayer perceptron (MLP) to learn high-frequency functions in low-dimensional problem domains. These results shed light on recent advances in computer vision and graphics that achieve state-of-the-art results by using MLPs to represent complex 3D objects and scenes. Using tools from the neural tangent kernel (NTK) literature, we…"
  },
  "https://arxiv.org/abs/2006.15704": {
   "site": "arXiv",
@@ -955,6 +976,13 @@
   "date": "2023-04",
   "description": "Recent work claims that large language models display emergent abilities, abilities not present in smaller-scale models that are present in larger-scale models. What makes emergent abilities intriguing is two-fold: their sharpness, transitioning seemingly instantaneously from not present to present, and their unpredictability, appearing at seemingly unforeseeable model scales. Here, we present an alternative…"
  },
+ "https://arxiv.org/abs/2305.07759": {
+  "site": "arXiv",
+  "title": "TinyStories: How Small Can Language Models Be and Still Speak Coherent English?",
+  "authors": "Ronen Eldan, Yuanzhi Li",
+  "date": "2023-05",
+  "description": "Language models (LMs) are powerful tools for natural language processing, but they often struggle to produce coherent and fluent text when they are small. Models with around 125M parameters such as GPT-Neo (small) or GPT-2 (small) can rarely generate coherent and consistent English text beyond a few words even after extensive training. This raises the question of whether the emergence of the ability to produce…"
+ },
  "https://arxiv.org/abs/2305.10429": {
   "site": "arXiv",
   "title": "DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining",
@@ -1031,6 +1059,13 @@
   "authors": "Amirhossein Kazemnejad, Inkit Padhi, Karthikeyan Natesan Ramamurthy et al.",
   "date": "2023-05",
   "description": "Length generalization, the ability to generalize from small training context sizes to larger ones, is a critical challenge in the development of Transformer-based language models. Positional encoding (PE) has been identified as a major factor influencing length generalization, but the exact impact of different PE schemes on extrapolation in downstream tasks remains unclear. In this paper, we conduct a systematic…"
+ },
+ "https://arxiv.org/abs/2305.20050": {
+  "site": "arXiv",
+  "title": "Let's Verify Step by Step",
+  "authors": "Hunter Lightman, Vineet Kosaraju, Yura Burda et al.",
+  "date": "2023-05",
+  "description": "In recent years, large language models have greatly improved in their ability to perform complex multi-step reasoning. However, even state-of-the-art models still regularly produce logical mistakes. To train more reliable models, we can turn either to outcome supervision, which provides feedback for a final result, or process supervision, which provides feedback for each intermediate reasoning step. Given the…"
  },
  "https://arxiv.org/abs/2306.00978": {
   "site": "arXiv",
@@ -1508,6 +1543,13 @@
   "date": "2024-05",
   "description": "While Transformers have been the main architecture behind deep learning's success in language modeling, state-space models (SSMs) such as Mamba have recently been shown to match or outperform Transformers at small to medium scale. We show that these families of models are actually quite closely related, and develop a rich framework of theoretical connections between SSMs and variants of attention, connected through…"
  },
+ "https://arxiv.org/abs/2406.12045": {
+  "site": "arXiv",
+  "title": "$τ$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains",
+  "authors": "Shunyu Yao, Noah Shinn, Pedram Razavi et al.",
+  "date": "2024-06",
+  "description": "Existing benchmarks do not test language agents on their interaction with human users or ability to follow domain-specific rules, both of which are vital for deploying them in real world applications. We propose $τ$-bench, a benchmark emulating dynamic conversations between a user (simulated by language models) and a language agent provided with domain-specific API tools and policy guidelines. We employ an…"
+ },
  "https://arxiv.org/abs/2406.17557": {
   "site": "arXiv",
   "title": "The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale",
@@ -1676,6 +1718,13 @@
   "date": "2025-03",
   "description": "The sequential nature of modern LLMs makes them expensive and slow, and speculative sampling has proven to be an effective solution to this problem. Methods like EAGLE perform autoregression at the feature level, reusing top-layer features from the target model to achieve better results than vanilla speculative sampling. A growing trend in the LLM community is scaling up training data to improve model intelligence…"
  },
+ "https://arxiv.org/abs/2503.14476": {
+  "site": "arXiv",
+  "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+  "authors": "Qiying Yu, Zheng Zhang, Ruofei Zhu et al.",
+  "date": "2025-03",
+  "description": "Inference scaling empowers LLMs with unprecedented reasoning ability, with reinforcement learning as the core technique to elicit complex reasoning. However, key technical details of state-of-the-art reasoning LLMs are concealed (such as in OpenAI o1 blog and DeepSeek R1 technical report), thus the community still struggles to reproduce their RL training results. We propose the $\\textbf{D}$ecoupled Clip and…"
+ },
  "https://arxiv.org/abs/2503.18813": {
   "site": "arXiv",
   "title": "Defeating Prompt Injections by Design",
@@ -1689,6 +1738,13 @@
   "authors": "Gemma Team, Aishwarya Kamath, Johan Ferret et al.",
   "date": "2025-03",
   "description": "We introduce Gemma 3, a multimodal addition to the Gemma family of lightweight open models, ranging in scale from 1 to 27 billion parameters. This version introduces vision understanding abilities, a wider coverage of languages and longer context - at least 128K tokens. We also change the architecture of the model to reduce the KV-cache memory that tends to explode with long context. This is achieved by increasing…"
+ },
+ "https://arxiv.org/abs/2503.20783": {
+  "site": "arXiv",
+  "title": "Understanding R1-Zero-Like Training: A Critical Perspective",
+  "authors": "Zichen Liu, Changyu Chen, Wenjun Li et al.",
+  "date": "2025-03",
+  "description": "DeepSeek-R1-Zero has shown that reinforcement learning (RL) at scale can directly enhance the reasoning capabilities of LLMs without supervised fine-tuning. In this work, we critically examine R1-Zero-like training by analyzing its two core components: base models and RL. We investigate a wide range of base models, including DeepSeek-V3-Base, to understand how pretraining characteristics influence RL performance.…"
  },
  "https://arxiv.org/abs/2504.03624": {
   "site": "arXiv",
@@ -1760,6 +1816,27 @@
   "date": "2025-12",
   "description": "We introduce DeepSeek-V3.2, a model that harmonizes high computational efficiency with superior reasoning and agent performance. The key technical breakthroughs of DeepSeek-V3.2 are as follows: (1) DeepSeek Sparse Attention (DSA): We introduce DSA, an efficient attention mechanism that substantially reduces computational complexity while preserving model performance in long-context scenarios. (2) Scalable…"
  },
+ "https://arxiv.org/html/2402.03300#S4.SS1": {
+  "site": "arXiv",
+  "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+  "authors": "Zhihong Shao, Peiyi Wang, Qihao Zhu et al.",
+  "date": "2024-02",
+  "description": "Mathematical reasoning poses a significant challenge for language models due to its complex and structured nature. In this paper, we introduce DeepSeekMath 7B, which continues pre-training DeepSeek-Coder-Base-v1.5 7B with 120B math-related tokens sourced from Common Crawl, together with natural language and code data. DeepSeekMath 7B has achieved an impressive score of 51.7% on the competition-level MATH benchmark…"
+ },
+ "https://arxiv.org/html/2402.03300#S4.SS1.SSS1": {
+  "site": "arXiv",
+  "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+  "authors": "Zhihong Shao, Peiyi Wang, Qihao Zhu et al.",
+  "date": "2024-02",
+  "description": "Mathematical reasoning poses a significant challenge for language models due to its complex and structured nature. In this paper, we introduce DeepSeekMath 7B, which continues pre-training DeepSeek-Coder-Base-v1.5 7B with 120B math-related tokens sourced from Common Crawl, together with natural language and code data. DeepSeekMath 7B has achieved an impressive score of 51.7% on the competition-level MATH benchmark…"
+ },
+ "https://arxiv.org/html/2602.15763v2#S3.SS6": {
+  "site": "arXiv",
+  "title": "GLM-5: from Vibe Coding to Agentic Engineering",
+  "authors": "GLM-5-Team, :, Aohan Zeng et al.",
+  "date": "2026-02",
+  "description": "We present GLM-5, a next-generation foundation model designed to transition the paradigm of vibe coding to agentic engineering. Building upon the agentic, reasoning, and coding (ARC) capabilities of its predecessor, GLM-5 adopts DSA to significantly reduce training and inference costs while maintaining long-context fidelity. To advance model alignment and autonomy, we implement a new asynchronous reinforcement…"
+ },
  "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf": {
   "site": "cdn.openai.com",
   "title": "language_models_are_unsupervised_multitask_learners.pdf",
@@ -1782,6 +1859,22 @@
   "description": "To get the most out of AI, optimizations are critical. When developers think about optimizing AI models for inference, model compression techniques&mdash;such as quantization, distillation…",
   "image": "https://developer-blogs.nvidia.com/wp-content/uploads/2025/06/nvidia-blackwell.png"
  },
+ "https://docs.e2b.dev/network/internet-access": {
+  "site": "E2B Docs",
+  "title": "Internet access - E2B Docs",
+  "description": "Every sandbox has outbound internet access by default. Control and restrict it with a simple on/off switch or fine-grained allow and deny lists.",
+  "image": "https://e2b.mintlify.site/images/og/generated/network/internet-access.png"
+ },
+ "https://docs.nvidia.com/deeplearning/transformer-engine/examples/fp8_primer.html": {
+  "site": "docs.nvidia.com",
+  "title": "Using FP8 and FP4 with Transformer Engine — Transformer Engine 2.21.0",
+  "description": ""
+ },
+ "https://docs.nvidia.com/nemo/rl/latest/guides/async-grpo.html": {
+  "site": "docs.nvidia.com",
+  "title": "Train with Async GRPO — NeMo-RL",
+  "description": ""
+ },
  "https://docs.sglang.io/advanced_features/lora.html": {
   "site": "SGLang Documentation",
   "title": "LoRA Serving - SGLang Documentation",
@@ -1791,6 +1884,16 @@
  "https://docs.vllm.ai/en/latest/api/vllm/lora/punica_wrapper/index.html": {
   "site": "docs.vllm.ai",
   "title": "punica_wrapper - vLLM",
+  "description": ""
+ },
+ "https://docs.vllm.ai/en/latest/design/cuda_graphs.html": {
+  "site": "docs.vllm.ai",
+  "title": "CUDA Graphs - vLLM",
+  "description": ""
+ },
+ "https://docs.vllm.ai/en/latest/design/prefix_caching.html": {
+  "site": "docs.vllm.ai",
+  "title": "Automatic Prefix Caching - vLLM",
   "description": ""
  },
  "https://docs.vllm.ai/en/latest/features/lora.html": {
@@ -1807,6 +1910,29 @@
   "site": "docs.vllm.ai",
   "title": "Optimization and Tuning - vLLM",
   "description": ""
+ },
+ "https://doi.org/10.1007/BF00992696": {
+  "site": "doi.org",
+  "title": "Client Challenge",
+  "description": ""
+ },
+ "https://github.com/PrimeIntellect-ai/prime-rl": {
+  "site": "GitHub",
+  "title": "GitHub - PrimeIntellect-ai/prime-rl: Agentic RL Training at Scale",
+  "description": "Agentic RL Training at Scale. Contribute to PrimeIntellect-ai/prime-rl development by creating an account on GitHub.",
+  "image": "https://opengraph.githubassets.com/f33099e87309cc902e45c90a365f13a66f9b5314ea2d1f3bb288fb50a2575d23/PrimeIntellect-ai/prime-rl"
+ },
+ "https://github.com/THUDM/slime/blob/main/scripts/models/qwen2.5-1.5B.sh": {
+  "site": "GitHub",
+  "title": "slime/scripts/models/qwen2.5-1.5B.sh at main · THUDM/slime",
+  "description": "slime is an LLM training framework for RL Scaling. - THUDM/slime",
+  "image": "https://opengraph.githubassets.com/698f9cd510250daa79f9eeae9ebf9e243e6ad25d5a1eca51569b12a65814fc31/THUDM/slime"
+ },
+ "https://github.com/THUDM/slime/blob/main/scripts/run-qwen3-4B-base-sft.sh": {
+  "site": "GitHub",
+  "title": "slime/scripts/run-qwen3-4B-base-sft.sh at main · THUDM/slime",
+  "description": "slime is an LLM training framework for RL Scaling. - THUDM/slime",
+  "image": "https://opengraph.githubassets.com/698f9cd510250daa79f9eeae9ebf9e243e6ad25d5a1eca51569b12a65814fc31/THUDM/slime"
  },
  "https://github.com/ai-dynamo/dynamo": {
   "site": "GitHub",
@@ -1844,6 +1970,33 @@
   "description": "Source for cook-ml.com: ML tutorials and blog (Astro + Starlight) - Issues · roryzhengzhang/cook-ml",
   "image": "https://opengraph.githubassets.com/9cb86e6f9c50042ea7f23a796389200dbc18b418914d7486dd81939757c2fc6d/roryzhengzhang/cook-ml"
  },
+ "https://github.com/sierra-research/tau2-bench": {
+  "site": "GitHub",
+  "title": "GitHub - sierra-research/tau2-bench: τ-Bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains",
+  "description": "τ-Bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains - sierra-research/tau2-bench",
+  "image": "https://opengraph.githubassets.com/9252a495d42196aeed94b9fb8188d32a89eddaaffb8df79df08bac97a0e461e2/sierra-research/tau2-bench"
+ },
+ "https://github.com/stanford-cs336/assignment2-systems/blob/main/cs336_assignment2_systems.pdf": {
+  "site": "github.com",
+  "title": "cs336_assignment2_systems.pdf",
+  "kind": "PDF"
+ },
+ "https://github.com/stanford-cs336/assignment3-scaling/blob/main/cs336_assignment3_scaling.pdf": {
+  "site": "github.com",
+  "title": "cs336_assignment3_scaling.pdf",
+  "kind": "PDF"
+ },
+ "https://github.com/stanford-cs336/assignment5-alignment/blob/main/cs336_spring2026_assignment5_alignment.pdf": {
+  "site": "github.com",
+  "title": "cs336_spring2026_assignment5_alignment.pdf",
+  "kind": "PDF"
+ },
+ "https://github.com/verl-project/verl": {
+  "site": "GitHub",
+  "title": "GitHub - verl-project/verl: verl/HybridFlow: A Flexible and Efficient RL Post-Training Framework",
+  "description": "verl/HybridFlow: A Flexible and Efficient RL Post-Training Framework - verl-project/verl",
+  "image": "https://opengraph.githubassets.com/df6ac83ec0847972395eaf952ca84abac0e9976c781f2ef86b6bdf83264eee6c/verl-project/verl"
+ },
  "https://huggingface.co/EleutherAI/pythia-6.9b/blob/main/config.json": {
   "site": "huggingface.co",
   "title": "config.json · EleutherAI/pythia-6.9b at main",
@@ -1866,11 +2019,22 @@
   "description": "Text Generation model with 81B parameters. Download, explore files and run it on Hugging Face.",
   "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/models/Qwen/Qwen3-Next-80B-A3B-Instruct.png"
  },
+ "https://huggingface.co/blog/rl-environments": {
+  "site": "huggingface.co",
+  "title": "Welcome RL Environments to the hub",
+  "image": "https://huggingface.co/blog/assets/datasets-filters/thumbnail.png"
+ },
  "https://huggingface.co/datasets/openai/mrcr": {
   "site": "huggingface.co",
   "title": "openai/mrcr · Datasets at Hugging Face",
   "description": "Dataset with 2.4k rows (Tabular, Text). Explore, preview and download it on Hugging Face.",
   "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/datasets/openai/mrcr.png"
+ },
+ "https://huggingface.co/datasets/roneneldan/TinyStories": {
+  "site": "huggingface.co",
+  "title": "roneneldan/TinyStories · Datasets at Hugging Face",
+  "description": "Dataset with 2.14M rows (Text). Explore, preview and download it on Hugging Face.",
+  "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/datasets/roneneldan/TinyStories.png"
  },
  "https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct": {
   "site": "huggingface.co",
@@ -1883,6 +2047,16 @@
   "title": "config.json · deepseek-ai/DeepSeek-V3 at main",
   "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/models/deepseek-ai/DeepSeek-V3.png"
  },
+ "https://huggingface.co/docs/openenv/index": {
+  "site": "huggingface.co",
+  "title": "OpenEnv: Agentic Execution Environments · Hugging Face",
+  "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/docs/openenv/index.png"
+ },
+ "https://huggingface.co/docs/trl/grpo_trainer": {
+  "site": "huggingface.co",
+  "title": "GRPO Trainer · Hugging Face",
+  "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/docs/trl/grpo_trainer.png"
+ },
  "https://huggingface.co/moonshotai/Kimi-K2-Instruct": {
   "site": "huggingface.co",
   "title": "moonshotai/Kimi-K2-Instruct · Hugging Face",
@@ -1894,21 +2068,73 @@
   "title": "Muon: An optimizer for hidden layers in neural networks | Keller Jordan blog",
   "description": ""
  },
+ "https://langfuse.com/docs/evaluation/experiments/datasets": {
+  "site": "langfuse.com",
+  "title": "Datasets - Langfuse",
+  "description": "Use Langfuse Datasets to create structured experiments to test and benchmark LLM applications.",
+  "image": "https://langfuse.com/api/og?title=Datasets&description=Use+Langfuse+Datasets+to+create+structured+experiments+to+test+and+benchmark+LLM+applications.&section=Docs"
+ },
+ "https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk": {
+  "site": "langfuse.com",
+  "title": "Experiments via SDK - Langfuse",
+  "description": "Start experiments via the Langfuse SDK to programmatically test your application",
+  "image": "https://langfuse.com/api/og?title=Experiments+via+SDK&description=Start+experiments+via+the+Langfuse+SDK+to+programmatically+test+your+application&section=Docs"
+ },
  "https://lmsys.org/blog/2025-05-05-large-scale-ep/": {
   "site": "lmsys.org",
   "title": "Deploying DeepSeek with PD Disaggregation and Large-Scale Expert Parallelism on 96 H100 GPUs",
   "description": "DeepSeek is a popular open-source large language model (LLM) praised for its strong performance. However, its large size and unique architecture, which uses Multi-head Latent Attention (MLA) and Mixture of Experts (MoE), require an advanced system for efficient serving at scale.",
   "image": "https://www.lmsys.org/blog/2025-05-05-large-scale-ep/opengraph-image?2f2a10b2cba4f923"
  },
+ "https://mistral.ai/news/mixtral-of-experts": {
+  "site": "Mistral",
+  "title": "Mixtral of experts | Mistral AI",
+  "description": "The most powerful AI platform for enterprises. Customize, fine-tune, and deploy AI assistants, autonomous agents, and multimodal AI with open models.",
+  "image": "https://mistral.ai/cms-media/api/media/file/thumbnail-01.jpg"
+ },
+ "https://mlflow.org/docs/latest/ml/model-registry/": {
+  "site": "mlflow.org",
+  "title": "ML Model Registry | MLflow AI Platform",
+  "description": ""
+ },
+ "https://modal.com/docs/guide/sandbox-networking": {
+  "site": "Modal",
+  "title": "Networking and security",
+  "description": "Secure Modal Sandboxes with outbound CIDR and domain allowlists, block all network access, restrict inbound traffic, and expose ports over HTTP and WebSockets.",
+  "image": "https://modal.com/docs/social-image.png?title=Networking+and+security&socialType=docs"
+ },
  "https://nvidia.github.io/TensorRT-LLM/features/paged-attention-ifb-scheduler.html": {
   "site": "nvidia.github.io",
   "title": "Paged Attention, IFB, and Request Scheduling — TensorRT LLM",
   "description": ""
  },
+ "https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/NgHaradaRussell-shaping-ICML1999.pdf": {
+  "site": "people.eecs.berkeley.edu",
+  "title": "NgHaradaRussell-shaping-ICML1999.pdf",
+  "kind": "PDF"
+ },
  "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d848cb2c84f0bba7f1f73cf232734c40-Abstract-Conference.html": {
   "site": "proceedings.iclr.cc",
   "title": "Small-scale proxies for large-scale Transformer training instabilities",
   "description": ""
+ },
+ "https://pytorch.org/blog/pytorch-2-15-release-blog/#deprecations-and-backwards-incompatible-changes": {
+  "site": "PyTorch",
+  "title": "PyTorch 2.15 Release Blog - PyTorch",
+  "description": "Explore PyTorch 2.15, featuring a rewritten NCCL backend by default, NVGEMM decode improvements, FP8 on Apple Silicon, and expanded platform support.",
+  "image": "https://pytorch.org/wp-content/uploads/2026/10/2.15-Release-Blog-Graphic.png"
+ },
+ "https://pytorch.org/blog/reducing-checkpointing-times/": {
+  "site": "PyTorch",
+  "title": "Reducing Model Checkpointing Times by Over 10x with PyTorch Distributed Asynchronous Checkpointing - PyTorch",
+  "description": "Summary: With PyTorch distributed’s new asynchronous checkpointing feature, developed with feedback from IBM, we show how IBM Research Team is able to implement and reduce effective checkpointing time by a factor...",
+  "image": "https://pytorch.org/wp-content/uploads/2024/11/fg1-6.png"
+ },
+ "https://pytorch.org/get-started/locally/": {
+  "site": "PyTorch",
+  "title": "Get Started Locally - PyTorch",
+  "description": "Set up PyTorch easily with local installation or supported cloud platforms.",
+  "image": "https://pytorch.org/wp-content/uploads/2025/01/pytorch_seo.png"
  },
  "https://scholar.google.com/citations?user=p8pwjGsAAAAJ&hl=en": {
   "site": "scholar.google.com",
@@ -1931,6 +2157,41 @@
   "title": "LoRA Without Regret",
   "description": "How LoRA matches full training performance more broadly than expected.",
   "image": "https://thinkingmachines.ai/blog/lora/images/cover-social.png"
+ },
+ "https://thudm.github.io/slime/get_started/agent.html": {
+  "site": "thudm.github.io",
+  "title": "Agentic RL Training Roadmap — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/customization.html": {
+  "site": "thudm.github.io",
+  "title": "Customization Guide — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/customization.html#returning-multiple-training-samples-for-one-prompt": {
+  "site": "thudm.github.io",
+  "title": "Customization Guide — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/experiment-guide.html": {
+  "site": "thudm.github.io",
+  "title": "Tutorial: build and understand an RL experiment — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/experiment-guide.html#choose-gpu-ownership-then-scheduling": {
+  "site": "thudm.github.io",
+  "title": "Tutorial: build and understand an RL experiment — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/experiment-guide.html#choose-the-task-and-model": {
+  "site": "thudm.github.io",
+  "title": "Tutorial: build and understand an RL experiment — slime",
+  "description": ""
+ },
+ "https://thudm.github.io/slime/get_started/quick_start.html": {
+  "site": "thudm.github.io",
+  "title": "Environment setup — slime",
+  "description": ""
  },
  "https://transformer-circuits.pub/2021/framework/index.html": {
   "site": "transformer-circuits.pub",
@@ -1965,6 +2226,23 @@
   "title": "NVIDIA GB200 NVL72",
   "description": "Discover the powerful GB200 NVL72 GPU, engineered for AI workloads and next-gen data centers.",
   "image": "https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/gb200-superchip/gb200-nvl72-og.jpg"
+ },
+ "https://www.nvidia.com/en-us/data-center/l40s/": {
+  "site": "NVIDIA",
+  "title": "NVIDIA L40S GPU",
+  "description": "The Most Powerful Universal GPU.",
+  "image": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/l40s/nvidia-l40s-og-1200x630.jpg"
+ },
+ "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/": {
+  "site": "NVIDIA",
+  "title": "NVIDIA GeForce RTX 4090 Graphics Cards",
+  "description": "For gamers and creators.",
+  "image": "https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/rtx-4090/geforce-ada-4090-web-og-1200x630.jpg"
+ },
+ "https://www.usenix.org/conference/osdi22/presentation/yu": {
+  "site": "usenix.org",
+  "title": "Orca: A Distributed Serving System for Transformer-Based Generative Models | USENIX",
+  "description": ""
  },
  "https://x.com/roryzzhang": {
   "site": "X (formerly Twitter)",

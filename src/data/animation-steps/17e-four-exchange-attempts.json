@@ -1,0 +1,19 @@
+{
+  "name": "17e four exchange attempts",
+  "title": "Four exchange attempts",
+  "subtitle": "The population spread is 0.5 for rewards of 1, 0, 1 and 0.",
+  "steps": [
+    {
+      "caption": "The raw scores have mean 0.5.",
+      "image": "/images/steps/17e-four-exchange-attempts/step-01.png"
+    },
+    {
+      "caption": "Subtracting the mean gives deviations of plus or minus 0.5.",
+      "image": "/images/steps/17e-four-exchange-attempts/step-02.png"
+    },
+    {
+      "caption": "Dividing by the spread gives advantages of plus or minus 1.",
+      "image": "/images/steps/17e-four-exchange-attempts/step-03.png"
+    }
+  ]
+}

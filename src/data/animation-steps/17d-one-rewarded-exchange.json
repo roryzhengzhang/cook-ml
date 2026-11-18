@@ -1,0 +1,19 @@
+{
+  "name": "17d one rewarded exchange",
+  "title": "One rewarded exchange",
+  "subtitle": "One sampled action changes the odds on the same observation.",
+  "steps": [
+    {
+      "caption": "The exchange chance starts at 0.4.",
+      "image": "/images/steps/17d-one-rewarded-exchange/step-01.png"
+    },
+    {
+      "caption": "The success gives a positive update.",
+      "image": "/images/steps/17d-one-rewarded-exchange/step-02.png"
+    },
+    {
+      "caption": "The next exchange is more likely.",
+      "image": "/images/steps/17d-one-rewarded-exchange/step-03.png"
+    }
+  ]
+}

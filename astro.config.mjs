@@ -3,10 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
-import remarkStoryNotebook, { notebookFile } from './scripts/remark-story-notebook.mjs';
+import remarkStoryNotebook, { notebookProjects, rlNotebook } from './scripts/remark-story-notebook.mjs';
 import rehypeKatex from 'rehype-katex';
 import rehypeMathNowrap from './scripts/rehype-math-nowrap.mjs';
-import { notebookPageFile, notebookSidebar, seriesSidebar } from './scripts/series-sidebar.mjs';
+import { notebookSidebar, seriesSidebar } from './scripts/series-sidebar.mjs';
 
 export default defineConfig({
   site: 'https://cook-ml.com',
@@ -25,8 +25,10 @@ export default defineConfig({
       name: 'cook-ml-notebook',
       hooks: {
         'astro:config:setup': ({ addWatchFile }) => {
-          addWatchFile(notebookFile);
-          addWatchFile(notebookPageFile);
+          for (const project of notebookProjects) {
+            addWatchFile(project.file);
+            addWatchFile(new URL(`./src/content/docs/${project.pageFile}`, import.meta.url));
+          }
           addWatchFile(new URL('./scripts/remark-story-notebook.mjs', import.meta.url));
         },
       },
@@ -78,6 +80,13 @@ export default defineConfig({
         {
           label: 'LLM Deep Dive',
           items: seriesSidebar('llm-deep-dive'),
+        },
+        {
+          label: 'Training Tool-Using Agent With RL',
+          items: [
+            ...seriesSidebar('rl-for-llm-agents'),
+            notebookSidebar(rlNotebook),
+          ],
         },
       ],
     }),

@@ -4,7 +4,7 @@ description: "How a router sends each token to a few of many fine-grained expert
 sidebar:
   order: 5
   label: "Mixture of Experts"
-lastUpdated: 2026-11-16
+lastUpdated: 2026-11-18
 ---
 
 The name Mixtral 8x7B suggests eight 7B models side by side, which would come to about 58 billion parameters. The model has 46.7 billion. Only the feed-forward network is copied eight times, while attention, the embeddings and the norms exist once. Even 46.7 billion overstates what any one token uses, because each token runs through 12.9 billion of them. The larger number decides how much memory the model needs and the smaller one decides how much arithmetic each token costs.
@@ -58,7 +58,7 @@ A router trained only on the language modeling loss tends to concentrate tokens 
 Imbalance also wastes hardware long before collapse. An expert's **load** is the number of tokens routed to it in a batch. Take the batch that the [load balancing loss](#load-balancing-loss) section works through, eight tokens routed top-1 over four experts. Their loads are 4, 2, 1 and 1, with a mean of 2 and a maximum of 4. When each expert sits on its own GPU, the layer cannot move on until the busiest GPU finishes. The [expert parallelism](#expert-parallelism) section describes that layout. That GPU is a **straggler**. It works for 4 token-units of time while the others work for 2, 1 and 1, so the expert phase runs at $2/4 = 50\%$ of the speed of a balanced batch. The busiest expert also sets how much buffer memory every GPU must reserve. Balance is therefore both a quality problem and a systems problem. Unused experts waste capacity, and uneven experts waste time.
 
 ## Load balancing loss
-The usual fix adds a small term to the training loss that grows when tokens are spread unevenly. The Switch Transformer form is
+The prediction loss can reward a router for choosing the same expert repeatedly, even if that expert becomes a bottleneck. A **load balancing loss** adds a penalty when the experts receive uneven shares of tokens. The Switch Transformer computes it as follows.
 
 $$
 \mathcal{L}_{\text{aux}} = \alpha \, E \sum_{i=1}^{E} f_i P_i.

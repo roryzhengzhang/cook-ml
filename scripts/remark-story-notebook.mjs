@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 export const notebookFile = new URL('../public/notebooks/llm-fundamentals.ipynb', import.meta.url);
 export const notebookPage = '/tutorials/llm-fundamentals/notebook/';
-const tutorial = '/tutorials/llm-fundamentals/';
 
 const html = (value) => ({ type: 'html', value });
 const text = (value) => ({ type: 'text', value });
@@ -12,13 +11,13 @@ const code = (cell) => ({ type: 'code', lang: 'python', value: cell.source });
 const escape = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 
-function loadNotebook() {
-  return JSON.parse(readFileSync(notebookFile, 'utf8')).cells.map((item) => ({
+function loadNotebook(project) {
+  return JSON.parse(readFileSync(project.file, 'utf8')).cells.map((item) => ({
     ...item, source: Array.isArray(item.source) ? item.source.join('') : item.source,
   }));
 }
 
-function loadCells(notebook = loadNotebook()) {
+function loadCells(notebook) {
   const seen = new Set();
   const cells = [];
   for (const item of notebook) {
@@ -43,6 +42,28 @@ export const notebookStages = [
   ['adamw', 'Base training'], ['temperature', 'Generation'], ['instruction-data', 'Instruction tuning'],
   ['constraints', 'Evaluation'], ['preference-pairs', 'Experiments'],
 ];
+export const rlNotebook = {
+  file: new URL('../public/notebooks/rl-agent.ipynb', import.meta.url),
+  page: '/tutorials/rl-for-llm-agents/notebook/',
+  pageFile: 'rl-agent-notebook.md',
+  series: 'rl-for-llm-agents',
+  label: 'Order exchange agent notebook',
+  stages: [
+    ['store-fixture', 'Environment and verification'],
+    ['store-sft-mask', 'Policy gradient foundations'],
+    ['multiturn-trace', 'Multi-turn training'],
+    ['repeated-evaluation', 'Evaluation and release'],
+  ],
+};
+export const storyNotebook = {
+  file: notebookFile,
+  page: notebookPage,
+  pageFile: 'story-model-notebook.md',
+  series: 'llm-fundamentals',
+  label: 'Story model notebook',
+  stages: notebookStages,
+};
+export const notebookProjects = [storyNotebook, rlNotebook];
 const STAGE_NOTES = {
   'preference-pairs': 'These cells extend the project past the main run. Cells that train or sample extra models run only when COOK_ML_LABS=1. The rest define small, checked functions that the chapters discuss.',
 };
@@ -54,10 +75,10 @@ function explanation(markdown) {
   return { title, body: fromMarkdown(lines.join('\n').trim()).children };
 }
 
-function notebookFrame(notebook) {
+function notebookFrame(notebook, project) {
   const cells = loadCells(notebook);
   const byId = new Map(cells.map((cell) => [cell.id, cell]));
-  const nodes = [html('<div class="cm-nb" role="region" aria-label="Story model notebook">')];
+  const nodes = [html(`<div class="cm-nb" role="region" aria-label="${project.label}">`)];
   let pending = null, count = 0;
   for (const item of notebook) {
     if (item.cell_type === 'markdown') {
@@ -65,7 +86,7 @@ function notebookFrame(notebook) {
       continue;
     }
     const cell = byId.get(item.id);
-    const stage = notebookStages.find(([id]) => id === cell.id);
+    const stage = project.stages.find(([id]) => id === cell.id);
     if (stage) {
       nodes.push({ type: 'heading', depth: 3, data: { hProperties: { className: ['cm-nb-stage'] } },
         children: [text(stage[1])] });
@@ -73,7 +94,7 @@ function notebookFrame(notebook) {
     }
     count += 1;
     const link = cell.chapter
-      ? `<a href="${tutorial}${cell.chapter}/#codepad-${cell.id}">Explained in ${escape(CHAPTERS[cell.chapter] ?? 'the tutorial')} <span aria-hidden="true">↗</span></a>`
+      ? `<a href="/tutorials/${project.series}/${cell.chapter}/#codepad-${cell.id}">Explained in ${escape(CHAPTERS[cell.chapter] ?? 'the tutorial')} <span aria-hidden="true">↗</span></a>`
       : '';
     nodes.push(html(`<section class="cm-nb-cell" id="${cell.id}">
 <div class="cm-nb-head"><span class="cm-nb-title">${escape(pending?.title ?? cell.title)}</span>${link}</div>`));
@@ -99,7 +120,7 @@ const CHAPTERS = {
   'evaluation-reliability-and-safety': 'Evaluation and Safety',
 };
 
-function codepad(cell) {
+function codepad(cell, project) {
   return [
     html(`<details class="cm-codepad" id="codepad-${cell.id}">
 <summary>
@@ -112,7 +133,7 @@ function codepad(cell) {
 </summary>
 <div class="cm-codepad-body">
   <p class="cm-codepad-summary">${escape(cell.summary)}</p>
-  <div class="cm-codepad-links"><a href="${notebookPage}#${cell.id}">Notebook cell <span aria-hidden="true">↗</span></a></div>`),
+  <div class="cm-codepad-links"><a href="${project.page}#${cell.id}">Notebook cell <span aria-hidden="true">↗</span></a></div>`),
     code(cell),
     html('</div></details>'),
   ];
@@ -133,20 +154,23 @@ function replaceText(node, before, after) {
 
 export default function remarkStoryNotebook() {
   return (tree, file) => {
-    const filename = file.path ?? file.history?.[0] ?? '';
-    const fromChapter = /[/\\]tutorials[/\\]llm-fundamentals[/\\]([^/\\]+)\.md$/.exec(filename)?.[1];
-    const notebookView = filename.endsWith('/story-model-notebook.md');
-    if (!fromChapter && !notebookView) return;
+    const filename = (file.path ?? file.history?.[0] ?? '').replaceAll('\\', '/');
+    const chapter = /\/tutorials\/([^/]+)\/([^/]+)\.md$/.exec(filename);
+    const project = notebookProjects.find((entry) =>
+      entry.series === chapter?.[1] || filename.endsWith(`/${entry.pageFile}`));
+    if (!project) return;
+    const fromChapter = chapter?.[2];
+    const notebookView = filename.endsWith(`/${project.pageFile}`);
     if (notebookView) {
       const marker = tree.children.findIndex((node) => node.type === 'html' && node.value.trim() === '<!-- notebook -->');
-      if (marker < 0) throw new Error('story-model-notebook.md needs a <!-- notebook --> marker');
+      if (marker < 0) throw new Error(`${project.pageFile} needs a <!-- notebook --> marker`);
       // Keep prose subsections in the outline and accessible as headings.
       for (const node of tree.children) {
         if (node.type === 'heading' && node.depth === 3) {
           node.data = { ...node.data, hProperties: { className: ['sr-only'] } };
         }
       }
-      tree.children.splice(marker, 1, ...notebookFrame(loadNotebook()));
+      tree.children.splice(marker, 1, ...notebookFrame(loadNotebook(project), project));
       return;
     }
     if (fromChapter === 'index') {
@@ -155,13 +179,13 @@ export default function remarkStoryNotebook() {
       return;
     }
 
-    const selected = loadCells().filter((cell) => cell.chapter === fromChapter);
+    const selected = loadCells(loadNotebook(project)).filter((cell) => cell.chapter === fromChapter);
     const inserted = new Set();
     const rewritten = [];
     let section;
     function appendCodepads() {
       for (const cell of selected.filter((entry) => entry.section === section)) {
-        rewritten.push(...codepad(cell));
+        rewritten.push(...codepad(cell, project));
         inserted.add(cell.id);
       }
     }

@@ -1,13 +1,13 @@
 {
   "name": "15g speculative accept reject",
   "title": "One target pass checks four drafted tokens and keeps the agreeing prefix",
-  "subtitle": "Prompt \"My coffee is\"; draft probability q and target probability p for each drafted token; accept if a uniform draw u < min(1, p / q)",
+  "subtitle": "Prompt \"The attic was\"; draft probability q and target probability p for each drafted token; accept if a uniform draw u < min(1, p / q)",
   "steps": [
     {
-      "caption": "The context so far is \"My coffee is\". A small draft model is about to guess ahead."
+      "caption": "The context so far is \"The attic was\". A small draft model is about to guess ahead."
     },
     {
-      "caption": "The draft model runs 4 cheap steps and proposes \"too hot to drink\", recording its own probability q for each guess.",
+      "caption": "The draft model runs 4 cheap steps and proposes \"too dark to see\", recording its own probability q for each guess.",
       "image": "/images/steps/15g-speculative-accept-reject/step-02.png"
     },
     {
@@ -15,11 +15,11 @@
       "image": "/images/steps/15g-speculative-accept-reject/step-03.png"
     },
     {
-      "caption": "For \"hot\" the draft was overconfident: p / q = 0.42 / 0.60 = 0.70. The uniform draw u = 0.35 is below 0.70, so \"hot\" is accepted.",
+      "caption": "For \"dark\" the draft was overconfident: p / q = 0.42 / 0.60 = 0.70. The uniform draw u = 0.35 is below 0.70, so \"dark\" is accepted.",
       "image": "/images/steps/15g-speculative-accept-reject/step-04.png"
     },
     {
-      "caption": "For \"to\" the ratio is 0.30 / 0.50 = 0.60 and the draw u = 0.81 is above it, so \"to\" is rejected. Everything after the first rejection, here \"drink\", is thrown away.",
+      "caption": "For \"to\" the ratio is 0.30 / 0.50 = 0.60 and the draw u = 0.81 is above it, so \"to\" is rejected. Everything after the first rejection, here \"see\", is thrown away.",
       "image": "/images/steps/15g-speculative-accept-reject/step-05.png"
     },
     {

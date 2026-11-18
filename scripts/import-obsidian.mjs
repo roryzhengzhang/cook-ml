@@ -69,6 +69,15 @@ const SHORT_TITLES = {
   '16f': 'Efficient Adaptation',
   '16g': 'Domain Adaptation',
   '16h': 'Serving Systems',
+  '17a': 'Agent and Environment',
+  '17b': 'Tasks and Verification',
+  '17c': 'Model Baselines',
+  '17d': 'Policy Gradients',
+  '17e': 'GRPO',
+  '17f': 'Multi-Turn Rollouts',
+  '17g': 'Evaluation and Ablations',
+  '17h': 'Training Systems',
+  '17i': 'Continual Learning',
 };
 
 // Published series. Links from one published series to another become site links; links to
@@ -76,6 +85,7 @@ const SHORT_TITLES = {
 const PUBLISHED = [
   { folder: '15 LLM Fundamentals', series: 'llm-fundamentals', title: 'LLM Fundamentals' },
   { folder: '16 LLM Deep Dive', series: 'llm-deep-dive', title: 'LLM Deep Dive' },
+  { folder: '17 RL for LLM Agents', series: 'rl-for-llm-agents', title: 'Training Tool-Using Agent With RL' },
 ];
 
 // Build the page map first, so links between notes can be resolved. `own` marks the pages of
@@ -118,7 +128,12 @@ const figureName = (file) => {
   const ext = path.extname(file).toLowerCase();
   return slugify(file.slice(0, -ext.length)) + ext;
 };
+const FIGURE_ALTS = {
+  '15c pronoun attention weights.png': 'Illustrative attention weights from “it”. With “lit”, the lantern gets 62.4%. With “wore”, the scarf gets 62.4%.',
+  '15c scaled dot product attention.png': 'Query, key and value vectors for she, lit and it. The query for it scores the three keys. Softmax gives weights 0.0743, 0.6200 and 0.3057, which mix the values into (1.8514, 0.3800).',
+};
 const figureAlt = (file) => {
+  if (FIGURE_ALTS[file]) return FIGURE_ALTS[file];
   const base = file.replace(/\.[a-z0-9]+$/i, '').replace(/^\d+[a-z]?\s+/, '');
   return base.charAt(0).toUpperCase() + base.slice(1);
 };
@@ -459,18 +474,18 @@ const STEP_INTROS = {
   '15a-softmax-walkthrough': 'After the context "the cat", four candidate tokens get raw scores of 2.0, 1.0, 0.5 and −1.0. The example turns them into probabilities that sum to one, then shows how temperature sharpens or flattens them.',
   '15b-bpe-merges': 'A tiny training corpus holds low 5 times, lower 2 times, lowest 3 times and newest 6 times. Byte pair encoding starts from single letters and keeps merging the most frequent neighbouring pair into a new token.',
   '15b-embedding-lookup': 'A five-token vocabulary gives each token a row of 3 learned numbers. The example fetches the vector for "cat", id 1, once by multiplying a one-hot vector by the table and once by reading the row directly.',
-  '15c-qkv-walkthrough': 'In the phrase "the river bank", each token is a vector of just two numbers so every product fits on screen. The token bank turns into a query, compares it with all three keys, and comes out carrying mostly the information of river.',
-  '15c-rope-relative-angle': 'The query of bank and the keys from the attention example are rotated by their positions, 45 degrees per step. Placing the same phrase at different points in a sentence shows that the score depends only on how far apart two tokens are.',
+  '15c-qkv-walkthrough': 'In “she lit it”, every token starts with two numbers. Follow the query for “it” as it scores all three keys, then use softmax to find how much of each value enters the output.',
+  '15c-rope-relative-angle': 'The query for “it” and the keys from “she lit it” are rotated by their positions, 45 degrees per step. Placing the same phrase at different points in a sentence shows that the score depends only on how far apart two tokens are.',
   '15d-mixture-of-experts-routing': 'A layer with four expert feed-forward networks keeps the top two for each token. The first token is followed from its router scores to its weighted output, then five more tokens show how unevenly the work spreads over the experts.',
-  '15d-residual-stream-accumulation': 'One token enters as the two-number vector (1, 0), and three blocks each add a small vector to it instead of replacing it. The example tracks the running sum and shows that each block\'s contribution can still be read off and removed.',
+  '15d-residual-stream-accumulation': 'The token “it” enters as the two-number vector (1, 0), and three blocks each add a small vector to it instead of replacing it. The example tracks the running sum and shows that each block\'s contribution can still be read off and removed.',
   '15e-adamw-two-steps': 'One parameter starts at 0.5 and sees a gradient of 2.0, then 0.5, with learning rate 0.01 and weight decay 0.1. Two AdamW updates are worked by hand and compared with plain gradient descent on the same gradients.',
   '15e-minhash-shingles': 'Two sentences that differ in a single word are cut into overlapping three-word shingles. Four hash functions turn each sentence into a short signature, and the matching minimums estimate how much the two overlap without comparing them word by word.',
   '15e-sequence-packing': 'Four short documents, each closed by an end-of-document token, have to fill training windows of 8 tokens. The example compares padding each document with packing them back to back, then adds the mask that stops packed documents from reading each other.',
   '15f-dpo-one-pair': 'One prompt has a preferred answer and a rejected one, each scored by the model being trained and by a frozen copy of where it started. The example works one DPO update from those four log probabilities, with no reward model and no sampling.',
   '15f-grpo-group-advantages': 'The model answers "what is 17 × 24?" four times, and a checker marks an answer right when it equals 408. Each answer\'s advantage comes from comparing its reward with the rest of the group, with no critic network.',
   '15g-paged-block-table': 'Three requests, A, B and C, share a key-value cache of 10 blocks that hold 4 tokens each. A block table hands each request a block only when it needs one, and the example follows it as requests grow, finish and free their blocks.',
-  '15g-speculative-accept-reject': 'After "My coffee is", a small draft model guesses four tokens ahead and the large target model checks them in one pass. Each guess is kept or rejected by comparing the two models\' probabilities, and the example counts how many tokens a round yields on average.',
-  '15g-temperature-reshaping': 'After "My coffee is too", six candidate words have logits from 3.0 down to 0.0. Their probabilities are recomputed at temperatures 1, 0.5, 2 and close to 0, which reshape the distribution but never change the order.',
+  '15g-speculative-accept-reject': 'After "The attic was", a small draft model guesses four tokens ahead and the large target model checks them in one pass. Each guess is kept or rejected by comparing the two models\' probabilities, and the example counts how many tokens a round yields on average.',
+  '15g-temperature-reshaping': 'After "The attic was too", six candidate words have logits from 3.0 down to 0.0. Their probabilities are recomputed at temperatures 1, 0.5, 2 and close to 0, which reshape the distribution but never change the order.',
   '15h-cosine-retrieval': 'A customer asks about returning a damaged item, and three help-center chunks compete to answer. Toy embeddings with three topic scores, returns, item condition and delivery, rank the chunks by cosine similarity and pass the top two to the model.',
   '15h-lora-forward-pass': 'A frozen 3 by 3 weight matrix gets a rank-1 LoRA path beside it, made of two thin matrices. One input runs through both paths before and after training, and the trained numbers are counted against a full update.',
   '15i-calibration-error-walkthrough': 'A model answers 100 questions and states a confidence for each. The answers are grouped into three confidence bins, and each bin\'s average confidence is compared with how often its answers were actually right.',
@@ -561,6 +576,16 @@ const WALKTHROUGHS = {
   'A chunked prefill schedule': { title: 'Chunked prefill', steps: '16h-chunked-prefill-schedule', frames: [1, 2, 3, 4, 5], replaces: true },
   'Three requests sharing one system prompt': { title: 'Prefix tree reuse', steps: '16h-prefix-tree-reuse', frames: [1, 2, 3, 4], replaces: true },
   'A capacity plan for the 70B': { title: 'Capacity plan', steps: '16h-capacity-plan', frames: [1, 2, 3, 4, 5, 6] },
+  'One valid exchange and two false completions': { title: 'Exchange verification', steps: '17b-exchange-verifier', frames: [1, 2, 3] },
+  'Masked loss on a tool trace': { title: 'Masked supervised loss', steps: '17c-masked-loss', frames: [1, 2, 3] },
+  'One rewarded exchange': { title: 'One policy gradient update', steps: '17d-one-rewarded-exchange', frames: [1, 2, 3] },
+  'A baseline across two outcomes': { title: 'Two outcomes and a baseline', steps: '17d-baseline-two-outcomes', frames: [1, 2] },
+  'Four exchange attempts': { title: 'Group-normalized rewards', steps: '17e-four-exchange-attempts', frames: [1, 2, 3] },
+  'One inventory recovery': { title: 'Inventory recovery', steps: '17f-inventory-recovery', frames: [1, 2, 3, 4] },
+  'A masked exchange prefix': { title: 'Token-level loss mask', steps: '17f-masked-exchange-prefix', frames: [1, 2, 3] },
+  'Retry scores for one task': { title: 'Repeat one task', steps: '17g-retry-scores-for-one-task', frames: [1, 2, 3] },
+  'A rollout batch on one GPU': { title: 'A colocated training round', steps: '17h-rollout-batch-on-one-gpu', frames: [1, 2, 3] },
+  'Promotion gates for policy V2': { title: 'Release gates for a new policy', steps: '17i-promotion-gates-for-policy-v2', frames: [1, 2, 3] },
 };
 
 // Paragraphs that explain a step-by-step example go inside its card, so a reader who leaves the
@@ -881,7 +906,7 @@ const WEB_WORDING = [
   // The Obsidian index is an interview-prep index; the site speaks to learners and practitioners.
   [/in a product decision or an interview question start to make sense/g, 'in a product decision or a research paper start to make sense'],
   [/Everything here is written for someone new to the field\.[^\n]*/g,
-    "This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives."],
+    "This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. The project is designed to run on a single consumer GPU, including the built-in GPU on an Apple Silicon Mac. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives."],
   [/\n+Each chapter opens with the problem it answers[^\n]*/g, ''],
   [/ These nine chapters follow one model through its whole life[^.]*\./g, ''],
   // The site outlines the merged pair in the BPE table; the note's plain table does not.
@@ -953,6 +978,9 @@ function convertBody(body) {
       if (/\.(mp4|webm)$/i.test(name)) {
         // Animations: loop silently like a GIF, with controls so readers can pause or scrub.
         return `<video class="cm-figure-video" src="${src}" autoplay loop muted playsinline controls preload="metadata" aria-label="${figureAlt(clean)}"></video>`;
+      }
+      if (clean === '15c scaled dot product attention.png') {
+        return `[![${figureAlt(clean)}](${src})](${src} "View the full-size attention figure")`;
       }
       return `![${figureAlt(clean)}](${src})`;
     });

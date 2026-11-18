@@ -1,0 +1,19 @@
+{
+  "name": "17g retry scores for one task",
+  "title": "Retry scores for one task",
+  "subtitle": "Four attempts on one task contain three successful exchanges.",
+  "steps": [
+    {
+      "caption": "Three of the four individual attempts pass.",
+      "image": "/images/steps/17g-retry-scores-for-one-task/step-01.png"
+    },
+    {
+      "caption": "Three of the six pairs contain two successful attempts.",
+      "image": "/images/steps/17g-retry-scores-for-one-task/step-02.png"
+    },
+    {
+      "caption": "All six pairs contain at least one successful attempt.",
+      "image": "/images/steps/17g-retry-scores-for-one-task/step-03.png"
+    }
+  ]
+}

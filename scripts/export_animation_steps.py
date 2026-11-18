@@ -157,7 +157,7 @@ def export(script):
 def main():
     wanted = sys.argv[1:]
     OUT_DATA.mkdir(parents=True, exist_ok=True)
-    scripts = sorted([*SCRIPTS.glob('15?-gifs.py'), *SCRIPTS.glob('16?-gifs.py')])
+    scripts = sorted([*SCRIPTS.glob('15?-gifs.py'), *SCRIPTS.glob('16?-gifs.py'), *SCRIPTS.glob('17?-gifs.py')])
     for script in scripts:
         if wanted and not any(script.name.startswith(w) for w in wanted):
             continue

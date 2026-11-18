@@ -1,0 +1,19 @@
+{
+  "name": "17b exchange verifier",
+  "title": "One valid exchange and two false completions",
+  "subtitle": "The verifier checks order size, stock, and the exchange record together.",
+  "steps": [
+    {
+      "caption": "The store records one exchange and the confirmation agrees.",
+      "image": "/images/steps/17b-exchange-verifier/step-01.png"
+    },
+    {
+      "caption": "The order never changes, although the assistant confirms the exchange.",
+      "image": "/images/steps/17b-exchange-verifier/step-02.png"
+    },
+    {
+      "caption": "The corrupted record contains two exchanges for one request.",
+      "image": "/images/steps/17b-exchange-verifier/step-03.png"
+    }
+  ]
+}

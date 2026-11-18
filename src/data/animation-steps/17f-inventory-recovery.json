@@ -1,0 +1,23 @@
+{
+  "name": "17f inventory recovery",
+  "title": "One inventory recovery",
+  "subtitle": "A failed read can be retried while the order and inventory stay intact.",
+  "steps": [
+    {
+      "caption": "The order is eligible for exchange.",
+      "image": "/images/steps/17f-inventory-recovery/step-01.png"
+    },
+    {
+      "caption": "The first inventory call returns a timeout.",
+      "image": "/images/steps/17f-inventory-recovery/step-02.png"
+    },
+    {
+      "caption": "The retry finds one medium shirt.",
+      "image": "/images/steps/17f-inventory-recovery/step-03.png"
+    },
+    {
+      "caption": "The submission leaves the order at size M and stock at zero.",
+      "image": "/images/steps/17f-inventory-recovery/step-04.png"
+    }
+  ]
+}

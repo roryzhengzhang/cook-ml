@@ -1,0 +1,19 @@
+{
+  "name": "17f masked exchange prefix",
+  "title": "A masked exchange prefix",
+  "subtitle": "A tool result is visible in context and has mask value zero.",
+  "steps": [
+    {
+      "caption": "Two sampled call positions contribute to the action loss.",
+      "image": "/images/steps/17f-masked-exchange-prefix/step-01.png"
+    },
+    {
+      "caption": "Three tool observation positions have no direct loss.",
+      "image": "/images/steps/17f-masked-exchange-prefix/step-02.png"
+    },
+    {
+      "caption": "Four sampled positions contribute across the two assistant spans.",
+      "image": "/images/steps/17f-masked-exchange-prefix/step-03.png"
+    }
+  ]
+}
