@@ -106,6 +106,8 @@ LoRA attaches in parallel instead. Its branch reads the same input as a frozen m
 
 LoRA computes $h = W x + \tfrac{\alpha}{r} B A x$ with $W$ frozen, and Fundamentals worked one rank-one layer by hand. The starting values of $A$ and $B$ and the scale $\alpha / r$ are two choices made before training starts, and they decide how that layer learns.
 
+The [story-model LoRA lab](/tutorials/llm-fundamentals/notebook/#lora) attaches an adapter to the first block’s query projection. Its first factor starts with small random entries and its second starts at zero, so the adapter initially adds zero. After three updates, the lab checks that the second factor has changed and the original projection is still identical.
+
 The usual initialization draws $A$ at random and sets $B$ to zero, so the adapted model starts identical to the base. In the Hugging Face PEFT library, the entries of $A$ have size about $1/\sqrt{d_{\text{in}}}$. The gradient for $A$ is proportional to $B$, so on the first step only $B$ moves, and both factors train from the second step on. Zero for both would freeze them forever, since each factor's gradient contains the other. Random values for both would start from a perturbed model that early training has to undo.
 
 The scale exists so that changing the rank does not change how fast the model moves. The **LoRA scale** is the factor $\alpha / r$ in front of $BA$, where $\alpha$ is a constant fixed once and $r$ is the rank. Without it, a rank 64 adapter would change the model's outputs about eight times faster than a rank 8 adapter at the same learning rate, and every change of rank would need a new learning rate search.
@@ -113,7 +115,7 @@ The scale exists so that changing the rank does not change how fast the model mo
 <details class="cm-collapse" id="why-the-first-update-grows-with-rank">
 <summary><span class="cm-collapse-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span><span class="cm-collapse-text"><span class="cm-collapse-kicker">Deep dive</span><span class="cm-collapse-title">Why the first update grows with rank</span></span><span class="cm-collapse-hint" aria-hidden="true"></span></summary>
 
-As the two-step example in [the AdamW section](/tutorials/llm-fundamentals/pretraining-at-scale/#adamw) showed, AdamW's first step moves every parameter by about the learning rate $\eta$, whatever the gradient's size. After that step each entry of $B$ has size $\eta$, with its sign chosen to lower the loss. Output $i$ of the adapter then changes by
+As the two-step example in [the AdamW section](/tutorials/llm-fundamentals/pretraining-at-scale/#adamw) showed, AdamW’s first update is close to $\eta$ in magnitude when the gradient is large compared with $\epsilon$. For entries of $B$ in that regime, the first step from zero gives them magnitude about $\eta$ and a sign that opposes the gradient. Output $i$ of the adapter then changes by
 
 $$
 \Delta y_i = \frac{\alpha}{r} \sum_{k=1}^{r} \Delta B_{ik}\, (A x)_k,

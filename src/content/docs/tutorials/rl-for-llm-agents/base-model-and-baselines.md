@@ -9,7 +9,9 @@ lastUpdated: 2026-11-18
 
 A language model can describe how a return works and still leave O-17 untouched. To complete the exchange it has to produce calls the store can execute, use the results, and stop after giving the customer an accurate status. The scripted agent gives us a completed trace. A pretrained model gives us a way to see which parts of that behavior it already produces.
 
-A **baseline** is a reference result obtained under stated conditions. The prompt-only agent provides a baseline for model behavior before weight updates. Supervised fine-tuning adds examples of how to act across several turns. Rejection fine-tuning collects the agent's own attempts and turns the verified successes into another training set. Comparing these stages gives the later reinforcement learning experiment a way to tell whether its improvement came from the update or from seeing better examples.
+The **baseline** in the CPU project is the supervised fine-tuning (SFT) warm start. This is the policy saved after four supervised updates that teach it to submit an exchange when stock is confirmed. That policy passes 605 of 1,024 attempts in the [held-out evaluation](/tutorials/rl-for-llm-agents/notebook/#repeated-evaluation). Both rejection fine-tuning and GRPO start from that same checkpoint. Rejection fine-tuning learns from its own verified successes. GRPO weights each attempt by how its reward compares with other attempts on the same task. The shared starting point makes those two updates comparable.
+
+The optional language-model pilot starts with a **prompt-only baseline**. The proposed Qwen2.5-1.5B base checkpoint gets the store instructions, tool schemas and a request like O-17 with its weights unchanged. That test checks whether the starting model can already emit valid calls and complete the exchange after a timeout.
 
 ![Baseline training stages](/images/rl-for-llm-agents/17c-baseline-training-stages.png)
 
@@ -17,9 +19,9 @@ The first sections work through scripted, prompted, and supervised versions of t
 
 ## Checkpoint baselines
 
-To measure what training changes, we need to be able to run the model as it was before the update. A **checkpoint** saves the weights at a particular stage so we can load that version again. The **base model** here is a language model whose weights already reflect pretraining. It starts with a general ability to continue text. The project supplies task instructions and a way to attempt typed tool calls, then measures what the unchanged checkpoint does with that context. [Post-Training](/tutorials/llm-fundamentals/post-training-from-base-model-to-assistant/) explains how this stage relates to instruction-tuned models.
+To measure what training changes, we need to be able to run the model as it was before the update. A **checkpoint** saves the weights at a particular stage so we can load that version again. The **base model** here is a language model whose weights already reflect pretraining. It starts with a general ability to continue text. In the proposed language-model pilot, the harness supplies task instructions and accepts typed tool calls. Evaluation measures what the unchanged checkpoint does with that context. [Post-Training](/tutorials/llm-fundamentals/post-training-from-base-model-to-assistant/) explains how this stage relates to instruction-tuned models.
 
-A **prompt-only baseline** gives the model a description of the store, its tool schemas, and the same user request the later checkpoints receive. A documented set of demonstrations can be included in the prompt as **few-shot examples**. Changing those examples can change the result without changing a single weight. The prompt version therefore belongs in the evaluation record beside the checkpoint.
+For the prompt-only run, the model gets the store description, tool schemas and the same user request the later checkpoints receive. A documented set of demonstrations can be included in the prompt as **few-shot examples**. Changing those examples can change the result without changing a single weight. The prompt version therefore belongs in the evaluation record beside the checkpoint.
 
 For O-17, even a policy that knows to retry might output the string “check stock” as a normal message. The harness can only execute a call that satisfies the action schema. An evaluation report can distinguish invalid formatting, valid calls leading to a failed task, and actual task successes. The first two categories point to different changes in the prompt and training data.
 
@@ -119,7 +121,7 @@ The retained traces change the effective data mix. Four easy tasks with four suc
 
 Every retained trace should be counted once before training. If identical successful attempts dominate the kept set, reporting the number of unique task IDs and unique trajectories helps explain what the model saw. The accepted subset can also be stratified by task family to show whether filtering erased examples of hard cases.
 
-RFT makes a strong baseline because it relies on the same task, samples, and verifier as GRPO. It uses supervised training on successful traces. GRPO can use the contrast between success and failure in the same group. To isolate the difference, start both runs at the same checkpoint and report their rollout counts, sampled token counts, and optimizer budgets.
+RFT is a useful comparison because it starts with the same supervised checkpoint and trains on the same tasks with the same verifier. Both CPU runs resample from their own policies as training proceeds, so their attempts can diverge. RFT uses supervised training on successful traces. GRPO computes training weights from the spread of rewards within each group. To isolate the difference, start both runs at the same checkpoint and report their rollout counts, sampled token counts, and optimizer budgets.
 
 ## Rollout diversity
 

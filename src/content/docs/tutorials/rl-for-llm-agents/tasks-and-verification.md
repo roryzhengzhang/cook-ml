@@ -116,6 +116,8 @@ The September 2026 [Hugging Face RL Environments release](https://huggingface.co
 
 The training split is where the policy learns from demonstrations and generated attempts. The **validation split** is used to choose settings such as the task mix or checkpoint. The **test split** stays out of those choices until a fixed evaluation. Using one test set to choose among models gradually turns it into validation data.
 
+The [CPU lab’s split](/tutorials/rl-for-llm-agents/notebook/#store-task-splits) trains on a timeout with stock available and on zero stock with no timeout. One held-out fixture combines a timeout with zero stock. The agent has to retry first and then report unavailability. The split check compares the conditions in the fixtures, so giving a training fixture a new order ID cannot make it held out.
+
 A **variant** changes wording or incidental details without creating a new decision structure. Suppose one retry case has four paraphrases. One paraphrase is in the test split. If the other three were independently assigned to test with probability 0.2 and train otherwise, all three stay out of training with probability $0.2^3=0.008$. At least one leaks into training with probability $1-0.008=0.992$. That is a 99.2% chance of a near-duplicate in train for the chosen test paraphrase.
 
 ![Task family split](/images/rl-for-llm-agents/17b-task-family-split.png)

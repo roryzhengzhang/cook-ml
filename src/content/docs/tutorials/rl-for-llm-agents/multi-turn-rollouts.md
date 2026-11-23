@@ -65,6 +65,8 @@ Separating the store instance from the model server also makes the learning loop
 
 A retry looks sensible after a timeout and wasteful after a stock count has already arrived. A **trajectory record** connects each decision to the observation the model had when it made that decision. For each turn it stores the model input IDs, the sampled output IDs, a loss mask, and the behavior log probabilities when the sampler supplies them. It also carries the matching tool call and result, the model version, and the reason the episode ended. Store safety checks and the eventual score attach to the episode as a whole.
 
+In the [CPU rollout trace](/tutorials/rl-for-llm-agents/notebook/#multiturn-trace), the same stock tool can return a timeout on one turn and a count on the next. The policy samples whether to retry after the first observation and whether to submit after confirmed stock. Each record keeps the context, the chosen action and its behavior log probability so the update can score each choice under the conditions it saw.
+
 ![Trainable spans](/images/rl-for-llm-agents/17f-trainable-spans.png)
 
 The observation that medium stock equals 1 should help the model choose to submit. It is a conditioning input for the next decision. Its position should have no direct action loss. Using the same loss on everything that appeared in the transcript would ask the agent to predict the stock service's output as though it had chosen that output.

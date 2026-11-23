@@ -129,6 +129,7 @@ const figureName = (file) => {
   return slugify(file.slice(0, -ext.length)) + ext;
 };
 const FIGURE_ALTS = {
+  '15a add one smoothing.png': 'After “dog”, the raw counts give “sat” 100% probability and the other five tokens 0%. Adding one count per token raises the total count from 1 to 7. “Sat” gets 2/7 and each of “ran”, “the”, “cat”, “dog”, and the period gets 1/7.',
   '15c pronoun attention weights.png': 'Illustrative attention weights from “it”. With “lit”, the lantern gets 62.4%. With “wore”, the scarf gets 62.4%.',
   '15c scaled dot product attention.png': 'Query, key and value vectors for she, lit and it. The query for it scores the three keys. Softmax gives weights 0.0743, 0.6200 and 0.3057, which mix the values into (1.8514, 0.3800).',
 };
@@ -540,7 +541,7 @@ const WALKTHROUGHS = {
   'One vector normalized both ways': { title: 'LayerNorm versus RMSNorm', steps: '15w-layernorm-and-rmsnorm', frames: [1, 2, 3, 4] },
   'A feed-forward pass on a two-number token': { title: 'Feed-forward pass', steps: '15w-feed-forward-pass', frames: [1, 2, 3, 4] },
   'Routing one token through four experts': { title: 'Mixture-of-experts routing', steps: '15d-mixture-of-experts-routing', frames: [null, 1, 2], extra: [8, 9], replaces: true },
-  'A near duplicate check by hand': { title: 'MinHash deduplication', steps: '15e-minhash-shingles', frames: [1, null, 5, 6], replaces: true },
+  'A near duplicate check by hand': { title: 'MinHash deduplication', steps: '15e-minhash-shingles', frames: [1, 2, 5, 6], replaces: true },
   'Two AdamW steps on one parameter': { title: 'AdamW update', steps: '15e-adamw-two-steps', frames: [2, 4, 5, 7, 8, 9], replaces: true },
   'A cosine ranking worked by hand': { title: 'Cosine retrieval', steps: '15h-cosine-retrieval', frames: [2, 5, 9, 10], replaces: true },
   'A rank one LoRA layer worked by hand': { title: 'LoRA forward pass', steps: '15h-lora-forward-pass', frames: [4, 5, 6, 7, 10], extra: [11], replaces: true },
@@ -768,6 +769,8 @@ function unwrapCallouts(text) {
       if (id === 'story-model') {
         const specs = inner.findIndex((line) => line.startsWith('|'));
         if (specs < 0) throw new Error('The story model card needs a specifications table');
+        let specsEnd = specs;
+        while (inner[specsEnd]?.startsWith('|')) specsEnd++;
         out.push(
           `<aside class="cm-model-card cm-notebook-card" id="${id}">`,
           '<div class="cm-notebook-kicker" id="story-model-project">Project</div>',
@@ -776,11 +779,13 @@ function unwrapCallouts(text) {
           ...inner.slice(0, specs),
           '<div class="cm-notebook-specs" role="region" aria-label="Model specifications" tabindex="0">',
           '',
-          ...inner.slice(specs),
+          ...inner.slice(specs, specsEnd),
           '',
           '</div>',
           '',
-          '<div class="cm-notebook-actions"><a href="/tutorials/llm-fundamentals/notebook/">Browse the notebook <span aria-hidden="true">↗</span></a></div>',
+          ...inner.slice(specsEnd),
+          '',
+          '<div class="cm-notebook-actions"><a href="/notebooks/llm-fundamentals/source/#readme" data-notebook-expand="llm-fundamentals">Open code project</a></div>',
           '</aside>',
         );
         i = blockId ? k : j - 1;
@@ -879,8 +884,7 @@ function convertLink(inner) {
 const WEB_WORDING = [
   // No divider between a chapter's introduction and its first section (non-global: first one only).
   [/\n---\n+(?=## )/, '\n'],
-  [/\b(across|of|in) this folder\b/g, '$1 this series'],
-  [/every note in this folder/g, 'every chapter in this series'],
+  [/\b(across|of|in) this folder\b/g, '$1 this tutorial'],
   // Each note is a chapter on the site.
   [/\b([Tt])his note\b/g, '$1his chapter'],
   [/\b([Tt])he note\b/g, '$1he chapter'],
@@ -891,7 +895,6 @@ const WEB_WORDING = [
   [/\bof all nine notes\b/g, 'of all nine chapters'],
   // Animations are shown as numbered step figures on the site.
   [/\b([Tt])he animation\b/g, '$1he step-by-step figure'],
-  [/the roughly (\d+(?:\.\d+)?) million words of notes in this vault/g, 'about $1 million words of the author\'s study notes'],
   // Index-only references to unpublished notes.
   [/ Interview practice for this folder lives in the question bank at \[\[17 LLM Fundamentals\]\][^.]*\./g, ''],
   [/\n\nThis folder is the end-to-end entrance\.[^\n]*/g, ''],
@@ -906,7 +909,7 @@ const WEB_WORDING = [
   // The Obsidian index is an interview-prep index; the site speaks to learners and practitioners.
   [/in a product decision or an interview question start to make sense/g, 'in a product decision or a research paper start to make sense'],
   [/Everything here is written for someone new to the field\.[^\n]*/g,
-    "This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. The project is designed to run on a single consumer GPU, including the built-in GPU on an Apple Silicon Mac. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives."],
+    "This tutorial is built around a working language model we implement from scratch. We build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives."],
   [/\n+Each chapter opens with the problem it answers[^\n]*/g, ''],
   [/ These nine chapters follow one model through its whole life[^.]*\./g, ''],
   // The site outlines the merged pair in the BPE table; the note's plain table does not.
@@ -980,7 +983,7 @@ function convertBody(body) {
         return `<video class="cm-figure-video" src="${src}" autoplay loop muted playsinline controls preload="metadata" aria-label="${figureAlt(clean)}"></video>`;
       }
       if (clean === '15c scaled dot product attention.png') {
-        return `[![${figureAlt(clean)}](${src})](${src} "View the full-size attention figure")`;
+        return `[![${figureAlt(clean)}](${src})](${src})`;
       }
       return `![${figureAlt(clean)}](${src})`;
     });

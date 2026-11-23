@@ -5,6 +5,7 @@ import { blogSchema } from 'starlight-blog/schema';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { notebookProjects } from '../scripts/remark-story-notebook.mjs';
+import { attentionFiles, attentionMarker } from '../scripts/remark-attention-playground.mjs';
 
 const starlightDocs = docsLoader();
 
@@ -19,9 +20,15 @@ export const collections = {
         const hash = createHash('sha256');
         for (const { file } of notebookProjects) hash.update(readFileSync(file));
         const notebook = hash.update(readFileSync(new URL('../scripts/remark-story-notebook.mjs', import.meta.url))).digest('hex');
+        const playgroundHash = createHash('sha256');
+        for (const file of attentionFiles) playgroundHash.update(readFileSync(file));
+        const attention = playgroundHash.digest('hex');
         await starlightDocs.load({
           ...context,
-          generateDigest: (contents) => context.generateDigest({ contents, notebook }),
+          generateDigest: (contents) => {
+            const hasPlayground = typeof contents === 'string' && contents.includes(attentionMarker);
+            return context.generateDigest(hasPlayground ? { contents, notebook, attention } : { contents, notebook });
+          },
         });
       },
     },

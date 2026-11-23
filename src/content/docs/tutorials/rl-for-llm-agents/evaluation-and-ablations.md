@@ -59,6 +59,8 @@ An **oracle** supplies the expected resolution from the fixture before model eva
 
 One successful attempt shows that the model can handle O-17 under that run's conditions. The next person sees one attempt too. Running the same task several times from the same snapshot shows whether the action is reliable when the model samples a different response.
 
+The [CPU evaluation](/tutorials/rl-for-llm-agents/notebook/#repeated-evaluation) runs four held-out fixtures in 32 groups of eight attempts each. It reports success over all 1,024 attempts and separately counts groups that pass eight out of eight. A policy can improve on individual attempts and still fail often enough to disappoint a customer who needs the same result every time.
+
 The **single-attempt success rate** is the average number of passes per attempt. The **all-attempts success rate** asks whether every attempt in a set of $k$ runs succeeds. The **at-least-one success rate** asks whether any attempt in the set succeeds. In benchmark notation these are pass@1, pass$^k$ and pass@$k$ respectively. The retry measure assumes a workflow can recognize success and safely retry, including knowing whether any previous operation may have committed. Reading inventory again carries a different risk from resubmitting a write.
 
 ### Practice: Retry scores for one task
@@ -124,7 +126,7 @@ A [reasoning policy](/tutorials/rl-for-llm-agents/multi-turn-rollouts/#reasoning
 
 ## Baselines and ablations
 
-A 75% exchange success rate means more once we know what the same tasks looked like before training. A **baseline** is the model or procedure we use as that point of comparison. The scripted agent checks that the expected outcomes are achievable. The prompted base model measures what is available before weight updates. The supervised fine-tuned checkpoint shows what imitation of expert demonstrations buys. Rejection fine-tuning adds learning from the model's own verified successes. GRPO adds an advantage signal computed within each rollout group.
+On the same 1,024 held-out attempts, the CPU policy records 605 successful outcomes at the SFT warm start, 738 after rejection fine-tuning and 770 after GRPO. The warm start is the measured baseline. Each later method begins from a copy of its weights. In the language-model pilot, the [prompt-only and scripted runs](/tutorials/rl-for-llm-agents/base-model-and-baselines/#checkpoint-baselines) establish what the base checkpoint can do and whether the expected outcomes are reachable.
 
 An **ablation** changes one part of a system to test a particular explanation. When GRPO beats rejection fine-tuning, it may be tempting to credit the use of failed attempts. Those methods also differ in how training weights the successful examples and how quickly the policy changes. A controlled next experiment can keep the same GRPO implementation and change only the reward or the group size.
 

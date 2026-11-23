@@ -86,6 +86,8 @@ A reward of zero produces a zero update under the basic rule. Early in training 
 
 An exchange can be correct and still provide little information about what to do next. If a policy already succeeds on nearly every eligible order, a success is close to what it usually earns. A **baseline** is an estimate of that usual return, chosen using only information available before the sampled action. Subtracting it from the return produces an **advantage**, the amount by which the observed return beat or fell short of the baseline.
 
+The baseline in this update is a number subtracted from each O-17 return. The [evaluation report](/tutorials/rl-for-llm-agents/evaluation-and-ablations/#baselines-and-ablations) uses the word for a checkpoint whose measured results serve as the comparison.
+
 $$
 A_t=G_t-b(o_t)
 $$
@@ -137,7 +139,7 @@ In an LLM pipeline the critic can require its own head, optimizer state, forward
 
 ## PPO and probability ratios
 
-A rollout remains in the batch after the first training step changes the policy. The action was sampled when exchange had probability $0.4$. The policy being trained might now give it probability $0.5$. Its current probability divided by the probability that produced the sample is **importance ratio** $0.5/0.4=1.25$. Ratios weight actions that became more likely more heavily, and actions that became less likely less heavily, when the new policy is scored using old samples.
+A rollout remains in the batch after the first training step changes the policy. The action was sampled when exchange had probability $0.4$. The policy being trained might now give it probability $0.5$. Its current probability divided by the probability that produced the sample is **importance ratio** $0.5/0.4=1.25$. Out of 100 attempts, the old policy would choose exchange about 40 times and the new policy about 50 times. Giving each old exchange attempt 1.25 times the weight accounts for how much more often the new policy would choose it.
 
 **Proximal Policy Optimization** (PPO) uses a clipped objective to limit the incentive for some large changes on a batch. For a positive advantage it stops rewarding an increase after the ratio passes an upper threshold. For a negative advantage the corresponding plateau is beneath the lower threshold. An unfavorable move can still make the objective worse.
 

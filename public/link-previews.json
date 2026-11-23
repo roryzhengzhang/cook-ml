@@ -1,4 +1,16 @@
 {
+ "https://aclanthology.org/2024.emnlp-main.649/": {
+  "site": "ACL Anthology",
+  "title": "Fishing for Magikarp: Automatically Detecting Under-trained Tokens in Large Language Models",
+  "description": "Sander Land, Max Bartolo. Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing. 2024.",
+  "image": "https://aclanthology.org/thumb/2024.emnlp-main.649.jpg"
+ },
+ "https://aclanthology.org/2024.naacl-long.301/": {
+  "site": "ACL Anthology",
+  "title": "XSTest: A Test Suite for Identifying Exaggerated Safety Behaviours in Large Language Models",
+  "description": "Paul Röttger, Hannah Kirk, Bertie Vidgen, Giuseppe Attanasio, Federico Bianchi, Dirk Hovy. Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers). 2024.",
+  "image": "https://aclanthology.org/thumb/2024.naacl-long.301.jpg"
+ },
  "https://ai.meta.com/blog/llama-4-multimodal-intelligence/": {
   "site": "Meta AI",
   "title": "The Llama 4 herd: The beginning of a new era of natively multimodal AI innovation",
@@ -66,6 +78,13 @@
   "date": "2016-03",
   "description": "We present a new approach for the approximate K-nearest neighbor search based on navigable small world graphs with controllable hierarchy (Hierarchical NSW, HNSW). The proposed solution is fully graph-based, without any need for additional search structures, which are typically used at the coarse search stage of the most proximity graph techniques. Hierarchical NSW incrementally builds a multi-layer structure…"
  },
+ "https://arxiv.org/abs/1604.06174": {
+  "site": "arXiv",
+  "title": "Training Deep Nets with Sublinear Memory Cost",
+  "authors": "Tianqi Chen, Bing Xu, Chiyuan Zhang et al.",
+  "date": "2016-04",
+  "description": "We propose a systematic approach to reduce the memory consumption of deep neural network training. Specifically, we design an algorithm that costs O(sqrt(n)) memory to train a n layer network, with only the computational cost of an extra forward pass per mini-batch. As many of the state-of-the-art models hit the upper bound of the GPU memory, our algorithm allows deeper and more complex models to be explored, and…"
+ },
  "https://arxiv.org/abs/1606.08415": {
   "site": "arXiv",
   "title": "Gaussian Error Linear Units (GELUs)",
@@ -107,6 +126,13 @@
   "authors": "Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz et al.",
   "date": "2017-01",
   "description": "The capacity of a neural network to absorb information is limited by its number of parameters. Conditional computation, where parts of the network are active on a per-example basis, has been proposed in theory as a way of dramatically increasing model capacity without a proportional increase in computation. In practice, however, there are significant algorithmic and performance challenges. In this work, we address…"
+ },
+ "https://arxiv.org/abs/1706.02677": {
+  "site": "arXiv",
+  "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour",
+  "authors": "Priya Goyal, Piotr Dollár, Ross Girshick et al.",
+  "date": "2017-06",
+  "description": "Deep learning thrives with large neural networks and large datasets. However, larger networks and larger datasets result in longer training times that impede research and development progress. Distributed synchronous SGD offers a potential solution to this problem by dividing SGD minibatches over a pool of parallel workers. Yet to make this scheme efficient, the per-worker workload must be large, which implies…"
  },
  "https://arxiv.org/abs/1706.03741": {
   "site": "arXiv",
@@ -962,6 +988,13 @@
   "date": "2023-04",
   "description": "We study recent research advances that improve large language models through efficient pre-training and scaling, and open datasets and tools. We combine these advances to introduce Cerebras-GPT, a family of open compute-optimal language models scaled from 111M to 13B parameters. We train Cerebras-GPT models on the Eleuther Pile dataset following DeepMind Chinchilla scaling rules for efficient pre-training (highest…"
  },
+ "https://arxiv.org/abs/2304.08485": {
+  "site": "arXiv",
+  "title": "Visual Instruction Tuning",
+  "authors": "Haotian Liu, Chunyuan Li, Qingyang Wu et al.",
+  "date": "2023-04",
+  "description": "Instruction tuning large language models (LLMs) using machine-generated instruction-following data has improved zero-shot capabilities on new tasks, but the idea is less explored in the multimodal field. In this paper, we present the first attempt to use language-only GPT-4 to generate multimodal language-image instruction-following data. By instruction tuning on such generated data, we introduce LLaVA: Large…"
+ },
  "https://arxiv.org/abs/2304.11277": {
   "site": "arXiv",
   "title": "PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel",
@@ -1256,6 +1289,13 @@
   "date": "2023-10",
   "description": "Human feedback is commonly utilized to finetune AI assistants. But human feedback may also encourage model responses that match user beliefs over truthful ones, a behaviour known as sycophancy. We investigate the prevalence of sycophancy in models whose finetuning procedure made use of human feedback, and the potential role of human preference judgments in such behavior. We first demonstrate that five…"
  },
+ "https://arxiv.org/abs/2310.16789": {
+  "site": "arXiv",
+  "title": "Detecting Pretraining Data from Large Language Models",
+  "authors": "Shi, Weijia, Ajith, Anirudh, Xia, Mengzhou et al.",
+  "date": "2023-10",
+  "description": "Introduces WikiMIA and tests whether averaging the log probabilities of a passage’s least predictable tokens can flag possible exposure during pretraining."
+ },
  "https://arxiv.org/abs/2310.18547": {
   "site": "arXiv",
   "title": "Punica: Multi-Tenant LoRA Serving",
@@ -1458,6 +1498,13 @@
   "authors": "Opher Lieber, Barak Lenz, Hofit Bata et al.",
   "date": "2024-03",
   "description": "We present Jamba, a new base large language model based on a novel hybrid Transformer-Mamba mixture-of-experts (MoE) architecture. Specifically, Jamba interleaves blocks of Transformer and Mamba layers, enjoying the benefits of both model families. MoE is added in some of these layers to increase model capacity while keeping active parameter usage manageable. This flexible architecture allows resource- and…"
+ },
+ "https://arxiv.org/abs/2404.02936": {
+  "site": "arXiv",
+  "title": "Min-K%++: Improved Baseline for Detecting Pre-Training Data from Large Language Models",
+  "authors": "Zhang, Jingyang, Sun, Jingwei, Yeats, Eric et al.",
+  "date": "2024-04",
+  "description": "Scores possible pretraining exposure by comparing a token’s log probability with the distribution the model predicts for that position."
  },
  "https://arxiv.org/abs/2404.04475": {
   "site": "arXiv",
@@ -1767,6 +1814,13 @@
   "date": "2025-05",
   "description": "In this work, we present Qwen3, the latest version of the Qwen model family. Qwen3 comprises a series of large language models (LLMs) designed to advance performance, efficiency, and multilingual capabilities. The Qwen3 series includes models of both dense and Mixture-of-Expert (MoE) architectures, with parameter scales ranging from 0.6 to 235 billion. A key innovation in Qwen3 is the integration of thinking mode…"
  },
+ "https://arxiv.org/abs/2507.09404": {
+  "site": "arXiv",
+  "title": "Scaling Laws for Optimal Data Mixtures",
+  "authors": "Shukor, Mustafa, Bethune, Louis, Busbridge, Dan et al.",
+  "date": "2025-07",
+  "description": "Fits loss from model size, training token count and data mixture weights, then tests extrapolation to larger models and unseen mixtures."
+ },
  "https://arxiv.org/abs/2507.20534": {
   "site": "arXiv",
   "title": "Kimi K2: Open Agentic Intelligence",
@@ -1815,6 +1869,13 @@
   "authors": "DeepSeek-AI, Aixin Liu, Aoxue Mei et al.",
   "date": "2025-12",
   "description": "We introduce DeepSeek-V3.2, a model that harmonizes high computational efficiency with superior reasoning and agent performance. The key technical breakthroughs of DeepSeek-V3.2 are as follows: (1) DeepSeek Sparse Attention (DSA): We introduce DSA, an efficient attention mechanism that substantially reduces computational complexity while preserving model performance in long-context scenarios. (2) Scalable…"
+ },
+ "https://arxiv.org/html/2204.02311#S5": {
+  "site": "arXiv",
+  "title": "PaLM: Scaling Language Modeling with Pathways",
+  "authors": "Aakanksha Chowdhery, Sharan Narang, Jacob Devlin et al.",
+  "date": "2022-04",
+  "description": "Large language models have been shown to achieve remarkable performance across a variety of natural language tasks using few-shot learning, which drastically reduces the number of task-specific training examples needed to adapt the model to a particular application. To further our understanding of the impact of scale on few-shot learning, we trained a 540-billion parameter, densely activated, Transformer language…"
  },
  "https://arxiv.org/html/2402.03300#S4.SS1": {
   "site": "arXiv",
@@ -2052,6 +2113,11 @@
   "title": "OpenEnv: Agentic Execution Environments · Hugging Face",
   "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/docs/openenv/index.png"
  },
+ "https://huggingface.co/docs/peft/en/package_reference/lora": {
+  "site": "huggingface.co",
+  "title": "LoRA · Hugging Face",
+  "image": "https://cdn-thumbnails.huggingface.co/social-thumbnails/docs/peft/package_reference/lora.png"
+ },
  "https://huggingface.co/docs/trl/grpo_trainer": {
   "site": "huggingface.co",
   "title": "GRPO Trainer · Hugging Face",
@@ -2113,10 +2179,21 @@
   "title": "NgHaradaRussell-shaping-ICML1999.pdf",
   "kind": "PDF"
  },
+ "https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf": {
+  "site": "plg.uwaterloo.ca",
+  "title": "cormacksigir09-rrf.pdf",
+  "kind": "PDF"
+ },
  "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d848cb2c84f0bba7f1f73cf232734c40-Abstract-Conference.html": {
   "site": "proceedings.iclr.cc",
   "title": "Small-scale proxies for large-scale Transformer training instabilities",
   "description": ""
+ },
+ "https://proceedings.mlr.press/v9/glorot10a.html": {
+  "site": "PMLR",
+  "title": "Understanding the difficulty of training deep feedforward neural networks",
+  "description": "Whereas before 2006 it appears that deep multi-layer neural networks were not successfully trained, since then several algorithms have been shown to successfully train them, with experimental resul...",
+  "image": "https://proceedings.mlr.press/v9/assets/images/SAIS_logo.jpg"
  },
  "https://pytorch.org/blog/pytorch-2-15-release-blog/#deprecations-and-backwards-incompatible-changes": {
   "site": "PyTorch",
@@ -2210,6 +2287,12 @@
   "description": "In this post, we explore strategies for effectively curating and managing their context.",
   "image": "https://assets.claude.com/f30ee982765baffdf3c90058e6e9bafe9f1e5542.jpg"
  },
+ "https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables": {
+  "site": "Elastic Blog",
+  "title": "Practical BM25 - Part 2: The BM25 Algorithm and its Variables",
+  "description": "BM25 is the default similarity ranking (relevancy) algorithm in Elasticsearch. Learn more about how it works by digging into the equation and exploring the concepts behind its variables.",
+  "image": "https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/bltf22aa508b8973986/5c57eb07f967c7fc0b4c6759/bm_25_tuning_pt2.jpg"
+ },
  "https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf": {
   "site": "jmlr.org",
   "title": "bengio03a.pdf",
@@ -2238,6 +2321,11 @@
   "title": "NVIDIA GeForce RTX 4090 Graphics Cards",
   "description": "For gamers and creators.",
   "image": "https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/ada/rtx-4090/geforce-ada-4090-web-og-1200x630.jpg"
+ },
+ "https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html": {
+  "site": "sbert.net",
+  "title": "Retrieve & Re-Rank &mdash; Sentence Transformers documentation",
+  "description": ""
  },
  "https://www.usenix.org/conference/osdi22/presentation/yu": {
   "site": "usenix.org",

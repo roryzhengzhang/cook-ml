@@ -14,7 +14,7 @@ There are many good explanations of language models. Most of them pick one level
 
 ## Start here
 
-The first series is [LLM Fundamentals](/tutorials/llm-fundamentals/). It has nine chapters:
+The first tutorial is [LLM Fundamentals](/tutorials/llm-fundamentals/). It has nine chapters:
 
 1. Language modeling and next-token prediction
 2. Tokenization and embeddings
@@ -30,4 +30,4 @@ The chapters share one reference model, a 7B decoder with the shape of Llama 2 7
 
 ## What comes next
 
-Planned series cover transformers in depth, retrieval-augmented generation, and ML systems. Blog posts will cover papers and practical lessons in between.
+Planned tutorials cover transformers in depth, retrieval-augmented generation, and ML systems. Blog posts will cover papers and practical lessons in between.

@@ -19,6 +19,8 @@ The chapter starts by timing what a single batch actually does. A memory budget 
 
 A rollout spends time sampling action tokens, running tools and checking the result. When O-17's stock check times out, the agent waits for that response before deciding whether to try again. The GPU may serve other rollouts during the wait. The elapsed time for the group still depends on when the last rollout finishes.
 
+The [timing exercise](/tutorials/rl-for-llm-agents/notebook/#colocation-budget) gives four simulated attempts durations of 5, 6, 8 and 12 seconds. The 12-second attempt sets the group’s wall time. On the single-GPU pilot, the same measurement would reveal whether the agent is waiting on a long exchange, the trainer or the transfer of updated weights.
+
 A **wall-clock time** is elapsed time measured from start to finish. **Throughput** is work completed per unit of that time, such as verified episodes per second. A **phase breakdown** accounts for time in generation, tool calls, reward checks, batching, the optimizer update and weight sync. Recording it from clean boundaries avoids mistaking time when the GPU is running an inference kernel for time when a sample is waiting in an input queue.
 
 ### Practice: A rollout batch on one GPU

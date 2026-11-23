@@ -1,6 +1,7 @@
 ---
 // Keep Starlight's page footer (last updated, prev/next) and add a site footer below it.
 import Default from '@astrojs/starlight/components/Footer.astro';
+import NotebookPanel from './NotebookPanel.astro';
 
 const year = new Date().getFullYear();
 ---
@@ -14,6 +15,14 @@ const year = new Date().getFullYear();
     <a href="/about/">About</a>
   </nav>
 </div>
+
+{Astro.url.pathname.startsWith('/tutorials/') && <NotebookPanel />}
+
+<script>
+  if (document.querySelector('#attention-playground.cm-attention')) {
+    void import('../labs/attention.js');
+  }
+</script>
 
 <style>
   .cm-footer {

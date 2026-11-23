@@ -33,7 +33,7 @@
   function previewLink(target) {
     const a = target instanceof Element ? target.closest('a[href]') : null;
     if (!a || !a.closest('.sl-markdown-content') || a.closest('.cm-link-preview')) return null;
-    if (a.classList.contains('sl-anchor-link')) return null;
+    if (a.matches('.sl-anchor-link, [data-notebook-expand], [href^="/images/"]')) return null;
     const href = a.getAttribute('href');
     if (!href || href.startsWith('mailto:') || href.startsWith('javascript:')) return null;
     return a;

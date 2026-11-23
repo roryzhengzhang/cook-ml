@@ -82,6 +82,8 @@ The fixed baseline in the policy gradient chapter uses only information availabl
 
 A group of four successes has mean 1 and a group of four failures has mean 0. In both cases every difference from the group mean is zero. The resulting reward advantage is zero even though the two groups represent very different behaviors. A separate penalty or auxiliary loss can still contribute an update.
 
+An available-stock fixture can become easy enough that all eight attempts in a CPU training group complete the exchange. Once that happens, the group contributes zero reward advantage. A harder training fixture that requires a retry can still produce a mix of scores and give the update something to compare.
+
 A success rate of 90% shows how rapidly signal can disappear near either end. Suppose each attempt is sampled independently and the conditional success probability is $p=0.9$ on the same fixture. A group of size $G=4$ is all-success with probability $0.9^4=0.6561$ and all-failure with probability $0.1^4=0.0001$. The chance of a group with varied rewards is $1-0.6561-0.0001=0.3438$. Around two thirds of groups from that fixture would have zero outcome-driven advantage.
 
 ![Informative groups](/images/rl-for-llm-agents/17e-informative-groups.png)
@@ -98,7 +100,7 @@ The math assumes each rollout samples independently conditional on the task fixt
 
 ## Token ratios and clipping
 
-A response-level advantage can weight all sampled tokens in that response. If a rollout retries the stock lookup and completes the exchange, its sampled tool-call tokens receive a positive weight. The model scores each token given the prefix it actually saw. Using these individual probabilities avoids forming the tiny product of probabilities for the entire exchange.
+A response-level advantage can weight all sampled tokens in that response. If a rollout retries the stock lookup and completes the exchange, its sampled tool-call tokens receive a positive weight. The advantage says which way to push the sampled choices. The ratio checks how much the probability of each choice has already changed. The model scores each token given the prefix it actually saw, and clipping applies to that token’s ratio.
 
 $$
 \rho_{i,t}=\exp\big(\ell_{i,t}^{\text{new}}-\ell_{i,t}^{\text{beh}}\big)

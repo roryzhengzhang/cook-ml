@@ -4,7 +4,7 @@ description: "How queries, keys and values let tokens read each other, and how p
 sidebar:
   order: 3
   label: "Attention"
-lastUpdated: 2026-11-18
+lastUpdated: 2026-11-23
 ---
 
 Lily found a scarf and a lantern in the attic. She set one beside the other. The next sentence can make the same little word, “it”, point to two different things.
@@ -37,11 +37,11 @@ $$
 
 The **dot product** $q_i \cdot k_j$ multiplies matching entries and adds them, so it is large when the two vectors point the same way. Here $s_{ij}$ is the **score** of position $j$ for position $i$. The **head width** $d_k$ is the number of entries in each query and key, and the [square root scaling](#square-root-scaling) section explains the division by $\sqrt{d_k}$. **Softmax** is the middle formula. It raises $e \approx 2.718$ to each score and divides by the sum, which makes every **attention weight** $a_{ij}$ positive, keeps the scores' order, and makes the weights in a row add to 1. The **output** $o_i$ is the weighted average of the values, and $j'$ just runs over every position $i$ may read.
 
-Read together, the three formulas show one pass for one token. The layer repeats the calculation for every query. In matrix form, with one token per row, $QK^{\mathsf T}$ computes all the query and key dot products at once. Its query is compared with every key it may read, the scores become weights that add to 1, and the output mixes the values in those shares. With weights 0.6 and 0.4 on two values, the output is 60% of the first plus 40% of the second, so it always lies between the values it mixes. The same three matrices are used at every position, which is why one layer works on a text of any length.
+For one token, its query scores each key it can read. Softmax turns those scores into shares, and those shares tell the layer how much of each value to mix into the output. With weights 0.6 and 0.4 on two values, the output is 60% of the first plus 40% of the second. The layer repeats the same steps for every token with the same three projection matrices. Stacking the queries in rows gives the matrix $Q$, and stacking the keys gives $K$. The product $QK^{\mathsf T}$ computes all the query and key dot products at once.
 
 Take the three words “she lit it” in isolation. The key for “lit” gives the highest score against the query for “it”, so the verb gets about 62% of the weight in this smaller example. In the figure, the top table gives every token its own query, key and value. Read down the query column to the highlighted vector for “it”. Pair it with each key, divide the three dot products by $\sqrt{2}$, and apply softmax across that row. The resulting weights multiply the three values to give an output of $(1.8514, 0.3800)$.
 
-[![Query, key and value vectors for she, lit and it. The query for it scores the three keys. Softmax gives weights 0.0743, 0.6200 and 0.3057, which mix the values into (1.8514, 0.3800).](/images/llm-fundamentals/15c-scaled-dot-product-attention.png)](/images/llm-fundamentals/15c-scaled-dot-product-attention.png "View the full-size attention figure")
+[![Query, key and value vectors for she, lit and it. The query for it scores the three keys. Softmax gives weights 0.0743, 0.6200 and 0.3057, which mix the values into (1.8514, 0.3800).](/images/llm-fundamentals/15c-scaled-dot-product-attention.png)](/images/llm-fundamentals/15c-scaled-dot-product-attention.png)
 
 Separate projections let the score from “it” to “lit” differ from the score from “lit” to “it”. Scoring raw vectors directly as $x_i \cdot x_j$ would be symmetric, so “it” would rate “lit” exactly as “lit” rates “it”. A token would also often rate itself highest, since a vector agrees best with itself. In the phrase worked below, the pronoun’s raw vector $(1,1)$ scores itself 2 and “lit” only 1. With $W_Q$ and $W_K$ learned separately, what “it” looks for and what “lit” offers are different vectors, so the score can be lopsided. After the projections “it” scores “lit” 2, “lit” scores “it” only 1, and “it” scores itself 1. The work of the layer sits in those scores. There is one dot product for every pair of positions, which the [quadratic cost and the key value cache](#quadratic-cost-and-the-key-value-cache) section prices.
 
@@ -83,6 +83,8 @@ M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
 
 The query, key and value come from three separate matrices because the three roles differ. The key for “lit” helps the pronoun’s query find the action. Its value is the information about that action that gets added to the output.
 
+<!-- attention-playground -->
+
 ## Square root scaling
 
 A dot product adds up one product per entry, so wider vectors give bigger sums and bigger gaps between sums for the same kind of agreement. **Variance** measures how spread out a quantity is around its average. It is the average squared distance from the average, and the **standard deviation** is its square root. If each entry of a query and a key has average 0 and variance 1, and the entries are independent, each product also has variance 1. The sum of $d_k$ of them then has variance $d_k$ and standard deviation $\sqrt{d_k}$.
@@ -95,7 +97,7 @@ The peaked case hurts training. Training adjusts each parameter in the direction
 
 ## The causal mask
 
-A model that writes text one token at a time must not peek at the word it is about to write. If training lets it see the next token, it learns to copy that token instead of predicting it. **Autoregressive generation** means producing text one token at a time, each chosen from everything before it. The language model of [Language Modeling](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/) is trained to predict every next token of a training text in parallel. A **causal mask** makes that parallel training honest. Position $i$ may read positions $j \le i$ and nothing later.
+A **causal mask** keeps each position from reading later tokens. That matters during training because the model scores all positions in a [training sequence](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/#teacher-forcing-and-exposure-bias) in parallel. The mask limits each prediction to its prefix, just as in generation. Position $i$ may read any position $j \le i$.
 
 $$
 a_{ij} = \operatorname{softmax}_j\left(s_{ij} + M_{ij}\right), \qquad M_{ij} = \begin{cases} 0 & j \le i \\ -\infty & j > i \end{cases}
@@ -109,9 +111,11 @@ A **future perturbation test** checks that a mask works by changing a later toke
 
 ![Causal mask test](/images/llm-fundamentals/15c-causal-mask-test.png)
 
+The [story-model mask check](/tutorials/llm-fundamentals/notebook/#attention-isolation) tests two limits with one edit. It changes a token in the first story and checks that logits at earlier positions and in the second story stay the same. The causal mask blocks the future token in the first case. The document boundary blocks it in the second.
+
 ## Multi head attention
 
-The mask decides which tokens each position may read. Multi-head attention lets the model combine those allowed tokens in several ways at the same position. For "it" in a long sentence, one question is which noun it refers to and another is what verb comes next. **Multi-head attention** runs $h$ attention operations side by side. Each one is called a **head** and has its own query, key and value projections, so each head can learn its own notion of relevance.
+The mask decides which positions are available. **Multi-head attention** lets the model read those positions in several ways at once. It runs $h$ attention operations in parallel. Each **head** has its own query, key and value projections, so the same token can attend to different clues in different heads.
 
 The heads split the model width instead of adding to it. A token vector of width $d$ is projected to queries, keys and values of width $d$, and each is cut into $h$ slices of width $d_k = d/h$. In a toy with $d = 4$ and $h = 2$, a query $(1, 0, 2, 1)$ becomes head 1's query $(1,0)$ and head 2's query $(2,1)$, and each head runs the [queries keys and values](#queries-keys-and-values) section's calculation on its own slice. In the [story model](/tutorials/llm-fundamentals/#story-model), $d = 384$ splits into $h = 6$ query heads of $d_k = 64$. The 6 head outputs of width 64 are placed side by side, which gives width 384 again. An **output projection** $W_O$ then mixes them so information found by one head can reach every coordinate. The story model saves on keys and values. It projects them to width 128 only, which makes 2 heads of width 64, and each of those serves 3 query heads. The [head sharing](#head-sharing) section explains why that sharing costs little.
 
@@ -121,9 +125,9 @@ The parameter count follows from the four matrices. $W_Q$ and $W_O$ are $384 \ti
 
 ## Permutation equivariance
 
-Each head can learn a different pattern of weights. The underlying order problem is easiest to see with the causal mask removed. **Permutation equivariance** means that reordering the inputs reorders the outputs in exactly the same way and changes nothing else. Without a mask, attention has this property, because each output is a weighted sum over a set, and every score depends only on the two vectors involved.
+Attention scores depend on the query and key vectors. If those vectors carry no positions and there is no mask, putting the same tokens in a different order simply moves each output along with its input. That property is called **permutation equivariance**. It follows because reordering the keys and values changes the order of the terms in the weighted sum.
 
-With no mask, the [queries keys and values](#queries-keys-and-values) section's numbers confirm it. In the example of "she lit it", swapping the first two tokens gives "lit she it". The pronoun’s query is still $(1,1)$, and it meets the same three keys in a different order. So its weights are still 0.6200 on “lit”, 0.0743 on “she” and 0.3057 on itself, and its output is still $(1.8514, 0.3800)$. The outputs for “she” and “lit” swap places along with their inputs, and none of the numbers change. The projections and the later per-token layers treat every position identically too, so the whole stack inherits the property.
+Swapping the first two words of “she lit it” gives “lit she it”. The pronoun’s query is still $(1,1)$, and it meets the same three keys in a different order. So its weights are still 0.6200 on “lit”, 0.0743 on “she” and 0.3057 on itself, and its output is still $(1.8514, 0.3800)$. The outputs for “she” and “lit” swap places along with their inputs, and none of the numbers change. The projections and the later per-token layers treat every position identically too, so the whole stack inherits the property.
 
 So "dog bites man" and "man bites dog" contain the same three tokens and would give every token the same output vector, though the two sentences mean different things. The [causal mask](/tutorials/llm-fundamentals/attention-and-positional-information/#the-causal-mask) breaks the symmetry slightly, since position 5 sees five tokens and position 2 sees two. Some decoder models trained without any position scheme do learn rough positions from that, as [NoPE](https://arxiv.org/abs/2305.19466) reports. Most models still add position information explicitly, by one of the schemes in the sections from [absolute and sinusoidal positions](#absolute-and-sinusoidal-positions) to [ALiBi and length extrapolation](#alibi-and-length-extrapolation). Positional Encoding and Long Context draws the same failure on real attention scores.
 
@@ -147,11 +151,11 @@ The dot product of two such vectors depends only on the gap between positions. B
 
 ![Sinusoid similarity](/images/llm-fundamentals/15c-sinusoid-similarity.png)
 
-The relative structure gets blurred once the position vector is added to content. The query becomes $(x_i + P_i)W_Q$, so a score mixes content with content, content with position, and position with position, and the model must learn to separate them. **Relative position** schemes put the offset $i - j$ into the score directly, and the next two sections are the two most used.
+Adding position vectors changes the query to $(x_i + P_i)W_Q$. The score then mixes information about the tokens with information about their positions. **Relative position** schemes make the offset $i - j$ between the two positions part of the score more directly.
 
 ## Rotary position embedding
 
-In "the cat sat", a head needs a way to tell that "cat" sits closer to "sat" than "the" does. The distance can change the score when the head compares a query with a key. **Rotary position embedding**, or [RoPE](/tutorials/llm-deep-dive/long-context-and-document-models/#rope-extrapolation), puts position into the score by rotating the query and key instead of adding a vector to them. It comes from the [RoFormer paper](https://arxiv.org/abs/2104.09864). It splits each query and key into pairs of coordinates and rotates each pair by an angle proportional to the token's position, $i\theta$ for the query at position $i$ and $j\theta$ for the key at position $j$. A **rotation** $R(\alpha)$ turns a two-number vector by angle $\alpha$ and keeps its length. Written out, it is a 2 by 2 matrix.
+**Rotary position embedding**, or [RoPE](/tutorials/llm-deep-dive/long-context-and-document-models/#rope-extrapolation), rotates the query and key so their score can depend on the offset between their positions. [RoFormer](https://arxiv.org/abs/2104.09864) introduced this approach. It splits each query and key into pairs of coordinates and rotates each pair by an angle proportional to the token's position, $i\theta$ for the query at position $i$ and $j\theta$ for the key at position $j$. A **rotation** $R(\alpha)$ turns a two-number vector by angle $\alpha$ and keeps its length. Written out, it is a 2 by 2 matrix.
 
 $$
 R(\alpha) = \begin{bmatrix} \cos\alpha & -\sin\alpha \\ \sin\alpha & \cos\alpha \end{bmatrix}
@@ -201,7 +205,7 @@ A real head rotates many pairs at different speeds. The story model uses RoPE wi
 
 ## ALiBi and length extrapolation
 
-RoPE makes distance matter through a rotation. Another way to make distance matter is to lower the score as the two tokens get farther apart. **ALiBi** adds no position vector at all. The name stands for attention with linear biases, and the method comes from [Press and colleagues](https://arxiv.org/abs/2108.12409). It subtracts a penalty proportional to distance from each score, $s_{ij} - m\,(i-j)$, where $m$ is the head's **slope**. Different heads get different slopes, so some heads stay local and some look far. For 8 heads the slopes form the geometric series $1/2, 1/4, \ldots, 1/256$.
+**ALiBi** gives nearby tokens a head start by subtracting a penalty that grows with distance. The name stands for attention with linear biases. The method from [Press and colleagues](https://arxiv.org/abs/2108.12409) gives each query and key a score of $s_{ij} - m\,(i-j)$, where $m$ is the head's **slope**. Different heads get different slopes, so some heads stay local and some look far. For 8 heads the slopes form the geometric series $1/2, 1/4, \ldots, 1/256$.
 
 The slopes turn into concrete factors. A head with slope $1/2$ subtracts 2.5 from a key five tokens back, which multiplies that key's unnormalized weight by $e^{-2.5} = 0.082$. A head with slope $1/8$ subtracts 0.625 at the same distance, a factor of 0.54. The penalty is a simple rule defined at every distance, so a sequence longer than training needs nothing new. The paper reports that a model trained on 1,024 tokens matched a sinusoidal model trained on 2,048 when both ran at 2,048 tokens.
 
@@ -213,15 +217,25 @@ The slopes turn into concrete factors. A head with slope $1/2$ subtracts 2.5 fro
 
 ## Quadratic cost and the key value cache
 
-All three position schemes still score pairs of tokens. Doubling the length makes that pair count roughly four times as large. For $n$ tokens one head computes $n^2$ scores, or $n(n+1)/2$ under the causal mask, which is still on the order of $n^2$. The [story model](/tutorials/llm-fundamentals/#story-model) reads at most $n = 512$ tokens, which is 262,144 scores per head per layer.
+Each attention head scores pairs of positions, so doubling the sequence length roughly quadruples the number of scores. For $n$ tokens one head computes $n^2$ scores, or $n(n+1)/2$ under the causal mask, which is still on the order of $n^2$. The [story model](/tutorials/llm-fundamentals/#story-model) reads at most $n = 512$ tokens, which is 262,144 scores per head per layer.
 
-Storing the full score table for one layer of the story model takes $6$ heads $\times\ 512^2$ scores $\times\ 2$ bytes $= 3$ MiB, where a MiB is $2^{20}$ bytes. The table grows with the square of the length and with the head count, so a large model with 32 heads reading 32,768 tokens would need 64 GiB per layer, where a GiB is $2^{30}$ bytes. [FlashAttention](/tutorials/llm-deep-dive/efficient-attention-mechanisms/#flashattention) computes the same result in small tiles without ever storing the table, but the arithmetic stays quadratic.
+Storing the full score table for one layer of the story model takes $6$ heads $\times\ 512^2$ scores $\times\ 2$ bytes $= 3$ MiB, where a MiB is $2^{20}$ bytes. The table grows with the square of the length and with the head count, so a large model with 32 heads reading 32,768 tokens would need 64 GiB per layer, where a GiB is $2^{30}$ bytes.
 
 The arithmetic shows up when the model writes a new token. A **FLOP** is one floating-point arithmetic operation, and a multiply followed by an add counts as two. The new token's query is compared with every earlier key and averages every earlier value, costing $2nd$ FLOPs each, so $4nd$ per layer. The layer's weights cost a fixed $2 \times 1{,}573{,}632 = 3.15$ million [FLOPs per token](/tutorials/llm-fundamentals/the-transformer-block-and-model-anatomy/#flops-per-token). At the full 512 tokens attention adds 786,432, which is 25% of the weight work. The two would be equal at 2,049 tokens, four times the story model's window, and at a hypothetical 4,096 tokens attention would cost twice the weights. Both costs grow with the width. A block holds about $10.7d^2$ weights, so the crossover sits near $2 \times 10.7d^2 / 4d \approx 5.3d$, and a wider model crosses later. For Llama 2 7B, with $d = 4{,}096$, it is near 24,700 tokens.
 
 ![Attention cost crossover](/images/llm-fundamentals/15c-attention-cost-crossover.png)
 
 Memory grows too, because the model keeps every earlier key and value instead of recomputing them for each new token. This store is the **key value cache**. Per token it holds $2 \times L \times h_{\text{kv}} \times d_k \times b$ bytes, where 2 counts keys and values, $L = 6$ layers, $h_{\text{kv}} = 2$ key value heads, $d_k = 64$ and $b = 2$ bytes per number. That is 3,072 bytes, or 3 KiB per token, where a KiB is $2^{10}$ bytes. A full 512-token context needs 1.5 MiB, small next to the model's 22.0 MB of weights at 2 bytes each. The cache grows with the model as well as the length. A model of Llama 2 7B's shape, with 32 layers and 32 key value heads of width 128, stores 0.5 MiB per token, so a 32,768-token conversation needs 16 GiB, more than its 12.55 GiB of weights. [Inference](/tutorials/llm-fundamentals/inference-and-decoding/) shows that reading this cache and the weights limits generation speed more than arithmetic does.
+
+### FlashAttention and memory traffic
+
+A straightforward implementation writes the score table to the GPU's main memory, called **high bandwidth memory** (HBM). Softmax reads those scores and writes a second table of probabilities. The weighted sum then reads the probabilities back. Every pass moves data that grows with the square of the prompt length. The compute units can spend much of their time waiting for those transfers, even when the tables fit in HBM.
+
+**FlashAttention** keeps a small tile of scores in faster on-chip memory, uses it to update the result, and discards it before moving on. The difficulty is that each query's softmax denominator includes every visible key. **Online softmax** handles this by tracking three quantities for each query as tiles arrive. It keeps the largest score so far, the sum of the exponentials relative to that maximum, and the weighted sum of value vectors on the same scale. If a new tile raises the maximum, both old sums are multiplied by the same factor to put them on the new scale.
+
+For one query, suppose the first tile has two scores of zero and scalar values 10 and 20. Each exponential is 1, so the denominator is 2 and the weighted sum is 30. A second tile brings a score of $\ln 2$ and a value of 30. Raising the maximum from 0 to $\ln 2$ halves both old sums because $e^{0-\ln 2}=1/2$. The new score contributes a weight of 1 on this scale. The denominator is now $1+1=2$, and the weighted sum is $15+30=45$. Their ratio is $22.5$, the same as weighting all three values by $1,1,2$ and dividing by 4.
+
+The kernel writes the final output without materializing the full score or probability table in HBM. The result is ordinary softmax attention up to floating-point rounding. The pairwise arithmetic for a full prompt still grows quadratically. [Efficient Attention](/tutorials/llm-deep-dive/efficient-attention-mechanisms/#flashattention) works out the tile schedule, and [Inference](/tutorials/llm-fundamentals/inference-and-decoding/#memory-bandwidth-bound-decoding) explains when moving bytes limits speed.
 
 ## Head sharing
 The cache in the [quadratic cost and the key value cache](#quadratic-cost-and-the-key-value-cache) section stores one key and one value for every head, but the heads do not need private copies. Several query heads can read the same keys and values and still produce different weights, because their queries differ. **Multi-query attention**, or MQA, keeps all the query heads but gives them one shared key head and value head, so $h_{\text{kv}} = 1$. [Shazeer](https://arxiv.org/abs/1911.02150) introduced it. **Grouped-query attention**, or [GQA](/tutorials/llm-deep-dive/efficient-attention-mechanisms/#grouped-query-attention), sits between the two. [Ainslie and colleagues](https://arxiv.org/abs/2305.13245) proposed it. Query heads are split into $h_{\text{kv}}$ groups that each share one key value head. The [story model](/tutorials/llm-fundamentals/#story-model) uses GQA with $h_{\text{kv}} = 2$, which gives the [quadratic cost and the key value cache](#quadratic-cost-and-the-key-value-cache) section's 3 KiB per token. With full multi-head attention it would keep a key and value head for each of its 6 query heads and store 9 KiB per token, and with MQA it would store 1.5 KiB. Among public models, [Llama 2](https://arxiv.org/abs/2307.09288) 70B uses 8 key value heads for 64 query heads, while Llama 2 7B keeps full multi-head attention. The score arithmetic does not shrink, because every query head still reads every cached key. Fewer key value heads also cost some quality.
@@ -239,7 +253,8 @@ Each row of the table starts from a situation or a symptom, names the choice fro
 | Must handle longer inputs with no further training | ALiBi or a similar distance bias | The penalty is defined at any distance |
 | Generation memory dominated by the cache | GQA with about 8 key value heads | Cuts cache size by $h / h_{\text{kv}}$ with small quality loss |
 | Training loss suspiciously low | Future perturbation test on the mask | A leak lets the model copy the answer |
-| Attention arithmetic dominates at long context | FlashAttention or sparse attention, covered in [Efficient Attention](/tutorials/llm-deep-dive/efficient-attention-mechanisms/) | The pair count grows with $n^2$ |
+| Score and probability tables dominate prefill memory or traffic | [FlashAttention](#flashattention-and-memory-traffic) | Keeps the intermediate tables off HBM |
+| Pairwise arithmetic dominates at long context | [Sparse attention](/tutorials/llm-deep-dive/efficient-attention-mechanisms/#fixed-sparse-patterns) when supported by the model | Limits the number of pairs scored |
 
 ---
 

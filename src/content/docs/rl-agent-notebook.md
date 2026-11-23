@@ -12,7 +12,7 @@ Order O-17 holds a small shirt, and the customer wants a medium. An inventory ti
 
 ## The CPU project
 
-The notebook runs on CPU with Python and PyTorch. It uses a small policy that learns the probability of retrying, committing an exchange, and escalating a reported defect. The environment and verifier are the ones used throughout the series. The policy is small enough to inspect each probability before and after an update.
+The notebook runs on CPU with Python and PyTorch. It uses a small policy that learns the probability of retrying, committing an exchange, and escalating a reported defect. The notebook uses the same store simulator and verifier as the tutorial. The policy is small enough to inspect each probability before and after an update.
 
 The code uses PyTorch tensors and automatic differentiation. All tasks are generated locally, and the notebook runs without a model download, external API, or account. Python 3.12 and PyTorch 2.15 were used for the reference execution.
 
@@ -23,7 +23,7 @@ jupyter lab rl-agent.ipynb
 
 ### Held-out results
 
-One good exchange shows that the agent can solve the task. Repeating it from the same starting conditions shows how often it succeeds. The evaluation uses four saved task setups, called fixtures, and runs each one in 32 groups of eight attempts. Every checkpoint is evaluated on the same task fixtures and per-attempt seeds. The CPU reference run used training seed 17.
+One good exchange shows that the agent can solve the task. Repeating it from the same starting conditions shows how often it succeeds. The evaluation uses four saved task setups, called fixtures, and runs each one in 32 groups of eight attempts. Every checkpoint is evaluated on the same task fixtures and per-attempt seeds. The CPU reference run used training seed 17. The supervised warm start is the baseline. Both rejection fine-tuning and GRPO begin with those same saved weights.
 
 | CPU policy | Successful attempts | Groups with eight successes |
 | --- | ---: | ---: |

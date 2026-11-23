@@ -1,0 +1,100 @@
+<link rel="stylesheet" href="/labs/attention.css">
+<details id="attention-playground" class="cm-attention not-content">
+  <summary class="cm-attention-header">
+    <span class="cm-attention-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="cm-attention-heading">
+      <span class="cm-attention-title">Attention playground</span>
+      <span class="cm-attention-subtitle">Explore what “it” takes from “she lit it”.</span>
+    </span>
+    <span class="cm-attention-chevron" aria-hidden="true"></span>
+  </summary>
+
+  <div class="cm-attention-body">
+    <form class="cm-attention-workspace">
+      <div class="cm-attention-controls">
+        <div class="cm-attention-query" role="group" aria-labelledby="attention-query-label">
+          <span id="attention-query-label">Query token</span>
+          <div class="cm-attention-tokens">
+            <label><input type="radio" name="query_index" value="0"><span>she</span></label>
+            <label><input type="radio" name="query_index" value="1"><span>lit</span></label>
+            <label><input type="radio" name="query_index" value="2" checked><span>it</span></label>
+          </div>
+        </div>
+        <fieldset class="cm-attention-coordinates">
+          <legend>First coordinate of “lit”</legend>
+          <div class="cm-attention-sliders">
+            <div class="cm-attention-slider">
+              <label for="attention-key">Key</label>
+              <output for="attention-key" aria-hidden="true">1.0</output>
+              <input id="attention-key" name="key_first" type="range" min="-3" max="3" step="0.1" value="1" style="--position: 66.67%">
+            </div>
+            <div class="cm-attention-slider">
+              <label for="attention-value">Value</label>
+              <output for="attention-value" aria-hidden="true">2.0</output>
+              <input id="attention-value" name="value_first" type="range" min="-3" max="4" step="0.1" value="2" style="--position: 71.43%">
+            </div>
+          </div>
+        </fieldset>
+        <div class="cm-attention-toggles">
+          <label><input type="checkbox" name="scaled" checked> <span>Scale by √2</span></label>
+          <label><input type="checkbox" name="causal"> <span>Causal mask</span></label>
+        </div>
+      </div>
+
+      <section class="cm-attention-chart" aria-label="Attention calculation">
+        <div class="cm-attention-plot-heading">
+          <h4>Attention weights</h4>
+          <span aria-hidden="true">0–100%</span>
+        </div>
+        <ul class="cm-attention-plot" role="list">
+          <li class="cm-attention-lane" data-lane>
+            <span class="cm-attention-key">she</span>
+            <span class="cm-attention-track" aria-hidden="true" style="--weight: 0.0743"></span>
+            <span class="cm-attention-weight" data-weight>7.4%</span>
+            <span class="cm-attention-scores"><span>Dot <b data-dot>−1.000</b></span><span>Score <b data-score>−0.707</b></span></span>
+          </li>
+          <li class="cm-attention-lane" data-lane>
+            <span class="cm-attention-key">lit</span>
+            <span class="cm-attention-track" aria-hidden="true" style="--weight: 0.6200"></span>
+            <span class="cm-attention-weight" data-weight>62.0%</span>
+            <span class="cm-attention-scores"><span>Dot <b data-dot>2.000</b></span><span>Score <b data-score>1.414</b></span></span>
+          </li>
+          <li class="cm-attention-lane" data-lane>
+            <span class="cm-attention-key">it</span>
+            <span class="cm-attention-track" aria-hidden="true" style="--weight: 0.3057"></span>
+            <span class="cm-attention-weight" data-weight>30.6%</span>
+            <span class="cm-attention-scores"><span>Dot <b data-dot>1.000</b></span><span>Score <b data-score>0.707</b></span></span>
+          </li>
+        </ul>
+        <div class="cm-attention-output">
+          <span>Output vector</span>
+          <strong data-vector>(1.8514, 0.3800)</strong>
+        </div>
+      </section>
+    </form>
+
+    <div class="cm-attention-toolbar">
+      <p role="status">Python loads when the exercise opens.</p>
+      <div class="cm-attention-actions">
+        <button type="button" data-action="stop" disabled>Stop</button>
+        <button type="button" data-action="reset">Reset</button>
+      </div>
+    </div>
+    <details class="cm-attention-editor">
+      <summary><span aria-hidden="true">&lt;/&gt;</span> Edit Python</summary>
+      <div class="cm-attention-editor-body">
+        <p id="attention-inputs">The controls pass their values in <code>inputs</code>. Run applies edits to the chart and subsequent slider updates.</p>
+        <div class="cm-attention-code">
+          <div class="cm-editor-tools">
+            <span aria-live="polite" data-copy-feedback></span>
+            <button type="button" class="cm-code-tool" data-action="copy" aria-label="Copy Python code" title="Copy Python code"></button>
+            <!-- notebook-expand -->
+          </div>
+          <textarea aria-label="Attention Python code" aria-describedby="attention-inputs" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" rows="14"><!-- python-source --></textarea>
+        </div>
+        <button type="button" data-action="run">Run</button>
+      </div>
+    </details>
+    <pre data-console hidden aria-label="Python output"></pre>
+  </div>
+</details>

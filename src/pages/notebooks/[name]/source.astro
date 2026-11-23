@@ -1,0 +1,436 @@
+---
+import { Code } from 'astro:components';
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { readFileSync } from 'node:fs';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import { notebookWorkspacePaths } from '../../../labs/notebook-python.mjs';
+
+export const getStaticPaths = notebookWorkspacePaths;
+
+const { files, readme } = Astro.props;
+const { name } = Astro.params;
+const readmeHtml = readme && await (await createMarkdownProcessor({ syntaxHighlight: false }))
+  .render(readFileSync(readme, 'utf8'), { fileURL: readme });
+const folders = Object.entries(Object.groupBy(files, ({ path }) => path.split('/')[0]));
+const basename = (path) => path.split('/').at(-1);
+const fileURL = (path) => `/notebooks/${name}/source/${path}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{name} · Python source</title>
+  </head>
+  <body>
+    <div class="workspace">
+      <header class="workspace-toolbar">
+        <button type="button" class="toolbar-action" data-explorer-toggle hidden
+          aria-label="Toggle file explorer" title="Toggle file explorer" aria-controls="source-explorer">
+          <span class="explorer-icon" aria-hidden="true"></span>
+        </button>
+        <div class="active-file" data-active-file hidden>
+          <span class="file-icon" data-file-icon aria-hidden="true"></span>
+          <span data-file-name></span>
+        </div>
+        <a class="toolbar-action download" data-file-download hidden download
+          aria-label="Download selected file" title="Download selected file">
+          <span class="download-icon" aria-hidden="true">↓</span>
+        </a>
+      </header>
+
+      <nav class="source-explorer" id="source-explorer" aria-label="File explorer">
+        <div class="explorer-heading">Explorer</div>
+        <ul class="folder-list">
+          {readmeHtml && (
+            <li><a href="#readme" data-source-file>
+              <span class="file-icon" aria-hidden="true">MD</span>
+              <span class="file-name">README.md</span>
+            </a></li>
+          )}
+          {folders.map(([folder, entries]) => (
+            <li>
+              <details open>
+                <summary title={folder}><span class="folder-icon" aria-hidden="true"></span>{folder}</summary>
+                <ul class="file-list">
+                  {entries.map(({ id, path }) => (
+                    <li><a href={`#${id}`} title={path} data-source-file>
+                      <span class="file-icon" aria-hidden="true">Py</span>
+                      <span class="file-name">{basename(path)}</span>
+                    </a></li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <main class="source-editor" tabindex="0" aria-label="Project files">
+        {readmeHtml && (
+          <section id="readme" class="workspace-readme" data-file-path="README.md"
+            data-file-url={`/notebooks/${name}/README.md`} aria-label="README.md" set:html={readmeHtml.code} />
+        )}
+        {files.map(({ id, path, title, source, anchors }) => (
+          <section id={id} data-file-path={path} data-file-url={fileURL(path)} aria-label={title}>
+            <h1 class="file-heading">{path}</h1>
+            <Code code={source} lang="python" theme="catppuccin-mocha" wrap={true} transformers={[{
+              line(node, line) {
+                node.properties['data-line'] = line;
+                if (anchors[line]) node.properties.id = anchors[line];
+              },
+            }]} />
+          </section>
+        ))}
+      </main>
+    </div>
+  </body>
+</html>
+
+<script>
+  import '../../../labs/notebook-workspace.js';
+</script>
+
+<style is:global>
+  :root {
+    color-scheme: dark;
+    background: #211c2e;
+    color: #eee8f5;
+    font: 0.875rem/1.5 'Inter Variable', system-ui, sans-serif;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  .workspace {
+    --border: #453b54;
+    --muted: #b8aec7;
+    --accent: #cbb1f1;
+    position: relative;
+    display: grid;
+    grid-template: 'toolbar toolbar' auto 'explorer editor' minmax(0, 1fr) / clamp(9.5rem, 28%, 14rem) minmax(0, 1fr);
+    height: 100dvh;
+  }
+
+  .workspace[data-explorer-closed] {
+    grid-template: 'toolbar' auto 'editor' minmax(0, 1fr) / minmax(0, 1fr);
+  }
+
+  .workspace-toolbar {
+    grid-area: toolbar;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 2.65rem;
+    padding-inline: 0.6rem;
+    border-block-end: 1px solid var(--border);
+    background: #282135;
+  }
+
+  .toolbar-action {
+    display: grid;
+    flex: 0 0 2.35rem;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .toolbar-action:hover,
+  .toolbar-action[aria-expanded='true'] {
+    background: #362d45;
+    color: #f0e6fc;
+  }
+
+  .explorer-icon {
+    display: block;
+    width: 0.94rem;
+    height: 0.8rem;
+    border: 1.5px solid;
+    border-radius: 3px;
+    background: linear-gradient(currentColor, currentColor) 33% center / 1px 100% no-repeat;
+  }
+
+  .download {
+    margin-inline-start: auto;
+  }
+
+  .download-icon {
+    font: 1.2rem/1 'JetBrains Mono Variable', monospace;
+  }
+
+  .active-file {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    margin-block-end: -1px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--border);
+    border-block: 1px solid var(--accent) 1px solid #211c2e;
+    background: #211c2e;
+    font: 0.8rem/1.2 'JetBrains Mono Variable', monospace;
+  }
+
+  .active-file [data-file-name],
+  .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .source-explorer {
+    grid-area: explorer;
+    min-width: 0;
+    overflow: auto;
+    padding: 0.85rem 0.4rem 0.85rem 0.65rem;
+    border-inline-end: 1px solid var(--border);
+    background: #272133;
+    scrollbar-width: thin;
+  }
+
+  .explorer-heading {
+    padding: 0 0.55rem 0.55rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 650;
+  }
+
+  .folder-list,
+  .file-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .folder-list > li + li {
+    margin-block-start: 0.16rem;
+  }
+
+  .folder-list summary,
+  .source-explorer [data-source-file] {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 1.9rem;
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.28rem;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .folder-list summary {
+    font-weight: 600;
+    list-style: none;
+  }
+
+  .folder-list summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .folder-list summary::before {
+    content: '';
+    flex: none;
+    width: 0.34rem;
+    height: 0.34rem;
+    border: solid var(--muted);
+    border-width: 0 1px 1px 0;
+    transform: rotate(-45deg);
+  }
+
+  .folder-list details[open] > summary::before {
+    transform: translateY(-0.1rem) rotate(45deg);
+  }
+
+  .folder-icon {
+    position: relative;
+    flex: none;
+    width: 0.78rem;
+    height: 0.5rem;
+    border: 1px solid #d6bb9e;
+    border-radius: 2px;
+  }
+
+  .folder-icon::before {
+    content: '';
+    position: absolute;
+    inset: -0.21rem auto auto -1px;
+    width: 0.34rem;
+    height: 0.22rem;
+    border: solid #d6bb9e;
+    border-width: 1px 1px 0;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .file-list {
+    margin-inline-start: 0.6rem;
+    padding-inline-start: 0.25rem;
+    border-inline-start: 1px solid var(--border);
+  }
+
+  .source-explorer [data-source-file] {
+    font-size: 0.84rem;
+    text-decoration: none;
+  }
+
+  .file-icon {
+    flex: none;
+    color: #a8c8ff;
+    font: 700 0.71rem/1 'JetBrains Mono Variable', monospace;
+  }
+
+  .folder-list summary:hover,
+  .source-explorer [data-source-file]:hover {
+    background: #352d43;
+  }
+
+  .source-explorer [data-source-file][aria-current] {
+    background: #433554;
+    box-shadow: inset 2px 0 var(--accent);
+    color: #faf5ff;
+  }
+
+  .workspace :is(button, a, summary, main):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .source-editor {
+    grid-area: editor;
+    min-width: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block-start: 1rem;
+    scrollbar-color: #594e69 #211c2e;
+  }
+
+  .workspace-readme {
+    box-sizing: border-box;
+    max-width: 50rem;
+    padding: clamp(1rem, 4vw, 2.25rem);
+    margin-inline: auto;
+    font-size: 1rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .workspace-readme h1 {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.25;
+  }
+
+  .workspace-readme h2 {
+    margin-block: 1.55rem 0.45rem;
+    font-size: 1.15rem;
+  }
+
+  .workspace-readme p,
+  .workspace-readme ul {
+    margin-block: 0.7rem;
+  }
+
+  .workspace-readme ul {
+    padding-inline-start: 1.35rem;
+  }
+
+  .workspace-readme a {
+    color: var(--accent);
+    text-underline-offset: 0.2em;
+  }
+
+  .workspace-readme pre,
+  .workspace-readme :not(pre) > code {
+    border-radius: 0.3rem;
+    background: #2d263b;
+  }
+
+  .workspace-readme pre {
+    overflow: auto;
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+  }
+
+  .workspace-readme code {
+    font: 0.86em/1.6 'JetBrains Mono Variable', monospace;
+  }
+
+  .workspace-readme :not(pre) > code {
+    padding: 0.12em 0.28em;
+  }
+
+  .workspace[data-enhanced] .file-heading {
+    display: none;
+  }
+
+  .file-heading {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-block-end: 1px solid var(--border);
+    font: 600 0.9rem/1.5 'JetBrains Mono Variable', monospace;
+  }
+
+  pre.astro-code {
+    margin: 0;
+    padding: 0.85rem 0 1rem;
+    background: transparent !important;
+    font: 0.875rem/1.65 'JetBrains Mono Variable', monospace;
+    tab-size: 4;
+    overflow-wrap: anywhere;
+  }
+
+  pre.astro-code code {
+    font: inherit;
+  }
+
+  pre.astro-code .line {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 1.65em;
+    padding-inline: 3.35rem 0.85rem;
+    vertical-align: top;
+  }
+
+  pre.astro-code .line::before {
+    content: attr(data-line) / '';
+    position: absolute;
+    inset-inline-start: 0.65rem;
+    width: 2rem;
+    color: #a399b4;
+    text-align: end;
+    user-select: none;
+  }
+
+  pre.astro-code .line.is-jump-target,
+  .workspace:not([data-enhanced]) pre.astro-code .line:target {
+    background: #3b324d;
+    box-shadow: inset 2px 0 var(--accent);
+  }
+
+  @media (width < 34rem) {
+    .workspace[data-enhanced] {
+      grid-template: 'toolbar' auto 'editor' minmax(0, 1fr) / minmax(0, 1fr);
+    }
+
+    .workspace[data-enhanced] .source-explorer {
+      position: absolute;
+      z-index: 1;
+      grid-area: editor;
+      inset: 0 auto 0 0;
+      width: min(15rem, 76vw);
+      box-shadow: 0.75rem 0 1.5rem #12101980;
+    }
+  }
+</style>

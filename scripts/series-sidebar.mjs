@@ -7,7 +7,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import GithubSlugger from 'github-slugger';
-import { storyNotebook } from './remark-story-notebook.mjs';
 
 const DOCS = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../src/content/docs');
 
@@ -48,7 +47,7 @@ function sections(markdown, maxDepth = 2) {
   return found;
 }
 
-export function notebookSidebar(project = storyNotebook) {
+export function notebookSidebar(project) {
   const markdown = fs.readFileSync(path.join(DOCS, project.pageFile), 'utf8').replace(
     '<!-- notebook -->',
     project.stages.map(([, title]) => `### ${title}`).join('\n'),

@@ -135,6 +135,8 @@ Parallel rollout workers also have a lifecycle. Each session starts with a clean
 
 The training code uses two operations to interact with the store. A single reset produces the starting observation and a fresh store. A step consumes a validated action and returns the next observation and stop information. A verifier can then examine the finished attempt. Each operation has an output that can be checked before training starts.
 
+In the [O-17 replay](/tutorials/rl-for-llm-agents/notebook/#store-episode), creating a new store from the fixture restores size S, one medium and zero stock calls. The first call to `check_stock` returns a timeout. The second returns the count because the call counter has advanced, while the shirt and inventory stay as they were.
+
 The environment is ready for the next chapter when the same input yields a consistent replay and concurrent attempts stay independent. These checks establish what the training code can rely on from the store.
 
 1. The fixture defines O-17, its size S shirt, a requested M, and a stock count of 1. The environment starts each attempt by building a fresh store from those facts.

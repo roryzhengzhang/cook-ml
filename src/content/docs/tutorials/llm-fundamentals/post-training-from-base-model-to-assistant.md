@@ -4,7 +4,7 @@ description: "How fine-tuning, preference learning and reinforcement learning tu
 sidebar:
   order: 6
   label: "Post-Training"
-lastUpdated: 2026-11-18
+lastUpdated: 2026-11-23
 ---
 
 The pretrained story model can continue a story that starts with "One day". It may return only a fragment when asked to write a story using specific words. Its training examples showed it how stories continue. Fine-tuning gives it examples of how to start one in response to a request.
@@ -23,7 +23,7 @@ The [story model](/tutorials/llm-fundamentals/#story-model) gives us a way to co
 
 ## Base model behavior
 
-Suppose a base model sees a line from Lily’s story followed by a reading question.
+A base model treats a request as text to continue. A passage followed by a question makes the difference visible.
 
 > Lily found a scarf beside the lantern in the attic.
 > What did Lily find beside the lantern?
@@ -38,7 +38,7 @@ Post training therefore has to add behavior rather than knowledge. The model mus
 
 ## Supervised fine tuning
 
-A story prompt paired with a complete story shows the model what an answer should look like. **Supervised fine tuning**, or [SFT](/tutorials/llm-deep-dive/domain-adaptation-and-fine-tuning/#fine-tuning-plan), continues training the base model on **instruction response pairs**, each a prompt together with an answer a person wrote or approved. Training lowers a number called the **loss** by **gradient descent**, which repeatedly nudges every weight in the direction that lowers it. Here the loss is the same next token **cross entropy** used in pretraining. It is minus the log probability the model gave to each token the written answer actually contains, as [Language Modeling](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/) develops.
+**Supervised fine tuning**, or [SFT](/tutorials/llm-deep-dive/domain-adaptation-and-fine-tuning/#fine-tuning-plan), teaches a base model how to respond to instructions. The training data consists of **instruction response pairs**. Each pair contains a prompt and a reference answer. The loss is the same next token **cross entropy** used in pretraining. It is minus the log probability the model gave to each token the written answer actually contains, as [Language Modeling](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/) develops.
 
 $$
 \mathcal{L}_{\text{SFT}}=-\sum_{t=1}^{|y|}\log \pi_\theta(y_t\mid x,y_{<t})
@@ -60,9 +60,19 @@ In the longer run, the base model followed 1 of 64 complete word lists and the t
 
 SFT has two important limits. It can only imitate, so it never sees a bad answer and never learns how much better one answer is than another. And it cannot add knowledge reliably. In one study, [fine tuning on facts the base model did not know](https://arxiv.org/abs/2405.05904) was learned slowly and increased **hallucination**, meaning fluent statements that are false. This happens because the model learns to answer confidently past what it knows. Training too long on narrow data also causes **catastrophic forgetting**, the loss of abilities the narrow data never exercised.
 
+### Refusal tuning
+
+An assistant needs to respond differently to requests with similar wording when their intent differs. “How do I kill a frozen process on my laptop?” calls for ordinary troubleshooting. A request to seriously harm someone calls for a brief refusal, with safe help when it fits. **Refusal tuning** uses examples like these to teach where the boundary falls and what response belongs on each side.
+
+In supervised fine tuning, the response tokens in each demonstration are the targets. The reference answer refuses the harmful request and directly helps with the allowed one. In [preference training](/tutorials/llm-fundamentals/post-training-from-base-model-to-assistant/#preference-data-and-reward-models), annotators can favor a clear refusal over harmful compliance for the first kind of request and favor a useful answer over a blanket refusal for the second. Reinforcement learning from human feedback can learn those preferences through a reward model. Direct preference optimization can train directly on the chosen and rejected responses. Llama 3 reports balancing refusal examples with examples of safe requests that look similar. [Llama 3 safety post-training](https://arxiv.org/abs/2407.21783)
+
+If the training pairs let a word such as “kill” predict the preferred refusal on its own, the model can learn the shortcut and turn down the troubleshooting question. This is **over-refusal**. Matched examples make the relevant distinction easier to learn, and [held-out refusal tests](/tutorials/llm-fundamentals/evaluation-reliability-and-safety/#over-refusal-evaluation) check whether it generalizes. The story model's fine-tuning data teaches it to follow story prompts.
+
 ## Prompt loss masking
 
-In those prompt-and-story pairs, the prompt gives the model context and the story supplies the target tokens. **Prompt loss masking** controls which tokens count toward the loss. The whole chat is fed to the model so that every response token can see the question, but only the response tokens contribute to the loss. Without it, part of every gradient teaches the model to write user questions, which it will never be asked to do.
+**Prompt loss masking** keeps the prompt visible to the model and counts only the response tokens toward the loss. The model can use the user’s question as context, and the training signal focuses on writing the answer.
+
+The [story notebook’s mask](/tutorials/llm-fundamentals/notebook/#prompt-mask) leaves the USER request and the ASSISTANT marker visible to the decoder. The scored targets begin with the first token of the reference story and include EOS. The model can use the requested words as context while learning both what to write and when to end.
 
 The chat is first laid out with a **chat template**, a fixed format that wraps each turn in special tokens. These are reserved tokens such as `<user>`, `<assistant>` and `<end>` that mark who is speaking and where a turn ends ([Tokenization](/tutorials/llm-fundamentals/tokenization-and-embeddings/) covers how they enter the vocabulary). The masked loss over the whole sequence is
 
@@ -82,7 +92,7 @@ The `<end>` token deserves the mask as much as the answer does, since a model ne
 
 ## Preference data and reward models
 
-Two stories may both follow a request, but one can be more coherent or use the requested words more naturally. A **preference pair** records which answer a reviewer or checker preferred. It holds one prompt, two responses, and a label saying which one a person preferred. Labellers can produce comparisons quickly, and a comparison carries information a supervised fine tuning (SFT) example cannot, namely what to avoid. **AI feedback** replaces the person with a strong model following written rules, as in [Constitutional AI](https://arxiv.org/abs/2212.08073). It is much cheaper and inherits that judge's biases.
+A reference answer shows one acceptable response. A **preference pair** shows which of two responses is better for the same prompt. A reviewer or checker supplies the label. Since the pair includes the weaker answer, it can capture differences in qualities such as coherence even when both responses follow the instructions. **AI feedback** replaces the person with a strong model following written rules, as in [Constitutional AI](https://arxiv.org/abs/2212.08073). It is much cheaper and inherits that judge's biases.
 
 A **reward model** turns those labels into a score. It is usually a copy of the language model with its final layer replaced by one that outputs a single number $r(x,y)$ for prompt $x$ and response $y$. The **Bradley-Terry model** links scores to labels. It is a 1952 model of paired comparisons, and it says the preferred response wins with probability equal to the sigmoid of the score gap.
 
@@ -101,13 +111,15 @@ The notebook builds a preference pair for the [story model](/tutorials/llm-funda
 The next cell fits about the smallest reward model possible. It averages the tuned model's frozen token embeddings over a story, giving 384 numbers, and one linear layer without a bias turns that average into a score, so it has 384 trainable weights. It trains for 20 steps on one pair with the loss $\log(1+e^{r(x,y_l)-r(x,y_w)})$, which is the Bradley-Terry loss above written another way. The head scores the story alone, without the request, which works for one fixed pair but not across many requests. An average of embeddings also cannot see word order. The head can learn which words a good story contains but not where they appear, the kind of blind spot a policy can exploit, as the [reward hacking and sycophancy](#reward-hacking-and-sycophancy) section shows. These lab cells run only when `COOK_ML_LABS=1`, and the measured run left them off, so the notebook reports no numbers for them.
 
 ## RLHF
-Once a reward model can rate candidate stories, the story generator can practice on fresh answers and learn from the scores it receives. Reinforcement learning from human feedback, or **RLHF** ([Christiano et al.](https://arxiv.org/abs/1706.03741), then InstructGPT), tunes the supervised fine tuning (SFT) model to raise the reward model's score, with a penalty that stops it drifting far from where it started. The model being trained is called the **policy**, the frozen SFT copy is the **reference model**, and each training batch is a set of rollouts, responses the current policy writes and the reward model scores.
+Reinforcement learning from human feedback, or **RLHF** ([Christiano et al.](https://arxiv.org/abs/1706.03741), then InstructGPT), lets a fine-tuned model learn from answers it generates during training. In this setup, a reward model scores each answer. The update favors higher scores and penalizes large departures from the supervised model. The model being trained is called the **policy**, the frozen SFT copy is the **reference model**, and each training batch is a set of rollouts, responses the current policy writes and the reward model scores.
+
+For each prompt, the goal is to get a high average reward while keeping the policy close to its starting point. The same comparison is averaged across training prompts.
 
 $$
-\max_\theta\;\mathbb{E}_{x,\;y\sim\pi_\theta}\big[r(x,y)\big]-\beta\,D_{\text{KL}}\big(\pi_\theta(\cdot\mid x)\,\|\,\pi_{\text{ref}}(\cdot\mid x)\big)
+\max_\theta\;\mathbb{E}_{x}\Big[\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}[r(x,y)]-\beta\,D_{\text{KL}}\big(\pi_\theta(\cdot\mid x)\,\|\,\pi_{\text{ref}}(\cdot\mid x)\big)\Big]
 $$
 
-$\mathbb{E}$ averages over prompts $x$ from the dataset and responses $y$ sampled from the policy $\pi_\theta$, $r(x,y)$ is the reward model's score, $\pi_{\text{ref}}$ is the reference model, and $D_{\text{KL}}$ is the **KL divergence** ([Kullback-Leibler](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/#maximum-likelihood)). The KL divergence is the average over the policy's own samples of $\log\pi_\theta(y\mid x)-\log\pi_{\text{ref}}(y\mid x)$, and it is 0 when the two models agree. The **KL coefficient** $\beta$ sets how much reward one nat of drift has to buy. The penalty exists because the reward model was fitted on responses near the reference model, so its scores are trustworthy only there. An optimizer without the penalty walks straight to responses the reward model overrates.
+For a prompt $x$ and one sampled response $y$, the reward model gives the score $r(x,y)$. The [KL term](/tutorials/llm-fundamentals/language-modeling-and-next-token-prediction/#mode-covering-and-mode-seeking) compares the policy $\pi_\theta$ with the reference $\pi_{\text{ref}}$ for that same prompt. It is reverse KL because it averages the log ratio $\log\pi_\theta(y\mid x)-\log\pi_{\text{ref}}(y\mid x)$ over answers the current policy produces. If both models assign the same probabilities, the penalty is zero. The **KL coefficient** $\beta$ controls the strength of the penalty. Keeping the policy near the reference reduces the risk of chasing unusually high reward scores on responses far outside the reward model’s training examples.
 
 For one sampled response the penalty is usually estimated from the response's own tokens. Take a three token response whose per token log ratios $\log\pi_\theta-\log\pi_{\text{ref}}$ are 0.5, 0.2 and −0.1. They sum to 0.6 nats. With reward 2.0 and $\beta=0.1$, its penalized reward is $2.0-0.1\times0.6=1.94$. A second response scores higher at 2.6 but has drifted to a log ratio of 8.0 nats, so its penalized reward is $2.6-0.8=1.8$. The objective prefers the first response even though the reward model liked the second more.
 
@@ -123,13 +135,15 @@ The notebook's reward policy cell runs one such update on the story model in min
 
 ## Direct preference optimization
 
-RLHF uses a reward model to score sampled answers. A preference dataset already says which of two answers should be favored. **Direct preference optimization**, or DPO ([Rafailov et al.](https://arxiv.org/abs/2305.18290)), uses that to skip the reward model and the sampling loop of the [RLHF](#rlhf) section entirely. Rearranging $\pi^{\star}=\pi_{\text{ref}}e^{r/\beta}/Z$ gives $r(x,y)=\beta\log\frac{\pi^{\star}(y\mid x)}{\pi_{\text{ref}}(y\mid x)}+\beta\log Z(x)$. Once this expression goes into the Bradley-Terry gap of the [preference data and reward models](#preference-data-and-reward-models) section, the awkward $\beta\log Z(x)$ term appears once for the winner and once for the loser of the same prompt, so it cancels.
+A preference dataset already identifies the better response for each pair. **Direct preference optimization**, or DPO ([Rafailov et al.](https://arxiv.org/abs/2305.18290)), trains on those comparisons directly. For each pair, DPO asks whether the model has shifted its odds toward the preferred answer relative to the frozen reference.
+
+The connection to RLHF comes from solving its best-policy formula for the reward. Rearranging $\pi^{\star}=\pi_{\text{ref}}e^{r/\beta}/Z$ gives $r(x,y)=\beta\log\frac{\pi^{\star}(y\mid x)}{\pi_{\text{ref}}(y\mid x)}+\beta\log Z(x)$. Once this expression goes into the Bradley-Terry gap of the [preference data and reward models](#preference-data-and-reward-models) section, the awkward $\beta\log Z(x)$ term appears once for the winner and once for the loser of the same prompt, so it cancels.
 
 $$
 \mathcal{L}_{\text{DPO}}=-\log\sigma\Big(\beta\Big[\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\Big]\Big)
 $$
 
-$\pi_\theta$ is the policy being trained, $\pi_{\text{ref}}$ the frozen supervised fine tuning (SFT) model, $y_w$ and $y_l$ the preferred and rejected responses, $\beta$ the KL coefficient and $\sigma$ the sigmoid. Each log ratio says how much more likely the policy makes a response than the reference does, and $\beta$ times that log ratio is the **implicit reward**, the score the policy's own probabilities stand for. The DPO loss is a supervised comparison on fixed labeled pairs. SFT learns to imitate one target response. DPO learns to prefer one response over another relative to a frozen reference model.
+$\pi_\theta$ is the policy being trained, $\pi_{\text{ref}}$ the frozen supervised fine tuning (SFT) model, $y_w$ and $y_l$ the preferred and rejected responses, $\beta$ the KL coefficient and $\sigma$ the sigmoid. The sigmoid maps the score gap to the estimated chance that a reviewer would pick the preferred answer. Each log ratio says how much more likely the policy makes a response than the reference does, and $\beta$ times that log ratio is the **implicit reward**, the score the policy's own probabilities stand for. The DPO loss is a supervised comparison on fixed labeled pairs. SFT learns to imitate one target response. DPO learns to prefer one response over another relative to a frozen reference model.
 
 The loss needs only four numbers per pair. In this example the policy gives the winner a log probability of −10.0 and the reference gives it −11.0, while the policy gives the loser −12.0 and the reference −11.5. The winner's log ratio is +1.0 and the loser's is −0.5, so the margin is 1.5 and $\beta=0.1$ turns it into 0.15. Then $\sigma(0.15)=0.537$ and the loss is $-\ln0.537=0.621$ nats. At the start of training the policy equals the reference, both log ratios are 0, and the loss is $\ln2=0.693$. The gradient on this pair is scaled by $1-0.537=0.463$.
 
@@ -152,7 +166,7 @@ What DPO gives up is the ability to learn from its own mistakes. Its pairs were 
 
 ## Verifiable rewards and GRPO
 
-Some tasks have outcomes a program can check. A calculator can verify that 17 × 24 equals 408. A **verifiable reward** is a score computed by a program instead of a learned model. It is 1 if the final answer matches the reference answer or the generated code passes its unit tests, and 0 otherwise. Training a policy against such checks is reinforcement learning with verifiable rewards, or **RLVR**, a name from the [Tülu 3](https://arxiv.org/abs/2411.15124) report. The reward cannot drift the way a learned reward model can, though the [reward hacking and sycophancy](#reward-hacking-and-sycophancy) section shows that a careless checker can still be gamed.
+When a task has a programmatically checkable outcome, the check itself can supply the training score. A **verifiable reward** comes from a rule such as matching a reference answer or passing unit tests. A simple check returns 1 for a pass and 0 for a failure. Training a policy against such checks is reinforcement learning with verifiable rewards, or **RLVR**, a name from the [Tülu 3](https://arxiv.org/abs/2411.15124) report. The reward cannot drift the way a learned reward model can, though the [reward hacking and sycophancy](#reward-hacking-and-sycophancy) section shows that a careless checker can still be gamed.
 
 **Group relative policy optimization**, or GRPO ([DeepSeekMath](https://arxiv.org/abs/2402.03300)), updates the model using rewards from several answers to the same prompt. It works with scores from a program or a learned reward model. [Tülu 3](https://arxiv.org/abs/2411.15124) used PPO for verifiable rewards, and [DeepSeek-R1-Zero](https://arxiv.org/abs/2501.12948) used GRPO. GRPO drops the critic from the [RLHF](#rlhf) section and uses the rewards of a group of $G$ responses to estimate the advantage. The **advantage** measures how much better one response did than the policy's typical response to that prompt. It is
 
@@ -191,7 +205,7 @@ A reward can check the final answer even when the model writes several steps to 
 The independence assumption is optimistic, since samples from one model share its blind spots. Real voting gains flatten sooner than the curve. A **verifier** is a checker that can recognize a right answer. When one exists, it does much better than voting, because it only needs one right sample among $k$. The bill arrives at serving time ([Inference](/tutorials/llm-fundamentals/inference-and-decoding/)). The [story model](/tutorials/llm-fundamentals/#story-model) decodes one sequence at a floor of about 6.6 µs per token on one H100, as [memory bandwidth bound decoding](/tutorials/llm-fundamentals/inference-and-decoding/#memory-bandwidth-bound-decoding) works out. Each token adds 3 KiB of key and value cache, which stores the attention keys and values of every earlier token. A 200 token answer therefore costs 1.3 ms and 600 KiB of cache. Its 512-token window could not hold 2,000 tokens of thinking at all, which is one reason reasoning models need long contexts. A 7-billion-parameter model such as Llama 2 7B decodes at about 4.0 ms per token, so a 200 token answer takes 0.8 seconds while 2,000 tokens of thinking take 8 seconds. With full multi-head attention it stores 0.5 MiB of cache per token, so those 2,000 tokens hold 1,000 MiB. Five votes multiply the tokens and the cache by five. Advanced Topics goes further into process supervision and how reasoning models are trained.
 
 ## Distillation
-A large reasoning model can produce useful answers that are expensive to generate repeatedly. **Distillation** trains a smaller model to imitate it, so the smaller model can produce similar answers at lower cost. The larger model is the teacher and the smaller one is the student. **Sequence level distillation** generates whole answers with the teacher and uses them as supervised fine tuning data. That is how DeepSeek released 1.5B to 70B models that copy R1's reasoning chains. **Token level distillation** ([Hinton et al.](https://arxiv.org/abs/1503.02531)) instead trains on the teacher's whole next token distribution rather than the single token it picked. These distributions are called **soft labels**.
+**Distillation** trains a smaller model to imitate a larger one. The goal is to retain some of the larger model’s capabilities while reducing the cost of generating answers. The larger model is the teacher and the smaller one is the student. **Sequence level distillation** generates whole answers with the teacher and uses them as supervised fine tuning data. That is how DeepSeek released 1.5B to 70B models that copy R1's reasoning chains. **Token level distillation** ([Hinton et al.](https://arxiv.org/abs/1503.02531)) instead trains on the teacher's whole next token distribution rather than the single token it picked. These distributions are called **soft labels**.
 
 $$
 \mathcal{L}_{\text{KD}}=-\sum_v q(v)\log\pi_\theta(v\mid \text{context})

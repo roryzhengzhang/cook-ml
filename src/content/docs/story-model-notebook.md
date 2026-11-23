@@ -54,46 +54,9 @@ The shorter run scored 1.267 nats per token on the same 400 responses. It fine-t
 
 The last stage of the notebook holds smaller experiments that the later chapters discuss. These include preference pairs with DPO, group-relative policy updates, a reward head, distillation, beam search, int8 quantization, LoRA, retrieval and a bounded tool loop. The experiments that train or sample extra models run only when `COOK_ML_LABS=1` is set. The others define small, checked functions and run in seconds.
 
-## Hardware requirement
-
-The `story` profile uses one GPU on Apple Silicon or NVIDIA. TinyStories and TinyStories-Instruct stream over the network, and both training stages use the same 11-million-parameter model and 512-token context. The memory figures below are starting estimates for the default settings.
-
-<div class="cm-hw">
-<fieldset class="cm-hw-switch">
-  <legend class="sr-only">Hardware platform</legend>
-  <label>
-    <input class="sr-only" type="radio" name="hardware-platform" value="apple" aria-controls="hw-apple-panel" checked>
-    <span>Apple Silicon</span>
-  </label>
-  <label>
-    <input class="sr-only" type="radio" name="hardware-platform" value="nvidia" aria-controls="hw-nvidia-panel">
-    <span>NVIDIA</span>
-  </label>
-</fieldset>
-<section class="cm-hw-card" id="hw-apple-panel" aria-labelledby="hw-mac">
-<h3 id="hw-mac">Apple Silicon Mac</h3>
-<dl>
-<dt>Minimum requirement</dt><dd>Any M-series chip (M1 or later). The run uses the GPU through PyTorch's MPS backend.</dd>
-<dt>Memory</dt><dd><strong>8 GB</strong> unified memory is a starting estimate. At the end of the longer M4 Max run, PyTorch reported 1.2 GiB of GPU driver memory. Python, the dataset stream and macOS also use unified memory.</dd>
-<dt>System</dt><dd>macOS 15 or later for MPS with <a href="https://pytorch.org/blog/pytorch-2-15-release-blog/#deprecations-and-backwards-incompatible-changes">PyTorch 2.15</a>.</dd>
-<dt>Precision</dt><dd>float32. MPS runs the same code without bf16 autocast.</dd>
-<dt>Measured training time</dt><dd>About 21 minutes for pretraining and 9 minutes for fine-tuning on an M4 Max. Streaming, tokenizer training and evaluation take additional time.</dd>
-</dl>
-</section>
-<section class="cm-hw-card" id="hw-nvidia-panel" aria-labelledby="hw-nvidia">
-<h3 id="hw-nvidia">NVIDIA GPU</h3>
-<dl>
-<dt>Minimum requirement</dt><dd>One NVIDIA GPU with CUDA support and an estimated <strong>4 GB</strong> of GPU memory. Desktop examples include the GeForce RTX 3060 (12 GB) and GeForce RTX 4060 (8 GB).</dd>
-<dt>System</dt><dd>Linux or Windows with a <a href="https://pytorch.org/get-started/locally/">CUDA-enabled PyTorch build</a> and a compatible NVIDIA driver.</dd>
-<dt>Precision</dt><dd>bf16 autocast for matrix products when PyTorch reports support. The model uses float32 otherwise. Weights and optimizer state stay in float32.</dd>
-<dt>Training measurements</dt><dd>The notebook prints peak GPU memory and throughput after pretraining. The runs reported here used Apple MPS.</dd>
-</dl>
-</section>
-</div>
-
-Both platforms also need Python 3.12, a network connection to stream the datasets, and free disk for PyTorch and two checkpoints of 132 MB each. That is about 2 GB on a Mac. On Linux or Windows the CUDA build of PyTorch alone takes several gigabytes. Both datasets are streamed, so they need little local disk space. Without a GPU, the default `cpu` profile still runs every stage on a small generated corpus. It needs no network and finishes in about 11 seconds on one CPU thread.
-
 ## Running it
+
+<p id="hardware-requirement">The <a href="/tutorials/llm-fundamentals/#hardware-requirement">hardware requirements</a> are on the LLM Fundamentals overview.</p>
 
 The commands below install the dependencies and start Jupyter on Apple Silicon. On NVIDIA, use the [PyTorch installer](https://pytorch.org/get-started/locally/) to select a CUDA build for your system. The other Python dependencies are the same.
 

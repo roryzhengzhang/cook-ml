@@ -75,6 +75,8 @@ In the CPU notebook, the three policy decisions use separate parameters, and the
 
 Three candidates help identify what produced a gain. The first is the previous checkpoint with V2 in the prompt. The second continues training on fresh V2 cases. The third continues from the same checkpoint on the mixed task set. The last two use comparable generated-token and update budgets. Each candidate is evaluated on the same new-case and retention fixtures with the same actions, limits and sampling settings.
 
+The [CPU release exercise](/tutorials/rl-for-llm-agents/notebook/#continual-evaluation) copies the original GRPO policy into two candidates. The new-only candidate repeats the two V2 defect fixtures. The mixed candidate trains on those same two fixtures plus two original V1 tasks. Each update sees four fixture slots and eight attempts per slot. Both candidates then face the same V1 and V2 holdouts as the original policy.
+
 Suppose the control succeeds on 11 of 20 new cases and 19 of 20 retention cases. Fresh-only training resolves 18 new cases and keeps 15 earlier ones. Mixed training resolves 17 new cases and keeps 19 earlier ones. The example shows a tradeoff a single average can conceal. Fresh-only fixes one more new case. Mixed restores four earlier cases. These are illustrative counts. A real report would include the paired outcomes and the seed variation from the previous chapter.
 
 ![Fresh skill and retention comparison](/images/rl-for-llm-agents/17i-fresh-skill-and-retention-comparison.png)

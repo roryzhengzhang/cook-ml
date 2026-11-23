@@ -1,23 +1,23 @@
 ---
 title: "LLM Fundamentals"
-description: "When a language model sees \"One day\", how does it decide what to write next? This series follows that choice from the text the model reads to the probabilities it produces."
+description: "When a language model sees \"One day\", how does it decide what to write next? It turns those words into tokens and assigns a probability to each possible next token."
 sidebar:
   order: 0
   label: "Overview"
 lastUpdated: 2026-11-13
 ---
 
-When a language model sees "One day", how does it decide what to write next? This series follows that choice from the text the model reads to the probabilities it produces. The same small model gives us a way to see how training changes those probabilities and how to tell whether its answers have improved.
+When a language model sees "One day", how does it decide what to write next? It turns those words into tokens and assigns a probability to each possible next token. We train a small model to see how those probabilities change and evaluate how well it follows a story prompt.
 
-This tutorial is built around a working language model we implement from scratch. In the [project notebook](/tutorials/llm-fundamentals/notebook/), we build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. The project is designed to run on a single consumer GPU, including the built-in GPU on an Apple Silicon Mac. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives.
+This tutorial is built around a working language model we implement from scratch. We build a tokenizer and an 11-million-parameter Transformer, train it on [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories), and compare its responses before and after fine-tuning. That same implementation connects the chapters, from how text becomes tokens to how a model generates answers and how those answers are evaluated. Newcomers can follow the chapters in order, while engineers and researchers can revisit individual topics and explore the deep dives.
 
 <aside class="cm-model-card cm-notebook-card" id="story-model">
 <div class="cm-notebook-kicker" id="story-model-project">Project</div>
 <p class="cm-notebook-title">Language model for storytelling</p>
 
-The project builds a small language model from scratch.
+The project builds a small language model from scratch to continue short children’s stories from an opening line. After fine-tuning, it can also write a story from a simple plot description and include requested words or features such as dialogue. Note that this small model may skip a requested word or leave out part of the plot due to its limited capacity.
 
-For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct). A request can ask the model to use specific words, include a sentence, follow a plot summary, or add features such as dialogue and a plot twist. An optional Direct Preference Optimization (DPO) lab takes a copy of the SFT model and runs one update to favor a story that uses every requested word over one that misses a word. The notebook gives the base and SFT models the same held-out requests. It checks words and sentences automatically and shows both stories for reviewing plot and features. Pretraining, SFT, and the DPO lab can all run on a single GPU.
+For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct](https://huggingface.co/datasets/roneneldan/TinyStoriesInstruct). An optional Direct Preference Optimization (DPO) lab takes a copy of the SFT model and runs one update to favor a story that uses every requested word over one that misses a word. Pretraining, SFT, and the DPO lab can all run on a single GPU.
 
 <div class="cm-notebook-specs" role="region" aria-label="Model specifications" tabindex="0">
 
@@ -38,20 +38,59 @@ For post-training, we use supervised fine-tuning (SFT) on [TinyStories-Instruct]
 
 </div>
 
-<div class="cm-notebook-actions"><a href="/tutorials/llm-fundamentals/notebook/">Browse the notebook <span aria-hidden="true">↗</span></a></div>
-</aside>
-
 ![Story model architecture](/images/llm-fundamentals/15-story-model-architecture.png)
 
-The diagram follows the model from an input token to its next-token scores. Each block updates the same 384-number vector. At the end, the output head turns that vector into 4,096 scores, one for each token in the vocabulary.
+The diagram follows the model from an input token to its next-token scores. Each block updates the same 384-dimensional vector. At the end, the output head turns that vector into 4,096 scores, one for each token in the vocabulary.
+
+<div class="cm-notebook-actions"><a href="/notebooks/llm-fundamentals/source/#readme" data-notebook-expand="llm-fundamentals">Open code project</a></div>
+</aside>
+
+## Hardware requirement
+
+The `story` profile uses one GPU on Apple Silicon or NVIDIA. TinyStories and TinyStories-Instruct stream over the network, and both training stages use the same 11-million-parameter model and 512-token context. The memory figures below are starting estimates for the default settings.
+
+<div class="cm-hw">
+<fieldset class="cm-hw-switch">
+  <legend class="sr-only">Hardware platform</legend>
+  <label>
+    <input class="sr-only" type="radio" name="hardware-platform" value="apple" aria-controls="hw-apple-panel" checked>
+    <span>Apple Silicon</span>
+  </label>
+  <label>
+    <input class="sr-only" type="radio" name="hardware-platform" value="nvidia" aria-controls="hw-nvidia-panel">
+    <span>NVIDIA</span>
+  </label>
+</fieldset>
+<section class="cm-hw-card" id="hw-apple-panel" aria-labelledby="hw-mac">
+<h3 id="hw-mac">Apple Silicon Mac</h3>
+<dl>
+<dt>Minimum requirement</dt><dd>Any M-series chip (M1 or later). The run uses the GPU through PyTorch's MPS backend.</dd>
+<dt>Memory</dt><dd><strong>8 GB</strong> unified memory is a starting estimate. At the end of the longer M4 Max run, PyTorch reported 1.2 GiB of GPU driver memory. Python, the dataset stream and macOS also use unified memory.</dd>
+<dt>System</dt><dd>macOS 15 or later for MPS with <a href="https://pytorch.org/blog/pytorch-2-15-release-blog/#deprecations-and-backwards-incompatible-changes">PyTorch 2.15</a>.</dd>
+<dt>Precision</dt><dd>float32. MPS runs the same code without bf16 autocast.</dd>
+<dt>Measured training time</dt><dd>About 21 minutes for pretraining and 9 minutes for fine-tuning on an M4 Max. Streaming, tokenizer training and evaluation take additional time.</dd>
+</dl>
+</section>
+<section class="cm-hw-card" id="hw-nvidia-panel" aria-labelledby="hw-nvidia">
+<h3 id="hw-nvidia">NVIDIA GPU</h3>
+<dl>
+<dt>Minimum requirement</dt><dd>One NVIDIA GPU with CUDA support and an estimated <strong>4 GB</strong> of GPU memory. Desktop examples include the GeForce RTX 3060 (12 GB) and GeForce RTX 4060 (8 GB).</dd>
+<dt>System</dt><dd>Linux or Windows with a <a href="https://pytorch.org/get-started/locally/">CUDA-enabled PyTorch build</a> and a compatible NVIDIA driver.</dd>
+<dt>Precision</dt><dd>bf16 autocast for matrix products when PyTorch reports support. The model uses float32 otherwise. Weights and optimizer state stay in float32.</dd>
+<dt>Training measurements</dt><dd>The notebook prints peak GPU memory and throughput after pretraining. The runs reported here used Apple MPS.</dd>
+</dl>
+</section>
+</div>
+
+Both platforms also need Python 3.12, a network connection to stream the datasets, and free disk for PyTorch and two checkpoints of 132 MB each. That is about 2 GB on a Mac. On Linux or Windows the CUDA build of PyTorch alone takes several gigabytes. Both datasets are streamed, so they need little local disk space. Without a GPU, the default `cpu` profile still runs every stage on a small generated corpus. It needs no network and finishes in about 11 seconds on one CPU thread.
 
 ## Reading order and prerequisites
 
-The first four chapters explain what the model predicts and how it makes a prediction. Language Modeling starts with the probability of a short sentence. Tokenization explains why the model might see more tokens than words in that sentence. Attention and the Transformer Block then follow those tokens through the network.
+The first four chapters explain what the model predicts and how it makes a prediction. Language Modeling starts with the probability of a short sentence. Tokenization explains why the model might see more tokens than words in that sentence. Attention and the Transformer Block then follow those tokens through the model.
 
-Pretraining and Post-Training use that network to build the two checkpoints compared in the notebook. The last three chapters use a trained model to explain how text is generated, how applications give the model context and tools, and how teams check the results. The chapter examples can be followed by hand. The notebook runs the same ideas in Python.
+Pretraining and Post-Training show how the model is trained and fine-tuned to produce the two checkpoints compared in the notebook. The last three chapters use a trained model to explain how text is generated, how applications give the model context and tools, and how developers check the results. The chapter examples can be followed by hand. The notebook runs the same ideas in Python.
 
-Some familiarity with the following topics will make the worked examples easier to follow.
+The following topics are recommended prerequisites for this tutorial.
 
 - **Machine learning basics.** Training usually adjusts a model's parameters by gradient descent to lower a loss on training data. The model is judged on data it has not seen. Overfitting, train and test splits, and the learning rate come up throughout.
 - **Neural networks.** A layer multiplies its input by a weight matrix and applies a nonlinearity, and backpropagation finds the gradient of the loss for every weight.

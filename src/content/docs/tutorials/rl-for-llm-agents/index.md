@@ -39,7 +39,7 @@ The project trains a policy to decide when to retry an inventory lookup, submit 
 | [GPU pilot](/tutorials/rl-for-llm-agents/scaling-the-training-loop/) | A 1.5B dense base model with slime, Megatron, and SGLang. One 48 GB L40S is the first target |
 | [Release exercise](/tutorials/rl-for-llm-agents/continual-learning-and-release/) | A second training round for final-sale cases and evaluation on both policies |
 
-The [project notebook](/tutorials/rl-for-llm-agents/notebook/) includes the measured CPU run, the lab code, and the optional GPU pilot files.
+The [project notebook](/tutorials/rl-for-llm-agents/notebook/) follows O-17 from a scripted replay to a learned retry decision. Its measured CPU comparison starts with a supervised warm start and tests two ways to improve it on the same held-out fixtures. The optional GPU pilot files show how those fixtures and the verifier carry over to a language-model run.
 
 </aside>
 

@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://cook-ml.com/tutorials/">Read the tutorials</a> ·
-  <a href="https://cook-ml.com/tutorials/llm-fundamentals/notebook/">Browse the notebook</a> ·
+  <a href="https://cook-ml.com/notebooks/llm-fundamentals/source/#readme">Browse the code project</a> ·
   <a href="./public/notebooks/llm-fundamentals.ipynb">Get the notebook file</a>
 </p>
 
@@ -14,9 +14,9 @@ Cook ML is a place to learn and revisit the fundamentals of machine learning, un
 
 ## Tutorials
 
-| Series | What it covers |
+| Tutorial | What it covers |
 | --- | --- |
-| [LLM Fundamentals](https://cook-ml.com/tutorials/llm-fundamentals/) | **Start here.** Nine chapters on language models, from text and tokens through training, inference, and evaluation. The [project notebook](https://cook-ml.com/tutorials/llm-fundamentals/notebook/) shows how to train and evaluate a storytelling model from scratch in PyTorch. |
+| [LLM Fundamentals](https://cook-ml.com/tutorials/llm-fundamentals/) | **Start here.** Nine chapters on language models, from text and tokens through training, inference, and evaluation. The [code project](https://cook-ml.com/notebooks/llm-fundamentals/source/#readme) shows how to train and evaluate a storytelling model from scratch in PyTorch. |
 | [LLM Deep Dive](https://cook-ml.com/tutorials/llm-deep-dive/) | **Go deeper.** Eight chapters on efficient attention, long context, distributed training, adaptation, and serving at scale. |
 
 ## Get started locally
@@ -37,7 +37,7 @@ python -m pip install torch jupyterlab
 COOK_ML_OUTPUT="$PWD/runs/llm-fundamentals" jupyter lab public/notebooks/llm-fundamentals.ipynb
 ```
 
-In JupyterLab, select **Run → Run All Cells**. To train on TinyStories and TinyStories-Instruct, install the streaming dependencies and launch the `story` profile on one Apple Silicon or NVIDIA GPU. NVIDIA users need a [CUDA-enabled PyTorch build](https://pytorch.org/get-started/locally/). See the [hardware guide](https://cook-ml.com/tutorials/llm-fundamentals/notebook/#hardware-requirement) for memory and runtime.
+In JupyterLab, select **Run → Run All Cells**. To train on TinyStories and TinyStories-Instruct, install the streaming dependencies and launch the `story` profile on one Apple Silicon or NVIDIA GPU. NVIDIA users need a [CUDA-enabled PyTorch build](https://pytorch.org/get-started/locally/). See the [hardware guide](https://cook-ml.com/tutorials/llm-fundamentals/#hardware-requirement) for memory and runtime.
 
 ```bash
 python -m pip install "datasets==3.6.0" "huggingface_hub<1"
